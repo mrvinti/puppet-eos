@@ -247,7 +247,7 @@ module PuppetX
       #   running configuration otherwise False
       def get_shutdown
         result = @api.enable('show running-config section mlag configuration',
-                             format: 'text')
+                             :format => 'text')
         !/\s{4}shutdown/.match(result.first['output']).nil?
       end
     end

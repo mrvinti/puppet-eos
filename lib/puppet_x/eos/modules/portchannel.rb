@@ -262,8 +262,8 @@ module PuppetX
         name = members.first
         result = @api.enable("show running-config interfaces #{name}",
                              :format => 'text')
-        m = /channel-group\s\d+\smode\s(?<lacp>.*)/.match(result.first['output'])
-        m['lacp']
+        m = /channel-group\s\d+\smode\s(.*)/.match(result.first['output'])
+        m.nil? ? nil : m[1]
       end
 
       def get_lacp_fallback(attr_hash)

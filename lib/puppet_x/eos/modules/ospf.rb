@@ -65,11 +65,11 @@ module PuppetX
       def getall
         result = @api.enable('show ip ospf', :format => 'text')
         output = result.first['output']
-        match = /(?<=ospf\s)(?<instance>\d+)"/.match(output)
-        return {} if match .nil?
-        instance = match['instance']
-        match = /(?<=ID\s)(?<routerid>[\d|\.]*)\s/.match(output)
-        routerid = match['routerid'].nil? ? {} : match['routerid']
+        match = /ospf\s(\d+)"/.match(output)
+        return {} if match.nil?
+        instance = match[1]
+        match = /ID\s([\d|\.]*)\s/.match(output)
+        routerid = (match.nil?||match[1]) ? {} : match[1]
         { instance => { 'router_id' => routerid } }
       end
 
@@ -153,8 +153,8 @@ module PuppetX
         result = @api.enable("show running-config all interface #{name}")
         output = result[0]['output']
         response = {}
-        nettype = output.scan(/(?<=ospf\snetwork\s)(?<nettype>.*)$/)
-        response['network_type'] = nettype
+        nettype = output.scan(/ospf\snetwork\s(.*)$/)
+        response['network_type'] = nettype.nil? ? nil : nettype[1]
         response
       end
     end

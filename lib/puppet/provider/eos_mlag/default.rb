@@ -59,27 +59,27 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   end
 
   def domain_id=(val)
-    eapi.Mlag.set_domain_id(value: val)
+    eapi.Mlag.set_domain_id(:value => val)
     @property_hash[:domain_id] = val
   end
 
   def local_interface=(val)
-    eapi.Mlag.set_local_interface(value: val)
+    eapi.Mlag.set_local_interface(:value => val)
     @property_hash[:local_interface] = val
   end
 
   def peer_address=(val)
-    eapi.Mlag.set_peer_address(value: val)
+    eapi.Mlag.set_peer_address(:value => val)
     @property_hash[:peer_address] = val
   end
 
   def peer_link=(val)
-    eapi.Mlag.set_peer_link(value: val)
+    eapi.Mlag.set_peer_link(:value => val)
     @property_hash[:peer_link] = val
   end
 
   def enable=(val)
-    eapi.Mlag.set_shutdown(value: val == :false)
+    eapi.Mlag.set_shutdown(:value => val == :false)
     @property_hash[:enable] = val
   end
 

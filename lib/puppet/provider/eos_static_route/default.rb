@@ -43,7 +43,7 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show running-config section ip route', format: 'text')
+    resp = eapi.enable('show running-config section ip route', :format => 'text')
     result = resp.first['output']
 
     result.split(/\n/).map do |entry|

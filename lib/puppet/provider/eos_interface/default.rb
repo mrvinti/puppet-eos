@@ -78,22 +78,22 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   end
 
   def enable=(val)
-    eapi.Interface.set_shutdown(resource[:name], value: val == :false)
+    eapi.Interface.set_shutdown(resource[:name], :value => val == :false)
     @property_hash[:enable] = val
   end
 
   def description=(val)
-    eapi.Interface.set_description(resource[:name], value: val)
+    eapi.Interface.set_description(resource[:name], :value => val)
     @property_hash[:description] = val
   end
 
   def flowcontrol_send=(val)
-    eapi.Interface.set_flowcontrol(resource[:name], 'send', value: val)
+    eapi.Interface.set_flowcontrol(resource[:name], 'send', :value => val)
     @property_hash[:flowcontrol_send] = val
   end
 
   def flowcontrol_receive=(val)
-    eapi.Interface.set_flowcontrol(resource[:name], 'receive', value: val)
+    eapi.Interface.set_flowcontrol(resource[:name], 'receive', :value => val)
     @property_hash[:flowcontrol_receive] = val
   end
 end

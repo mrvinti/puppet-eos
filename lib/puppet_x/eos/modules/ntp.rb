@@ -70,7 +70,7 @@ module PuppetX
         result = @api.enable('show running-config section ntp', :format => 'text')
         output = result.first['output']
 
-        m_source = /(?<=source\s)(\w|\d)+$/.match(output)
+        m_source = /source\s(\w|\d)+$/.match(output)
 
         servers = {}
         output.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/).each do |srv|
@@ -82,7 +82,7 @@ module PuppetX
         end
 
         attr_hash = {
-          'source_interface' => m_source.nil? ? '' : m_source[0],
+          'source_interface' => m_source.nil? ? '' : m_source[1],
           'servers' => servers
         }
         attr_hash

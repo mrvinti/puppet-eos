@@ -34,7 +34,7 @@ require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_eapi).provide(:eos) do
 
-  commands cli: 'FastCli'
+  commands :cli => 'FastCli'
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -54,8 +54,8 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
 
     state = !/no\sshutdown/.match(resp).nil?
     protocol = /no\sprotocol\shttp/.match(resp).nil? ? 'https' : 'http'
-    port = /'port\s(?<port>\d+)'/.match(resp)
-    port = protocol == 'http' ? '443' : '80' if port.nil?
+    port = (m=/'port\s(\d+)'/.match(resp)).nil? ? nil : m[1]
+    port = (protocol == 'http' ? '443' : '80') if port.nil?
 
     provider_hash['enable'] = state
     provider_hash['protocol'] = protocol

@@ -52,7 +52,7 @@ Puppet::Type.type(:eos_stp_config).provide(:eos) do
   end
 
   def mode=(val)
-    eapi.Stp.set_mode(value: val)
+    eapi.Stp.set_mode(:value => val)
     @property_hash[:mode] = val
   end
 

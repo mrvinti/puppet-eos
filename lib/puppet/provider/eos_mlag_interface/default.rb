@@ -54,7 +54,7 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   end
 
   def mlag_id=(val)
-    eapi.Mlag.set_mlag_id(resource[:name], value: val)
+    eapi.Mlag.set_mlag_id(resource[:name], :value => val)
     @property_hash[:mlag_id] = val
   end
 

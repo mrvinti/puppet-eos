@@ -73,7 +73,7 @@ module PuppetX
         attr_hash = { 'name' => 'configuration' }
 
         (0..3).each do |i|
-          m = /(?<=:\s)(.*)$/.match(result[i]['output'])
+          m = /:\s(.*)$/.match(result[i]['output'])
           case i
           when 0
             attr_hash['contact'] = !m.nil? ? m[0] : ''

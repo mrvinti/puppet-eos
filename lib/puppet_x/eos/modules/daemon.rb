@@ -63,18 +63,18 @@ module PuppetX
       # @return [Hash<String, String>] Hash of configured agents
       def getall
         result = @api.enable('show running-config section daemon',
-                             format: 'text')
+                             :format => 'text')
         response = {}
         key = nil
         result.first['output'].split("\n").each do |entry|
-          token = entry.strip.match(/^daemon\s(?<name>.*)$/)
+          token = entry.strip.match(/^daemon\s(.*)$/)
           unless token.nil?
-            key = token['name']
+            key = token[1]
             response[key] = nil
           end
-          token = entry.strip.match(/^command\s(?<command>.*)$/)
+          token = entry.strip.match(/^command\s(.*)$/)
           unless token.nil?
-            value = token['command']
+            value = token[1]
             response[key] = value
           end
         end

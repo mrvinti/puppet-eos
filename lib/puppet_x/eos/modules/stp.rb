@@ -75,9 +75,9 @@ module PuppetX
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
         result = @api.enable('show running-config section spanning-tree mode',
-                             format: 'text')
-        mode = /(?<=mode\s)(\w+)$/.match(result.first['output'])
-        response = { 'mode' => mode[0] }
+                             :format => 'text')
+        mode = /mode\s(\w+)$/.match(result.first['output'])
+        response = { 'mode' => mode[1] }
         response['instances'] = {}
         response['interfaces'] = {}
         response
@@ -264,7 +264,7 @@ module PuppetX
 
       def get_interface_config(name)
         cmd = "show running-config interfaces #{name}"
-        result = @api.enable(cmd, format: 'text')
+        result = @api.enable(cmd, :format => 'text')
         output = result.first['output']
         portfast = /portfast/.match(output) ? 'enable' : 'disable'
         { 'portfast' => portfast }
