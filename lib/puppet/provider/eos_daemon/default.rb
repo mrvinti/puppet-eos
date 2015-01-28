@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_daemon).provide(:eos) do
 
   def self.instances
     eapi.Daemon.get.map do |name, command|
-      provider_hash = { name: name, ensure: :present, command: command }
+      provider_hash = { :name => name, :ensure => :present, :command => command }
       new(provider_hash)
     end
   end
@@ -67,13 +67,13 @@ Puppet::Type.type(:eos_daemon).provide(:eos) do
 
   def create
     eapi.Daemon.create(resource[:name], resource[:command])
-    @property_hash = { name: resource[:name],
-                       command: resource[:command],
-                       ensure: :present }
+    @property_hash = { :name => resource[:name],
+                       :command => resource[:command],
+                       :ensure => :present }
   end
 
   def destroy
     eapi.Daemon.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

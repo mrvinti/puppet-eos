@@ -51,7 +51,7 @@ Puppet::Type.newtype(:eos_vlan) do
 
   # Parameters
 
-  newparam(:vlanid, namevar: true) do
+  newparam(:vlanid, :namevar => true) do
     desc "The vlanid parameter configures a virtual LAN in the range
         of 1 to 4094."
 
@@ -81,7 +81,7 @@ Puppet::Type.newtype(:eos_vlan) do
     end
   end
 
-  newproperty(:enable, boolean: true) do
+  newproperty(:enable, :boolean => true) do
     desc "The enable property configures the VLAN transmission state of
         configured VLAN.  When enable is True, ports forward VLAN traffic
         and when enable is False, ports block VLAN traffic.
@@ -111,7 +111,7 @@ Puppet::Type.newtype(:eos_vlan) do
     end
   end
 
-  newproperty(:trunk_groups, array_matching: :all) do
+  newproperty(:trunk_groups, :array_matching => :all) do
     desc "The trunk group property assigns the array of trunk groups to
         the specified VLAN.  A trunk group is the set of physical interfaces
         that comprise the trunk and th ecollections of VLANs whose traffic

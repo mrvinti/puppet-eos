@@ -46,7 +46,7 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   def self.instances
     result = eapi.System.get
     return [] if result.empty?
-    [new(name: result['hostname'], ensure: :present)]
+    [new(:name => result['hostname'], :ensure => :present)]
   end
 
   def exists?
@@ -55,7 +55,7 @@ Puppet::Type.type(:eos_system).provide(:eos) do
 
   def create
     eapi.System.set_hostname(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
   end
 
 end

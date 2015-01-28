@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
     result = eapi.Logging.get
     Puppet.debug("result #{result}")
     result['hosts'].each.map do |name, _|
-      provider_hash = { name: name, ensure: :present }
+      provider_hash = { :name => name, :ensure => :present }
       new(provider_hash)
     end
   end
@@ -58,11 +58,11 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def create
     eapi.Logging.hosts.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
   end
 
   def destroy
     eapi.Logging.hosts.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

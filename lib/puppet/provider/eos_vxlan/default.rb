@@ -4,7 +4,7 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
-# met:
+# met:h
 #
 #   Redistributions of source code must retain the above copyright notice,
 #   this list of conditions and the following disclaimer.
@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
   def self.instances
     eapi.Vxlan.getall.map do |name, attrs|
-      provider_hash = { name: name, ensure: :present }
+      provider_hash = { :name => name, :ensure => :present }
       provider_hash[:source_interface] = attrs['source_interface']
       provider_hash[:multicast_group] = attrs['multicast_group']
       new(provider_hash)
@@ -53,12 +53,12 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   end
 
   def source_interface=(val)
-    eapi.Vxlan.set_source_interface(value: val)
+    eapi.Vxlan.set_source_interface(:value => val)
     @property_hash[:source_interface] = val
   end
 
   def multicast_group=(val)
-    eapi.Vxlan.set_multicast_group(value: val)
+    eapi.Vxlan.set_multicast_group(:value => val)
     @property_hash[:multicast_group] = val
   end
 
@@ -68,7 +68,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
   def create
     eapi.Vxlan.create
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
     self.source_interface = resource[:source_interface] \
                             if resource[:source_interface]
     self.multicast_group = resource[:multicast_group] \
@@ -77,6 +77,6 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
   def destroy
     eapi.Vxlan.delete
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

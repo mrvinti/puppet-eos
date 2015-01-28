@@ -172,7 +172,7 @@ module PuppetX
 
       def get_helper_address(name)
         config = @api.enable("show running-config interfaces #{name}",
-                             format: 'text')
+                             :format => 'text')
         output = config.first['output']
         output.scan(/(?<=\-address\s)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
       end

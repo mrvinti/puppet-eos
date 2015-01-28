@@ -50,7 +50,7 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     resp = cli('-p', '15', '-A', '-c', "#{commands}")
     Puppet.debug("#{resp}")
 
-    provider_hash = { name: 'eapi', ensure: :present }
+    provider_hash = { :name => 'eapi', :ensure => :present }
 
     state = !/no\sshutdown/.match(resp).nil?
     protocol = /no\sprotocol\shttp/.match(resp).nil? ? 'https' : 'http'
@@ -112,7 +112,7 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     commands << 'no shutdown'
     commands = commands.join('\n')
     cli('-p', '15', '-A', '-e', '-c', "$'#{commands}'")
-    @property_hash = { name: resource[:name],  ensure: :present }
+    @property_hash = { :name => resource[:name],  :ensure => :present }
   end
 
   def destroy

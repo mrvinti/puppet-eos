@@ -68,7 +68,7 @@ module PuppetX
                                'show snmp location',
                                'show snmp chassis',
                                'show snmp source-interface'],
-                              format: 'text')
+                              :format => 'text')
 
         attr_hash = { 'name' => 'configuration' }
 

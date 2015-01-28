@@ -156,7 +156,7 @@ module PuppetX
       # @raise [Eos::Eapi::CommandError] if the response from invoke contains
       #   the key error
       def execute(commands, options = {})
-        commands.insert(0, cmd: 'enable', input: @enable_pwd)
+        commands.insert(0, :cmd => 'enable', :input => @enable_pwd)
         Puppet.debug("REQ: #{commands}")
         resp = invoke(request(commands, options))
         Puppet.debug("RESP: #{resp}")

@@ -45,9 +45,9 @@ Puppet::Type.type(:eos_stp_config).provide(:eos) do
 
   def self.instances
     result = eapi.Stp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      mode: result['mode'] }
+    provider_hash = { :name => 'settings',
+                      :ensure => :present,
+                      :mode => result['mode'] }
     [new(provider_hash)]
   end
 

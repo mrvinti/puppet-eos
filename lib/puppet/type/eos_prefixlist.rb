@@ -50,7 +50,7 @@ Puppet::Type.newtype(:eos_prefixlist) do
 
   # Properties (state management)
 
-  newproperty(:entries, array_matching: :all) do
+  newproperty(:entries, :array_matching => :all) do
     desc 'An array of prefix list entries.'
 
     validate do |value|

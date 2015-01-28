@@ -46,9 +46,9 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   def self.instances
     result = eapi.Mlag.get_interfaces
     result.first['interfaces'].map do |name, attrs|
-      provider_hash = { name: attrs['localInterface'],
-                        mlag_id: name,
-                        ensure: :present }
+      provider_hash = { :name => attrs['localInterface'],
+                        :mlag_id => name,
+                        :ensure => :present }
       new(provider_hash)
     end
   end
@@ -64,12 +64,12 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
   def create
     eapi.Mlag.add_interface(resource[:name], resource['mlag_id'])
-    @property_hash = { name: resource['name'], ensure: :present }
+    @property_hash = { :name => resource['name'], :ensure => :present }
     self.mlag_id = resource[:mlag_id] if resource[:mlag_id]
   end
 
   def destroy
     eapi.Mlag.remove_interface(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

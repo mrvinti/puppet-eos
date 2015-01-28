@@ -44,7 +44,7 @@ Puppet::Type.newtype(:eos_ospf_area) do
 
   # Properties (state management)
 
-  newproperty(:networks, array_matching: :all) do
+  newproperty(:networks, :array_matching => :all) do
     desc 'Array of networks'
 
     validate do |value|

@@ -45,32 +45,32 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
 
   def self.instances
     result = eapi.Snmp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      contact: result['contact'],
-                      location: result['location'],
-                      chassis_id: result['chassis_id'],
-                      source_interface: result['source_interface'] }
+    provider_hash = { :name => 'settings',
+                      :ensure => :present,
+                      :contact => result['contact'],
+                      :location => result['location'],
+                      :chassis_id => result['chassis_id'],
+                      :source_interface => result['source_interface'] }
     [new(provider_hash)]
   end
 
   def contact=(val)
-    eapi.Snmp.set_contact(value: val)
+    eapi.Snmp.set_contact(:value => val)
     @property_hash[:contact] = val
   end
 
   def location=(val)
-    eapi.Snmp.set_location(value: val)
+    eapi.Snmp.set_location(:value => val)
     @property_hash[:location] = val
   end
 
   def chassis_id=(val)
-    eapi.Snmp.set_chassis_id(value: val)
+    eapi.Snmp.set_chassis_id(:value => val)
     @property_hash[:chassis_id] = val
   end
 
   def source_interface=(val)
-    eapi.Snmp.set_source_interface(value: val)
+    eapi.Snmp.set_source_interface(:value => val)
     @property_hash[:source_interface] = val
   end
 

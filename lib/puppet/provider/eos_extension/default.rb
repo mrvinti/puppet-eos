@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_extension).provide(:eos) do
 
   def self.instances
     eapi.Extension.getall[0]['extensions'].map do |name, _hsh|
-      provider_hash = { name: name, ensure: :present }
+      provider_hash = { :name => name, :ensure => :present }
       value = eapi.Extension.autoload?(name) ? :true : :false
       provider_hash[:autoload] = value
       Puppet.debug(provider_hash)
@@ -79,13 +79,13 @@ Puppet::Type.type(:eos_extension).provide(:eos) do
     url = resource[:name]
     url = url.insert(0, "#{resource[:source_url]}/") if resource[:source_url]
     eapi.Extension.install(url, resource[:force])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
     self.autoload = resource[:autoload] if resource[:autoload]
   end
 
   def destroy
     eapi.Extension.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 
   def flush_autoload

@@ -104,7 +104,7 @@ module PuppetX
       def get_members(name)
         id = name.match(/\d+/)
         result = @api.enable("show port-channel #{id} all-ports",
-                             format: 'text')
+                             :format => 'text')
         result.first['output'].scan(/Ethernet\d+/)
       end
 
@@ -261,9 +261,8 @@ module PuppetX
         return '' if members.empty?
         name = members.first
         result = @api.enable("show running-config interfaces #{name}",
-                             format: 'text')
-        m = /channel-group\s\d+\smode\s(?<lacp>.*)/
-            .match(result.first['output'])
+                             :format => 'text')
+        m = /channel-group\s\d+\smode\s(?<lacp>.*)/.match(result.first['output'])
         m['lacp']
       end
 

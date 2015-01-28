@@ -70,7 +70,7 @@ module PuppetX
       # @return [Hash] a hash that includes the switchport properties
       def get(name)
         result = @api.enable("show interfaces #{name} switchport",
-                             format: 'text')
+                             :format => 'text')
         output = result.first['output']
         attr_hash = {
           'name' => name,

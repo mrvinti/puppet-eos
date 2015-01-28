@@ -45,14 +45,14 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
 
   def self.instances
     result = eapi.Varp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      mac_address: result['mac_address'] }
+    provider_hash = { :name => 'settings',
+                      :ensure => :present,
+                      :mac_address => result['mac_address'] }
     [new(provider_hash)]
   end
 
   def mac_address=(val)
-    eapi.Varp.set_mac_address(value: val)
+    eapi.Varp.set_mac_address(:value => val)
     @property_hash[:mac_address] = val
   end
 

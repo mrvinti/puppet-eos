@@ -55,7 +55,7 @@ Puppet::Type.newtype(:eos_access_list) do
     newvalues(:standard, :extended)
   end
 
-  newproperty(:entries, array_matching: :all) do
+  newproperty(:entries, :array_matching => :all) do
     desc 'An array of access list entries.'
 
     validate do |value|

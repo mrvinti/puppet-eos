@@ -46,7 +46,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   def self.instances
     result = eapi.Vlan.getall
     result.first['vlans'].map do |name, attrs|
-      provider_hash = { name: name, vlanid: name, ensure: :present }
+      provider_hash = { :name => name, :vlanid => name, :ensure => :present }
       provider_hash[:vlan_name] = attrs['name']
       enable = attrs['status'] == 'active' ? :true : :false
       provider_hash[:enable] = enable
@@ -57,17 +57,17 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def enable=(val)
     arg = val == :true ? 'active' : 'suspend'
-    eapi.Vlan.set_state(resource[:vlanid], value: arg)
+    eapi.Vlan.set_state(resource[:vlanid], :value => arg)
     @property_hash[:enable] = val
   end
 
   def vlan_name=(val)
-    eapi.Vlan.set_name(resource[:vlanid], value: val)
+    eapi.Vlan.set_name(resource[:vlanid], :value => val)
     @property_hash[:vlan_name] = val
   end
 
   def trunk_groups=(val)
-    eapi.Vlan.set_trunk_group(resource[:vlanid], value: val)
+    eapi.Vlan.set_trunk_group(resource[:vlanid], :value => val)
     @property_hash[:trunk_groups] = val
   end
 
@@ -77,9 +77,9 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def create
     eapi.Vlan.create(resource[:name])
-    @property_hash = { name: resource[:name],
-                       vlanid: resource[:vlanid],
-                       ensure: :present }
+    @property_hash = { :name => resource[:name],
+                       :vlanid => resource[:vlanid],
+                       :ensure => :present }
 
     self.enable = resource[:enable] if resource[:enable]
     self.vlan_name = resource[:vlan_name] if resource[:vlan_name]
@@ -88,6 +88,6 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def destroy
     eapi.Vlan.delete(resource[:vlanid])
-    @property_hash = { vlanid: resource[:vlanid], ensure: :absent }
+    @property_hash = { :vlanid => resource[:vlanid], :ensure => :absent }
   end
 end

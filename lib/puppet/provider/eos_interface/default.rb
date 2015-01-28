@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def self.instances
     eapi.Interface.getall.map do |name, attrs|
-      provider_hash = { name: name }
+      provider_hash = { :name => name }
 
       enable = attrs['shutdown'] ? :false : :true
       provider_hash[:enable] = enable
@@ -63,7 +63,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def create
     eapi.Interface.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
     self.enable = resource[:enable] if resource[:enable]
     self.description = resource[:description] if resource[:description]
     self.flowcontrol_send = resource[:flowcontrol_send] \
@@ -74,7 +74,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def destroy
     eapi.Interface.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 
   def enable=(val)

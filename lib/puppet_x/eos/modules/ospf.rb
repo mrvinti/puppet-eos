@@ -63,7 +63,7 @@ module PuppetX
       #
       # @return [Hash] returns an Hash
       def getall
-        result = @api.enable('show ip ospf', format: 'text')
+        result = @api.enable('show ip ospf', :format => 'text')
         output = result.first['output']
         match = /(?<=ospf\s)(?<instance>\d+)"/.match(output)
         return {} if match .nil?

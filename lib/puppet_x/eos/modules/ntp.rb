@@ -67,7 +67,7 @@ module PuppetX
       #
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
-        result = @api.enable('show running-config section ntp', format: 'text')
+        result = @api.enable('show running-config section ntp', :format => 'text')
         output = result.first['output']
 
         m_source = /(?<=source\s)(\w|\d)+$/.match(output)

@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     result = eapi.Mlag.get
     Puppet.debug("RESULT #{result}")
     return [] if result.empty?
-    provider_hash = { name: 'settings',  ensure: :present }
+    provider_hash = { :name => 'settings',  :ensure => :present }
     provider_hash[:domain_id] = result['domain_id']
     provider_hash[:local_interface] = result['local_interface']
     provider_hash[:peer_address] = result['peer_address']
