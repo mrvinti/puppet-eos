@@ -177,8 +177,7 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def enable(commands, options = {})
-        commands = [*commands] unless commands.respond_to?('each')
-        execute(commands, options)
+        execute(Array(commands), options)
       end
 
       ##
@@ -189,8 +188,7 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def config(commands)
-        commands = [*commands] unless commands.respond_to?('each')
-        commands.insert(0, 'configure')
+        Array(commands).insert(0, 'configure')
         begin
           result = enable(commands)
           result.shift
