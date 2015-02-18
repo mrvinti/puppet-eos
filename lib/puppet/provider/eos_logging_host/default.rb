@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
