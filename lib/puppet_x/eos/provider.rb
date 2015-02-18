@@ -29,7 +29,14 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-require 'puppet_x/eos/eapi'
+begin 
+  require 'puppet_x/eos/eapi' 
+rescue LoadError => detail 
+  # Work around #7788 (Rubygems support for modules) 
+  require 'pathname' # JJM WORK_AROUND #14073 
+  module_base = Pathname.new(__FILE__).dirname 
+  require module_base + "../../" + "puppet_x/eos/eapi" 
+end 
 
 ##
 # PuppetX namespace
