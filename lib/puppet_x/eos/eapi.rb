@@ -33,7 +33,14 @@ require 'net/http'
 require 'json'
 require 'syslog'
 
-require 'puppet_x/eos/autoload'
+begin
+  require 'puppet_x/eos/autoload'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../" + "puppet_x/eos/autoload"
+end
 
 ##
 # PuppetX namespace
