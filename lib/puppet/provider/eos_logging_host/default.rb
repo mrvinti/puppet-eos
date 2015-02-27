@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
@@ -47,7 +55,7 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
     result = eapi.Logging.get
     Puppet.debug("result #{result}")
     result['hosts'].each.map do |name, _|
-      provider_hash = { name: name, ensure: :present }
+      provider_hash = { :name => name, :ensure => :present }
       new(provider_hash)
     end
   end
@@ -58,11 +66,11 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def create
     eapi.Logging.hosts.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
   end
 
   def destroy
     eapi.Logging.hosts.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

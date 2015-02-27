@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
@@ -45,7 +53,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def self.instances
     eapi.Portchannel.getall.map do |attrs|
-      provider_hash = { name: attrs['name'], ensure: :present }
+      provider_hash = { :name => attrs['name'], :ensure => :present }
       provider_hash[:lacp_mode] = attrs['lacp_mode'].to_sym
       provider_hash[:members] = attrs['members']
       provider_hash[:lacp_fallback] = attrs['lacp_fallback'].to_sym
@@ -65,12 +73,12 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def lacp_fallback=(val)
-    eapi.Portchannel.set_lacp_fallback(resource[:name], value: val)
+    eapi.Portchannel.set_lacp_fallback(resource[:name], :value => val)
     @property_hash[:lacp_fallback] = val
   end
 
   def lacp_timeout=(val)
-    eapi.Portchannel.set_lacp_timeout(resource[:name], value: val)
+    eapi.Portchannel.set_lacp_timeout(resource[:name], :value => val)
     @property_hash[:lacp_timeout] = val
   end
 
@@ -80,7 +88,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def create
     eapi.Portchannel.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
     self.members = resource[:members] if resource[:members]
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
@@ -89,6 +97,6 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def destroy
     eapi.Portchannel.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

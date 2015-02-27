@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_switchport).provide(:eos) do
 
@@ -45,33 +53,33 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def self.instances
     eapi.Switchport.getall.map do |attrs|
-      provider_hash = { name: attrs['name'],
-                        ensure: :present,
-                        mode: attrs['mode'].to_sym,
-                        trunk_allowed_vlans: attrs['trunk_allowed_vlans'],
-                        trunk_native_vlan: attrs['trunk_native_vlan'],
-                        access_vlan: attrs['access_vlan'] }
+      provider_hash = { :name => attrs['name'],
+                        :ensure => :present,
+                        :mode => attrs['mode'].to_sym,
+                        :trunk_allowed_vlans => attrs['trunk_allowed_vlans'],
+                        :trunk_native_vlan => attrs['trunk_native_vlan'],
+                        :access_vlan => attrs['access_vlan'] }
       new(provider_hash)
     end
   end
 
   def mode=(val)
-    eapi.Switchport.set_mode(resource[:name], value: val)
+    eapi.Switchport.set_mode(resource[:name], :value => val)
     @property_hash[:mode] = val
   end
 
   def trunk_allowed_vlans=(val)
-    eapi.Switchport.set_trunk_allowed_vlans(resource[:name], value: val)
+    eapi.Switchport.set_trunk_allowed_vlans(resource[:name], :value => val)
     @property_hash[:trunk_allowed_vlans] = val
   end
 
   def trunk_native_vlan=(val)
-    eapi.Switchport.set_trunk_native_vlan(resource[:name], value: val)
+    eapi.Switchport.set_trunk_native_vlan(resource[:name], :value => val)
     @property_hash[:trunk_native_vlan] = val
   end
 
   def access_vlan=(val)
-    eapi.Switchport.set_access_vlan(resource[:name], value: val)
+    eapi.Switchport.set_access_vlan(resource[:name], :value => val)
     @property_hash[:access_vlan] = val
   end
 
@@ -81,7 +89,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def create
     eapi.Switchport.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
     self.mode = resource[:mode] if resource[:mode]
     self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] \
                                if resource[:trunk_allowed_vlans]
@@ -94,6 +102,6 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def destroy
     eapi.Switchport.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

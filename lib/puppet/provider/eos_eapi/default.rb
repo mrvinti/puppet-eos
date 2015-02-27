@@ -30,11 +30,18 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_eapi).provide(:eos) do
 
-  commands cli: 'FastCli'
+  commands :cli => 'FastCli'
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -50,12 +57,12 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     resp = cli('-p', '15', '-A', '-c', "#{commands}")
     Puppet.debug("#{resp}")
 
-    provider_hash = { name: 'eapi', ensure: :present }
+    provider_hash = { :name => 'eapi', :ensure => :present }
 
     state = !/no\sshutdown/.match(resp).nil?
     protocol = /no\sprotocol\shttp/.match(resp).nil? ? 'https' : 'http'
-    port = /'port\s(?<port>\d+)'/.match(resp)
-    port = protocol == 'http' ? '443' : '80' if port.nil?
+    port = (m=/'port\s(\d+)'/.match(resp)).nil? ? nil : m[1]
+    port = (protocol == 'http' ? '443' : '80') if port.nil?
 
     provider_hash['enable'] = state
     provider_hash['protocol'] = protocol
@@ -112,7 +119,7 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     commands << 'no shutdown'
     commands = commands.join('\n')
     cli('-p', '15', '-A', '-e', '-c', "$'#{commands}'")
-    @property_hash = { name: resource[:name],  ensure: :present }
+    @property_hash = { :name => resource[:name],  :ensure => :present }
   end
 
   def destroy

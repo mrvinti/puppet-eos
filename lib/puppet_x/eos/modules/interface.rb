@@ -204,7 +204,7 @@ module PuppetX
       #   the configuration
       def get_flowcontrol(name)
         result = @api.enable("show running-config interfaces #{name}",
-                             format: 'text')
+                             :format => 'text')
         output = result.first['output']
         match = /flowcontrol\ssend(.*)$/.match(output)
         tx = match.nil? ? 'absent' : match[1].strip

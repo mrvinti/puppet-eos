@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_mlag).provide(:eos) do
 
@@ -47,7 +55,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     result = eapi.Mlag.get
     Puppet.debug("RESULT #{result}")
     return [] if result.empty?
-    provider_hash = { name: 'settings',  ensure: :present }
+    provider_hash = { :name => 'settings',  :ensure => :present }
     provider_hash[:domain_id] = result['domain_id']
     provider_hash[:local_interface] = result['local_interface']
     provider_hash[:peer_address] = result['peer_address']
@@ -59,27 +67,27 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   end
 
   def domain_id=(val)
-    eapi.Mlag.set_domain_id(value: val)
+    eapi.Mlag.set_domain_id(:value => val)
     @property_hash[:domain_id] = val
   end
 
   def local_interface=(val)
-    eapi.Mlag.set_local_interface(value: val)
+    eapi.Mlag.set_local_interface(:value => val)
     @property_hash[:local_interface] = val
   end
 
   def peer_address=(val)
-    eapi.Mlag.set_peer_address(value: val)
+    eapi.Mlag.set_peer_address(:value => val)
     @property_hash[:peer_address] = val
   end
 
   def peer_link=(val)
-    eapi.Mlag.set_peer_link(value: val)
+    eapi.Mlag.set_peer_link(:value => val)
     @property_hash[:peer_link] = val
   end
 
   def enable=(val)
-    eapi.Mlag.set_shutdown(value: val == :false)
+    eapi.Mlag.set_shutdown(:value => val == :false)
     @property_hash[:enable] = val
   end
 

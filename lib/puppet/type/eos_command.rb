@@ -47,7 +47,7 @@ Puppet::Type.newtype(:eos_command) do
     newvalues(:enable, :config)
   end
 
-  newproperty(:commands, array_matching: :all) do
+  newproperty(:commands, :array_matching => :all) do
     desc 'Array of commands to execute'
 
     validate do |value|

@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_system).provide(:eos) do
 
@@ -46,7 +54,7 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   def self.instances
     result = eapi.System.get
     return [] if result.empty?
-    [new(name: result['hostname'], ensure: :present)]
+    [new(:name => result['hostname'], :ensure => :present)]
   end
 
   def exists?
@@ -55,7 +63,7 @@ Puppet::Type.type(:eos_system).provide(:eos) do
 
   def create
     eapi.System.set_hostname(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
   end
 
 end

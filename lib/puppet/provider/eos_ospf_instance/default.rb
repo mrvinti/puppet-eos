@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
 
@@ -47,14 +55,14 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
     result = eapi.Ospf.getall
     return [] if result.empty?
     result.map do |name, attrs|
-      provider_hash = { name: name, ensure: :present }
+      provider_hash = { :name => name, :ensure => :present }
       provider_hash[:router_id] = attrs['router_id']
       new(provider_hash)
     end
   end
 
   def router_id=(val)
-    eapi.Ospf.set_router_id(resource['name'], value: val)
+    eapi.Ospf.set_router_id(resource['name'], :value => val)
     @property_hash[:router_id] = val
   end
 
@@ -64,12 +72,12 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
 
   def create
     eapi.Ospf.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+    @property_hash = { :name => resource[:name], :ensure => :present }
     self.router_id = resource[:router_id] if resource[:router_id]
   end
 
   def destroy
     eapi.Ospf.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 end

@@ -33,7 +33,14 @@ require 'net/http'
 require 'json'
 require 'syslog'
 
-require 'puppet_x/eos/autoload'
+begin
+  require 'puppet_x/eos/autoload'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../" + "puppet_x/eos/autoload"
+end
 
 ##
 # PuppetX namespace
@@ -156,7 +163,7 @@ module PuppetX
       # @raise [Eos::Eapi::CommandError] if the response from invoke contains
       #   the key error
       def execute(commands, options = {})
-        commands.insert(0, cmd: 'enable', input: @enable_pwd)
+        commands.insert(0, {:cmd => 'enable', :input => @enable_pwd})
         Puppet.debug("REQ: #{commands}")
         resp = invoke(request(commands, options))
         Puppet.debug("RESP: #{resp}")
@@ -177,8 +184,7 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def enable(commands, options = {})
-        commands = [*commands] unless commands.respond_to?('each')
-        execute(commands, options)
+        execute(Array(commands), options)
       end
 
       ##
@@ -189,8 +195,7 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def config(commands)
-        commands = [*commands] unless commands.respond_to?('each')
-        commands.insert(0, 'configure')
+        Array(commands).insert(0, 'configure')
         begin
           result = enable(commands)
           result.shift

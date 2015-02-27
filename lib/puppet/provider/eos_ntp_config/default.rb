@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_ntp_config).provide(:eos) do
 
@@ -50,14 +58,14 @@ Puppet::Type.type(:eos_ntp_config).provide(:eos) do
 
   def self.instances
     result = eapi.Ntp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      source_interface: result['source_interface'] }
+    provider_hash = { :name => 'settings',
+                      :ensure => :present,
+                      :source_interface => result['source_interface'] }
     [new(provider_hash)]
   end
 
   def source_interface=(val)
-    eapi.Ntp.set_source_interface(value: val)
+    eapi.Ntp.set_source_interface(:value => val)
     @property_hash[:source_interface] = val
   end
 

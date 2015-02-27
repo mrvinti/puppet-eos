@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_static_route).provide(:eos) do
 
@@ -43,12 +51,12 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show running-config section ip route', format: 'text')
+    resp = eapi.enable('show running-config section ip route', :format => 'text')
     result = resp.first['output']
 
     result.split(/\n/).map do |entry|
       parts = entry.split
-      provider_hash = { name: parts[2], ensure: :present }
+      provider_hash = { :name => parts[2], :ensure => :present }
       provider_hash[:next_hop] = parts[3]
       provider_hash[:route_name] = ''
       new(provider_hash)
@@ -86,7 +94,7 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
     prefix = resource[:name]
     next_hop = resource[:next_hop]
     eapi.config(["ip route #{prefix} #{next_hop}"])
-    @property_hash = { name: prefix, ensure: :present }
+    @property_hash = { :name => prefix, :ensure => :present }
     self.next_hop = resource[:next_hop] if resource[:next_hop]
     self.route_name = resource[:route_name] if resource[:route_name]
   end
@@ -94,7 +102,7 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
   def destroy
     prefix = resource[:name]
     eapi.config(["no ip route #{prefix}"])
-    @property_hash = { name: prefix, ensure: :absent }
+    @property_hash = { :name => prefix, :ensure => :absent }
   end
 
   def flush

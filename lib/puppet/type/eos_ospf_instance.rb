@@ -38,7 +38,7 @@ Puppet::Type.newtype(:eos_ospf_instance) do
 
   # Parameters
 
-  newparam(:name, namevar: true) do
+  newparam(:name, :namevar => true) do
     desc 'The resource name for the OSPF instance'
 
     # min: 1 max: 65535

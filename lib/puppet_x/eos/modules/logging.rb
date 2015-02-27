@@ -104,11 +104,13 @@ module PuppetX
       # @return [Hash] returns a hash with the host name as the index
       def getall
         result = @api.enable('show running-config section ^logging\shost',
-                             format: 'text')
+                             :format => 'text')
         output = result.first['output']
-        hosts = output.scan(/(?<=host\s)[\d|\.|\w]*/)
-        hosts.each_with_object({}) do |host, hsh|
-          hsh[host] = {}
+        output.split("\n").inject({}) do |hsh,line|
+          if m = line.match(/host\s([\d|\.|\w]*)\s/)
+            hsh[m[1]] = {}
+          end
+          hsh
         end
       end
 

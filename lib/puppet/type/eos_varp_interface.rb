@@ -42,7 +42,7 @@ Puppet::Type.newtype(:eos_varp_interface) do
 
   # Properties (state management)
 
-  newproperty(:addresses, array_matching: :all) do
+  newproperty(:addresses, :array_matching => :all) do
     desc 'Specifies virtual IP address for the interface'
 
     validate do |value|

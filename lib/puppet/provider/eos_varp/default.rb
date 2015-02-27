@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_varp).provide(:eos) do
 
@@ -45,14 +53,14 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
 
   def self.instances
     result = eapi.Varp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      mac_address: result['mac_address'] }
+    provider_hash = { :name => 'settings',
+                      :ensure => :present,
+                      :mac_address => result['mac_address'] }
     [new(provider_hash)]
   end
 
   def mac_address=(val)
-    eapi.Varp.set_mac_address(value: val)
+    eapi.Varp.set_mac_address(:value => val)
     @property_hash[:mac_address] = val
   end
 

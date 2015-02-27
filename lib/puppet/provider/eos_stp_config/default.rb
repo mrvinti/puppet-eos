@@ -30,7 +30,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+
+begin
+  require 'puppet_x/eos/provider'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../../" + "puppet_x/eos/provider"
+end
 
 Puppet::Type.type(:eos_stp_config).provide(:eos) do
 
@@ -45,14 +53,14 @@ Puppet::Type.type(:eos_stp_config).provide(:eos) do
 
   def self.instances
     result = eapi.Stp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      mode: result['mode'] }
+    provider_hash = { :name => 'settings',
+                      :ensure => :present,
+                      :mode => result['mode'] }
     [new(provider_hash)]
   end
 
   def mode=(val)
-    eapi.Stp.set_mode(value: val)
+    eapi.Stp.set_mode(:value => val)
     @property_hash[:mode] = val
   end
 
