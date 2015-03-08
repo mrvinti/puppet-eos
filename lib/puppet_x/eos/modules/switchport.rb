@@ -29,6 +29,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+require 'puppet_x/eos/module_base'
 
 ##
 # PuppetX is the toplevel namespace for working with Arista EOS nodes
@@ -40,16 +41,7 @@ module PuppetX
     # The Switchport class provides a base class instance for working with
     # logical layer-2 interfaces.
     #
-    class Switchport
-      ##
-      # Initialize instance of Switchport
-      #
-      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
-      #
-      # @return [PuppetX::Eos::Switchport]
-      def initialize(api)
-        @api = api
-      end
+    class Switchport < ModuleBase
 
       ##
       # Retrieves the properies for a logical switchport from the
@@ -77,8 +69,9 @@ module PuppetX
           'mode' => mode_to_value(output),
           'trunk_allowed_vlans' => trunk_vlans_to_value(output).split(','),
           'trunk_native_vlan' => trunk_native_to_value(output),
-          'access_vlan' => access_vlan_to_value(output)
+          'access_vlan' => access_vlan_to_value(output),
         }
+        attr_hash.merge!(parse_trunk_groups(name))
         attr_hash
       end
 
@@ -93,6 +86,16 @@ module PuppetX
           switchports << get(name) if attrs['forwardingModel'] == 'bridged'
         end
         switchports
+      end
+
+      def parse_trunk_groups(name)
+        cfg = get_block("interface #{name}", :config => config)
+        matches = cfg.scan(/switchport trunk group ([^\s]+)/)
+        values = matches.inject([]) do |arry, m|
+          arry << m.first
+          arry
+        end
+        { 'trunk_groups' => values }
       end
 
       ##
@@ -230,6 +233,17 @@ module PuppetX
                                 "switchport access vlan #{value}")
         end
         @api.config(cmds) == [{}, {}]
+      end
+
+      def set_trunk_groups(name, opts = {})
+        value = opts[:value] || []
+
+        cmds = ["interface #{name}", "no switchport trunk group"]
+        value.each do |v|
+          cmds << "switchport trunk group #{v}"
+        end
+
+        @api.config cmds
       end
 
       private

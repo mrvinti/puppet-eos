@@ -39,28 +39,41 @@ Puppet::Type.newtype(:eos_prefixlist) do
   # Parameters
 
   newparam(:name) do
-    desc 'Specifies the name of the prefix list'
-
-    validate do |value|
-      if value.is_a? String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
-      end
-    end
+    desc 'Specifies the name of the access list'
   end
 
   # Properties (state management)
 
-  newproperty(:entries, :array_matching => :all) do
-    desc 'An array of prefix list entries.'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+  newproperty(:seqno) do
+    desc 'The entry seqno <0-65535>'
   end
 
+  newproperty(:action) do
+    desc 'Action for this rule to perform if matched'
+    newvalues(:permit, :deny)
+  end
+
+  newproperty(:prefix) do
+    desc 'IP prefix to match'
+  end
+
+  newproperty(:mask) do
+    desc 'Prefix mask'
+  end
+
+  newproperty(:masklen) do
+    desc 'Mask len'
+  end
+
+  newproperty(:eq) do
+    desc 'equal to <1-32>'
+  end
+
+  newproperty(:ge) do
+    desc 'greater than <1-32>; must be equal to or greater than the mask len'
+  end
+
+  newproperty(:le) do
+    desc 'less than <1-32>; must be be equal to or greater than the mask len'
+  end
 end

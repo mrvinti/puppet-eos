@@ -53,8 +53,7 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def self.instances
     result = eapi.Logging.get
-    Puppet.debug("result #{result}")
-    result['hosts'].each.map do |name, _|
+    result['hosts'].each.map do |(name, _)|
       provider_hash = { :name => name, :ensure => :present }
       new(provider_hash)
     end

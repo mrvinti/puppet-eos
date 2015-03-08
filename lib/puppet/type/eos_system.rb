@@ -37,9 +37,13 @@ Puppet::Type.newtype(:eos_system) do
   # Parameters
 
   newparam(:name) do
-    desc 'Configures the system name (hostname)'
+    desc 'Resource name, not used to configure the device'
   end
 
   # Properties (state management)
+
+  newproperty(:hostname) do
+    desc 'Configures the system name (hostname)'
+  end
 
 end

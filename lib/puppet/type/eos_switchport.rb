@@ -100,4 +100,12 @@ Puppet::Type.newtype(:eos_switchport) do
     end
   end
 
+  newproperty(:trunk_groups, :array_matching => :all) do
+    desc 'Specifies the switchport trunk group name'
+
+    def insync?(is)
+      is.sort == @should.sort.map(&:to_s)
+    end
+ end
+
 end

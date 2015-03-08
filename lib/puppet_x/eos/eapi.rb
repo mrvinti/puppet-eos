@@ -163,10 +163,7 @@ module PuppetX
       # @raise [Eos::Eapi::CommandError] if the response from invoke contains
       #   the key error
       def execute(commands, options = {})
-        commands.insert(0, {:cmd => 'enable', :input => @enable_pwd})
-        Puppet.debug("REQ: #{commands}")
         resp = invoke(request(commands, options))
-        Puppet.debug("RESP: #{resp}")
         fail 'Unable to execute commands' if resp.key?('error')
         result = resp['result']
         result.shift
@@ -184,7 +181,9 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def enable(commands, options = {})
-        execute(Array(commands), options)
+        commands = [*commands] unless commands.is_a?(Array)
+        commands.insert(0, {:cmd => 'enable', :input => @enable_pwd})
+        execute commands, options
       end
 
       ##
@@ -195,12 +194,14 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def config(commands)
-        Array(commands).insert(0, 'configure')
+        commands = [*commands] unless commands.is_a?(Array)
+        commands.insert(0, 'configure')
         begin
-          result = enable(commands)
+          result = enable commands
           result.shift
           result
-        rescue
+        rescue Exception => exc
+          Puppet.debug("#{exc}")
           return nil
         end
       end

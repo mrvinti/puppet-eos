@@ -31,30 +31,21 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_ospf_area) do
-  @doc = 'Configure OSPF area'
+Puppet::Type.newtype(:eos_ospf_redistribution) do
+  @doc = 'Configure OSPF redistribution settings'
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The name for the OSPF area'
+    desc 'The protocol to redistribute into OSPF'
   end
 
   # Properties (state management)
 
-  newproperty(:networks, :array_matching => :all) do
-    desc 'Array of networks'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail 'value #{value.inspect} is invalid, must be a string.'
-      end
-    end
+  newproperty(:route_map) do
+    desc 'Route map to apply to the redistribution'
   end
 
 end

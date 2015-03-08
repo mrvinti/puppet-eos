@@ -40,7 +40,7 @@ rescue LoadError => detail
   require module_base + "../../../" + "puppet_x/eos/provider"
 end
 
-Puppet::Type.type(:eos_system).provide(:eos) do
+Puppet::Type.type(:eos_prefix_list).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -52,19 +52,102 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    property_hash = { :name => 'settings', :ensure => :present,
-                      :hostname => result['hostname'] }
-    [new(property_hash)]
+    result = eapi.Prefixlist.getall
+    return [] unless result
+    result.map do |(name, rules)|
+      provider_hash = rules.inject({}) do |hsh, attrs|
+        hsh = { :name => namevar(name, attrs), :ensure => :present }
+        hsh[:prefix_list] = name
+        hsh[:seqno] = attrs['seqno']
+        hsh[:action] = attrs['action']
+        hsh[:prefix] = attrs['prefix']
+        hsh[:masklen] = attrs['masklen']
+        hsh[:eq] = attrs['eq']
+        hsh[:ge] = attrs['ge']
+        hsh[:le] = attrs['le']
+        hsh
+      end
+      new(provider_hash)
+    end
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def hostname=(val)
-    eapi.System.set_hostname(resource[:hostname])
-    @property_hash[:hostname] = val
+  def create
+    @property_flush = resource.to_hash
+  end
+
+  def destroy
+    @property_flush = resource.to_hash
+  end
+
+  def prefix_list=(val)
+    @property_flush[:prefix_list] = val
+  end
+
+  def seqno=(val)
+    @property_flush[:seqno] = val
+  end
+
+  def action=(val)
+    @property_flush[:action] = val
+  end
+
+  def prefix=(val)
+    @property_flush[:action] = val
+  end
+
+  def masklen=(val)
+    @property_flush[:action] = val
+  end
+
+  def eq=(val)
+    @property_flush[:action] = val
+  end
+
+  def ge=(val)
+    @property_flush[:action] = val
+  end
+
+  def le=(val)
+    @property_flush[:action] = val
+  end
+
+  def flush
+    api = eapi.Prefixlist
+    desired_state = @property_hash.merge!(@property_flush)
+    validate_identity(desired_state)
+    case desired_state[:ensure]
+    when :present
+      api.update_rule(desired_state)
+    when :absent
+      api.remove_rule(desired_state)
+    end
+    @property_hash = desired_state
+  end
+
+  ##
+  # validate_identity checks to make sure there are enough options specified to
+  # uniquely identify a radius server resource.
+  def validate_identity(opts = {})
+    errors = false
+    missing = [:prefix_list, :seqno].reject { |k| opts[k] }
+    errors = !missing.empty?
+    msg = "Invalid options #{opts.inspect} missing: #{missing.join(', ')}"
+    fail Puppet::Error, msg if errors
+  end
+  private :validate_identity
+
+  def self.namevar(name, attrs)
+    seqno = attrs['seqno']
+    "#{name}:#{seqno}"
   end
 
 end

@@ -40,7 +40,7 @@ rescue LoadError => detail
   require module_base + "../../../" + "puppet_x/eos/provider"
 end
 
-Puppet::Type.type(:eos_system).provide(:eos) do
+Puppet::Type.type(:eos_vxlan_vlan).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -52,19 +52,44 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    property_hash = { :name => 'settings', :ensure => :present,
-                      :hostname => result['hostname'] }
-    [new(property_hash)]
+    result = eapi.Vxlan.getall
+    result['Vxlan1']['vlans'].map do |(name, attrs)|
+      provider_hash = { :name => name, :ensure => :present }
+      provider_hash[:vni] = attrs['vni']
+      new(provider_hash)
+    end
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
+  def vni=(val)
+    @property_flush[:area] = val
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def hostname=(val)
-    eapi.System.set_hostname(resource[:hostname])
-    @property_hash[:hostname] = val
+  def create
+    @property_flush = resource.to_hash
   end
 
+  def destroy
+    @property_flush = resource.to_hash
+  end
+
+  def flush
+    api = eapi.Vxlan
+    desired_state = @property_hash.merge!(@property_flush)
+    case desired_state[:ensure]
+    when :present
+      api.update_vlan(desired_state[:name], desired_state[:vni])
+    when :absent
+      api.remove_vlan(desired_state[:name])
+    end
+    @property_hash = desired_state
+  end
 end

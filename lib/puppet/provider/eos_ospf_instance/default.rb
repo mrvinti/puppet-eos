@@ -53,17 +53,28 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
 
   def self.instances
     result = eapi.Ospf.getall
-    return [] if result.empty?
-    result.map do |name, attrs|
+    result['instances'].map do |(name, attrs)|
       provider_hash = { :name => name, :ensure => :present }
       provider_hash[:router_id] = attrs['router_id']
+      provider_hash[:max_lsa] = attrs['max_lsa']
+      provider_hash[:maximum_paths] = attrs['maximum_paths']
       new(provider_hash)
     end
   end
 
   def router_id=(val)
-    eapi.Ospf.set_router_id(resource['name'], :value => val)
+    eapi.Ospf.set_router_id(resource[:name], :value => val)
     @property_hash[:router_id] = val
+  end
+
+  def max_lsa=(val)
+    eapi.Ospf.set_max_lsa(resource[:name], :value => val)
+    @property_hash[:max_lsa] = val
+  end
+
+  def maximum_paths=(val)
+    eapi.Ospf.set_maximum_paths(resource[:name], :value => val)
+    @property_hash[:maximum_paths] = val
   end
 
   def exists?
@@ -74,6 +85,8 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
     eapi.Ospf.create(resource[:name])
     @property_hash = { :name => resource[:name], :ensure => :present }
     self.router_id = resource[:router_id] if resource[:router_id]
+    self.max_lsa = resource[:max_lsa] if resource[:max_lsa]
+    self.maximum_paths = resource[:maximum_paths] if resource[:maximum_paths]
   end
 
   def destroy

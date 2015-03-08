@@ -40,7 +40,7 @@ rescue LoadError => detail
   require module_base + "../../../" + "puppet_x/eos/provider"
 end
 
-Puppet::Type.type(:eos_system).provide(:eos) do
+Puppet::Type.type(:eos_ospf_network).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -52,19 +52,54 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    property_hash = { :name => 'settings', :ensure => :present,
-                      :hostname => result['hostname'] }
-    [new(property_hash)]
+    result = eapi.Ospf.getall['instances']
+    result.values.inject([]) do |resources, inst|
+      areas_arry = inst['areas'].inject([]) do |areas, (area, attrs)|
+        networks = attrs['networks'].inject([]) do |arry, name|
+          provider_hash = { :name => name, :ensure => :present }
+          provider_hash[:area] = area
+          provider_hash[:instance] = inst
+          arry << new(provider_hash)
+          arry
+        end
+        areas << networks
+        areas
+      end
+      resources << areas_arry
+      resources.flatten!
+    end
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
+  def area=(val)
+    @property_flush[:area] = val
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def hostname=(val)
-    eapi.System.set_hostname(resource[:hostname])
-    @property_hash[:hostname] = val
+  def create
+    @property_flush = resource.to_hash
   end
 
+  def destroy
+    @property_flush = resource.to_hash
+  end
+
+  def flush
+    api = eapi.Ospf
+    desired_state = @property_hash.merge!(@property_flush)
+    case desired_state[:ensure]
+    when :present
+      api.update_network(desired_state[:name], desired_state[:area])
+    when :absent
+      api.remove_network(desired_state[:name], desired_state[:area])
+    end
+    @property_hash = desired_state
+  end
 end

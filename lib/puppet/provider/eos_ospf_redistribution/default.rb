@@ -40,7 +40,7 @@ rescue LoadError => detail
   require module_base + "../../../" + "puppet_x/eos/provider"
 end
 
-Puppet::Type.type(:eos_system).provide(:eos) do
+Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -52,19 +52,49 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    property_hash = { :name => 'settings', :ensure => :present,
-                      :hostname => result['hostname'] }
-    [new(property_hash)]
+    result = eapi.Ospf.getall['instances']
+    resources = []
+    result.values.each do |inst|
+      inst['redistribution'].each do |(name, attrs)|
+        provider_hash = { :name => name, :ensure => :present }
+        provider_hash[:route_map] = attrs['route_map']
+        resources << new(provider_hash)
+      end
+    end
+    resources
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
+  def route_map=(val)
+    @property_flush[:route_map] = val
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def hostname=(val)
-    eapi.System.set_hostname(resource[:hostname])
-    @property_hash[:hostname] = val
+  def create
+    @property_flush = resource.to_hash
   end
 
+  def destroy
+    @property_flush = resource.to_hash
+  end
+
+  def flush
+    api = eapi.Ospf
+    desired_state = @property_hash.merge!(@property_flush)
+    case desired_state[:ensure]
+    when :present
+      api.update_redistribution(desired_state[:name],
+                                :route_map => desired_state[:route_map])
+    when :absent
+      api.remove_redistribution(desired_state[:name])
+    end
+    @property_hash = desired_state
+  end
 end

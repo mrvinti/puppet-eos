@@ -29,14 +29,14 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-begin 
-  require 'puppet_x/eos/eapi' 
-rescue LoadError => detail 
-  # Work around #7788 (Rubygems support for modules) 
-  require 'pathname' # JJM WORK_AROUND #14073 
-  module_base = Pathname.new(__FILE__).dirname 
-  require module_base + "../../" + "puppet_x/eos/eapi" 
-end 
+begin
+  require 'puppet_x/eos/eapi'
+rescue LoadError => detail
+  # Work around #7788 (Rubygems support for modules)
+  require 'pathname' # JJM WORK_AROUND #14073
+  module_base = Pathname.new(__FILE__).dirname
+  require module_base + "../../" + "puppet_x/eos/eapi"
+end
 
 ##
 # PuppetX namespace
@@ -48,8 +48,9 @@ module PuppetX
     # EapiProviderMixin module
     module EapiProviderMixin
       def prefetch(resources)
-        provider_hash = instances.each_with_object({}) do |provider, hsh|
-          hsh[provider.name] = provider
+        provider_hash = {}
+        instances.each do |provider|
+          provider_hash[provider.name] = provider
         end
 
         resources.each_pair do |name, resource|
@@ -58,7 +59,7 @@ module PuppetX
       end
 
       def conf
-        filename = ENV['EAPI_CONF'] || '/mnt/flash/eapi.conf'
+        filename = ENV['PUPPET_X_EAPI_CONF'] || '/mnt/flash/eapi.conf'
         YAML.load_file(filename)
       end
 

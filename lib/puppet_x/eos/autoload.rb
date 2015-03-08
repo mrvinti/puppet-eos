@@ -52,5 +52,6 @@ module PuppetX
     autoload :Varp, 'puppet_x/eos/modules/varp'
     autoload :Stp, 'puppet_x/eos/modules/stp'
     autoload :Logging, 'puppet_x/eos/modules/logging'
+    autoload :Prefixlist, 'puppet_x/eos/modules/prefixlist'
   end
 end

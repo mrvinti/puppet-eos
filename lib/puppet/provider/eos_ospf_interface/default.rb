@@ -40,7 +40,7 @@ rescue LoadError => detail
   require module_base + "../../../" + "puppet_x/eos/provider"
 end
 
-Puppet::Type.type(:eos_system).provide(:eos) do
+Puppet::Type.type(:eos_ospf_interface).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -52,19 +52,20 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    property_hash = { :name => 'settings', :ensure => :present,
-                      :hostname => result['hostname'] }
-    [new(property_hash)]
+    result = eapi.Ospf.getall
+    result['interfaces'].map do |(name, attrs)|
+      provider_hash = { :name => name, :ensure => :present }
+      provider_hash[:network_type] = attrs['network_type'].to_sym
+      new(provider_hash)
+    end
+  end
+
+  def network_type=(val)
+    eapi.Ospf.set_network_type(resource[:name], :value => val.to_s)
+    @property_hash[:network_type] = val
   end
 
   def exists?
-    @property_hash[:ensure] == :present
+    resource[:ensure] == :present
   end
-
-  def hostname=(val)
-    eapi.System.set_hostname(resource[:hostname])
-    @property_hash[:hostname] = val
-  end
-
 end

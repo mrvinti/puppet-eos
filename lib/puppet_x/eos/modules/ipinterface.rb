@@ -68,7 +68,7 @@ module PuppetX
           mask = attrs['interfaceAddress']['primaryIp']['maskLen']
           interface['address'] = "#{addr}/#{mask}"
           interface['mtu'] = attrs['mtu']
-          interface['helper_address'] = get_helper_address(name)
+          interface['helper_addresses'] = get_helper_addresses(name)
           response[name] = interface
         end
         response
@@ -149,7 +149,7 @@ module PuppetX
       # @param [opts] [Array] :value list of addresses to configure as
       #   helper address on the specified interface
       # @option opts [Boolean] :default The value should be set to default
-      def set_helper_address(name, opts = {})
+      def set_helper_addresses(name, opts = {})
         value = opts[:value]
         default = opts[:default] || false
 
@@ -170,12 +170,15 @@ module PuppetX
 
       private
 
-      def get_helper_address(name)
+      def get_helper_addresses(name)
         config = @api.enable("show running-config interfaces #{name}",
                              :format => 'text')
         output = config.first['output']
-        m = output.match(/\-address\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/)
-        m.nil? ? nil : m[1]
+        values = output.scan(/ip helper-address ([^\s]+)$/)
+        values.inject([]) do |ary, value|
+          ary << value.first
+          ary
+        end
       end
     end
   end

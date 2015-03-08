@@ -56,6 +56,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
       provider_hash = { :name => name, :ensure => :present }
       provider_hash[:source_interface] = attrs['source_interface']
       provider_hash[:multicast_group] = attrs['multicast_group']
+      provider_hash[:udp_port ] = attrs['udp_port']
       new(provider_hash)
     end
   end
@@ -70,6 +71,11 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
     @property_hash[:multicast_group] = val
   end
 
+  def udp_port=(val)
+    eapi.Vxlan.set_udp_port(:value => val)
+    @property_hash[:udp_port] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
@@ -81,6 +87,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
                             if resource[:source_interface]
     self.multicast_group = resource[:multicast_group] \
                            if resource[:multicast_group]
+    self.udp_port = resource[:udp_port] if resource[:udp_port]
   end
 
   def destroy

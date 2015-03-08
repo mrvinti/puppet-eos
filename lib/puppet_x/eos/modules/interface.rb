@@ -60,8 +60,7 @@ module PuppetX
       #     "Ethernet1": {
       #       "description": <string>,
       #       "shutdown": [true, false],
-      #       "flowcontrol_send": [on, off, desired, absent],
-      #       "flowcontrol_receive": [on, off, desired, absent]
+      #       "speed": <value>
       #     }
       #   }
       #
@@ -73,8 +72,7 @@ module PuppetX
         result.first['interfaces'].map do |_, attrs|
           shutdown = attrs['interfaceStatus'] == 'disabled' ? true : false
           values = { 'description' => attrs['description'],
-                     'shutdown' => shutdown }
-          values = values.merge(get_flowcontrol(attrs['name']))
+                     'shutdown' => shutdown, 'speed' => nil }
           response[attrs['name']] = values
         end
         response
@@ -165,6 +163,37 @@ module PuppetX
         end
         @api.config(cmds) == [{}, {}]
       end
+
+      ##
+      # Configures the interface speed value
+      #
+      # @param [String] name The name of the interface to configure
+      # @param [Hash] opts The configuration parameters for the interface
+      # @option opts [string] :value The value to set the speed to
+      # @option opts [Boolean] :default The value should be set to default
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_speed(name, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        case value
+        when 'forced40g' then value = 'forced 40full'
+        when 'auto' then value = 'auto'
+        when nil then value = nil
+        else fail 'Unknown value for speed'
+        end
+
+        cmds = ["interface #{name}"]
+        case default
+        when true
+          cmds << 'default speed'
+        when false
+          cmds << ((value.nil?) ? 'no speed' : "speed #{value}")
+        end
+        @api.config(cmds) == [{}, {}]
+      end
+
 
       ##
       # Configures the interface flowcontrol

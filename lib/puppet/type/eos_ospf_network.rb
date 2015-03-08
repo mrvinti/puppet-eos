@@ -31,56 +31,24 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_ipinterface) do
-  @doc = 'Manage the IP address of an interface'
+Puppet::Type.newtype(:eos_ospf_network) do
+  @doc = 'Configure OSPF network statements'
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the IP interface instance'
+    desc 'Configure routing for a network'
   end
 
   # Properties (state management)
 
-  newproperty(:address) do
-    desc 'Specifies IP address for the interface'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+  newproperty(:area) do
+    desc 'Configures the OSPF AREA'
   end
 
-  newproperty(:helper_addresses, :array_matching => :all) do
-    desc 'Specifies forwarding address for DHCP relay agent'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+  newproperty(:instance) do
   end
 
-  newproperty(:mtu) do
-    desc 'Specifies the IP interface MTU value'
-
-    munge do |value|
-      Integer(value).to_s
-    end
-
-    validate do |value|
-      unless value.to_i.between?(68, 9214)
-        fail "value #{value.inspect} must be in the range of 68 and 9214"
-      end
-    end
-  end
 end

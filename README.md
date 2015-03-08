@@ -25,6 +25,13 @@ The eapi.conf file is a stand YAML file with the following configuration options
 * Arista EOS 4.13 or later
 * EOS Command API enabled
 
+## Setup test environment
+
+In order to build a test environment for Ruby 1.8.7 just skip the
+:development environment.
+
+$ bundle install --test --path .bundle/gems
+
 ## License
 
 BSD-3 (see LICENSE)

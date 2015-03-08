@@ -78,8 +78,8 @@ module PuppetX
                              :format => 'text')
         mode = /mode\s(\w+)$/.match(result.first['output'])
         response = { 'mode' => mode[1] }
-        response['instances'] = {}
-        response['interfaces'] = {}
+        response['instances'] = instances.getall
+        response['interfaces'] = interfaces.getall
         response
       end
 
@@ -153,15 +153,13 @@ module PuppetX
       #
       # @return [Hash] instance attributes from eAPI
       def getall
-        result = @api.enable('show spanning-tree')
-        result = result.first['spanningTreeInstances']
-        response = {}
-        result.each do |inst, attrs|
-          instance = inst.gsub('MST', '')
-          priority = attrs['bridge']['priority']
-          response[instance] = { 'priority' => priority }
+        result = @api.enable('show running-config', :format => 'text')
+        config = result.first['output']
+        values = config.scan(/spanning-tree mst (\d+) priority (\d+)/)
+        values.each.inject({}) do |hsh, (inst, priority)|
+          hsh[inst] = { 'priority' => priority }
+          hsh
         end
-        response
       end
 
       ##
@@ -229,9 +227,10 @@ module PuppetX
       def getall
         result = @api.enable('show interfaces')
         result = result.first['interfaces']
-        response = result.each_with_object({}) do |(name, attrs),  hsh|
+        response = result.inject({}) do |hsh, (name, attrs)|
           hsh[name] = get_interface_config(name) \
             if attrs['forwardingModel'] == 'bridged'
+          hsh
         end
         response
       end
@@ -254,8 +253,8 @@ module PuppetX
         when true
           cmds << 'default spanning-tree portfast'
         when false
-          cmds << (value == 'enable' ? 'spanning-tree portfast' : \
-                                       'no spanning-tree portfast')
+          cmds << (value ? 'spanning-tree portfast' : \
+                           'no spanning-tree portfast')
         end
         @api.config(cmds) == [{}, {}]
       end
@@ -263,11 +262,11 @@ module PuppetX
       private
 
       def get_interface_config(name)
-        cmd = "show running-config interfaces #{name}"
+        cmd = "show running-config all interfaces #{name}"
         result = @api.enable(cmd, :format => 'text')
         output = result.first['output']
-        portfast = /portfast/.match(output) ? 'enable' : 'disable'
-        { 'portfast' => portfast }
+        portfast = /no spanning-tree portfast/.match(output)
+        { 'portfast' => portfast.nil? }
       end
     end
   end

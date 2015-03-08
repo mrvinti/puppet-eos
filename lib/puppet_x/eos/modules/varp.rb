@@ -68,12 +68,22 @@ module PuppetX
       #
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
-        result = @api.enable('show ip virtual-router')
+        result = @api.enable(['show ip virtual-router', 'show ip interface'])
+
+        virtualrouters = result[0]['virtualRouters']
+        ipinterfaces = result[1]['interfaces']
+
         response = { 'mac_address' => result[0]['virtualMac'] }
-        result = result[0]['virtualRouters']
-        response['interfaces'] = result.each_with_object({}) do |intf, hsh|
-          hsh[intf['interface']] = intf['virtualIps']
+
+        interfaces = {}
+        ipinterfaces.keys.each do |name|
+          next unless name =~ /^Vlan/
+          interfaces[name] = []
+          values = virtualrouters.find { |intf| intf['interface'] == name }
+          interfaces[name] = values['virtualIps'] if values
         end
+        response['interfaces'] = interfaces
+
         response
       end
 
@@ -105,36 +115,12 @@ module PuppetX
       # @param [String] name The name of the interface to configure
       # @param [Array] values The values to configure for the interface
       def set_addresses(name, values)
-        get['interfaces'].each do |intf, attrs|
-          attrs.each { |attr| remove_address(intf, attr) }
+        cmds = ["interface #{name}"]
+        cmds << 'no ip virtual-router address'
+        values.each do |addr|
+          cmds << "ip virtual-router address #{addr}"
         end
-        values.each { |value| add_address(name, value) }
-      end
-
-      ##
-      ## Adds a virtual address to an interface
-      #
-      # @param [String] name The name of the interface to configure
-      # @param [String] value The value to set the interface virtual
-      #     address to
-      #
-      # @return [Boolean] True if the commands succeed otherwise false
-      def add_address(name, value)
-        @api.config(["interface #{name}",
-                     "ip virtual-address address #{value}"]) == [{}, {}]
-      end
-
-      ##
-      # Removes a virtual address from a given interface
-      #
-      # @param [String] name The name of the interface to configure
-      # @param [String] value The value to remove from the list of virtual
-      #     address configured for the interface
-      #
-      # @return [Boolean] True if the commands succeed otherwise False
-      def remove_address(name, value)
-        @api.config(["interface #{name}",
-                     "no ip virtual-address address #{value}"]) == [{}, {}]
+        @api.config(cmds)
       end
     end
   end

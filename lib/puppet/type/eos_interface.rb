@@ -59,14 +59,9 @@ Puppet::Type.newtype(:eos_interface) do
     newvalues(:true, :false)
   end
 
-  newproperty(:flowcontrol_send) do
-    desc 'Flow control settings for TX'
-    newvalues(:on, :off)
-  end
-
-  newproperty(:flowcontrol_receive) do
-    desc 'Flow contorl settings for RX'
-    newvalues(:on, :off)
+  newproperty(:speed) do
+    desc 'Interface spped value'
+    newvalues(:auto, :forced40gfull)
   end
 
 end

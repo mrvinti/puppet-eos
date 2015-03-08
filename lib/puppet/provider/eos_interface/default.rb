@@ -53,36 +53,15 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def self.instances
     eapi.Interface.getall.map do |name, attrs|
-      provider_hash = { :name => name }
+      provider_hash = { :name => name, :ensure => :present }
 
       enable = attrs['shutdown'] ? :false : :true
       provider_hash[:enable] = enable
       provider_hash[:description] = attrs['description']
-
-      tx = attrs['flowcontrol_send'].to_sym
-      rx = attrs['flowcontrol_receive'].to_sym
-
-      provider_hash[:flowcontrol_send] = tx
-      provider_hash[:flowcontrol_receive] = rx
+      provider_hash[:speed] = attrs['speed']
 
       new(provider_hash)
     end
-  end
-
-  def create
-    eapi.Interface.create(resource[:name])
-    @property_hash = { :name => resource[:name], :ensure => :present }
-    self.enable = resource[:enable] if resource[:enable]
-    self.description = resource[:description] if resource[:description]
-    self.flowcontrol_send = resource[:flowcontrol_send] \
-                            if resource[:flowcontrol_send]
-    self.flowcontrol_receive = resource[:flowcontrol_receive] \
-                               if resource[:flowcontrol_receive]
-  end
-
-  def destroy
-    eapi.Interface.delete(resource[:name])
-    @property_hash = { :name => resource[:name], :ensure => :absent }
   end
 
   def enable=(val)
@@ -95,13 +74,12 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_hash[:description] = val
   end
 
-  def flowcontrol_send=(val)
-    eapi.Interface.set_flowcontrol(resource[:name], 'send', :value => val)
-    @property_hash[:flowcontrol_send] = val
+  def speed=(val)
+    eapi.Interface.set_speed(resource[:name], :value => val)
+    @property_hash[:speed] = val
   end
 
-  def flowcontrol_receive=(val)
-    eapi.Interface.set_flowcontrol(resource[:name], 'receive', :value => val)
-    @property_hash[:flowcontrol_receive] = val
+  def exists?
+    resource[:ensure] == :present
   end
 end

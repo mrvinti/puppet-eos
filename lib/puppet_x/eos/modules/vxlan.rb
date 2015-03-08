@@ -29,6 +29,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+require 'puppet_x/eos/module_base'
 
 ##
 # Eos is the toplevel namespace for working with Arista EOS nodes
@@ -40,10 +41,7 @@ module PuppetX
     # The Vxlan provides an instance for managing vxlan virtual tunnel
     # interfaces in EOS
     #
-    class Vxlan
-      def initialize(api)
-        @api = api
-      end
+    class Vxlan < ModuleBase
 
       ##
       # Returns the Vxlan logical interface from the running-config
@@ -52,22 +50,81 @@ module PuppetX
       #   {
       #     "Vxlan1": {
       #       "source_interface": <string>,
-      #       "multicast_group": <string>
+      #       "multicast_group": <string>,
+      #       "udp_port": <integer>
+      #       "vlans": {...}
       #     }
       #   }
       #
       # @return [Hash] returns key/value pairs that present the logical
       #   interface configuration
       def getall
-        result = @api.enable('show interfaces')
+        result = @api.enable('show running-config all interfaces Vxlan1',
+                             :format => 'text')
+        config = result.first['output']
+        return {} if config.empty?
         response = {}
-        if result.first['interfaces'].key?('Vxlan1')
-          attrs = result.first['interfaces']['Vxlan1']
-          values = { 'source_interface' => attrs['srcIpIntf'],
-                     'multicast_group' => attrs['floodMcastGrp'] }
-          response['Vxlan1'] = values
+        response['source_interface'] = parse_source_interface(config)
+        response['multicast_group'] = parse_multicast_group(config)
+        response['udp_port'] = parse_udp_port(config)
+        response.merge!(parse_vlans(config))
+        { 'Vxlan1' => response }
+      end
+      ##
+      # parse_source_interface scans the interface config block and returns the
+      # value of the vxlan source-interace.  If the source-interface is not
+      # configured then the value of DEFAULT_SRC_INTF is used.  The hash
+      # returned is intended to be merged into the interface resource hash
+      #
+      # @param [String] :config The interface configuration block to extract
+      #   the vxlan source-interface value from
+      #
+      # @return [Hash<Symbol, Object>] resource hash attribute
+      def parse_source_interface(config)
+        mdata = /source-interface ([^\s]+)$/.match(config)
+        mdata.nil? ? '' : mdata[1]
+      end
+
+      ##
+      # parse_multicast_group scans the interface config block and returns the
+      # value of the vxlan multicast-group.  If the multicast-group is not
+      # configured then the value of DEFAULT_MCAST_GRP is used.  The hash
+      # returned is intended to be merged into the interface resource hash
+      #
+      # @param [String] :config The interface configuration block to extract
+      #   the vxlan multicast-group value from
+      #
+      # @return [Hash<Symbol, Object>] resource hash attribute
+      def parse_multicast_group(config)
+        mdata = /multicast-group ([^\s]+)$/.match(config)
+        mdata.nil? ? '' : mdata[1]
+      end
+
+      ##
+      # parse_udp_port scans the interface config block and returns the value
+      # of the vxlan udp-port setting.  The vxlan udp-port value is expected to
+      # always be present in the configuration.  The returned value is intended
+      # to be merged into the interface resource Hash
+      #
+      # @api private
+      #
+      # @param [String] :config The interface configuration block to parse the
+      #   vxlan udp-port value from
+      #
+      # @return [Hash<Symbol, Object>] resource Hash attribute
+      def parse_udp_port(config)
+        mdata = /^\s{3}vxlan udp-port (\d+)/.match(config)
+        mdata.nil? ? '' : mdata[1].to_i
+      end
+
+      def parse_vlans(config)
+        matches = config.scan(/vxlan vlan (\d+) vni (\d+)/)
+        values = matches.inject({}) do |hsh, m|
+          vlan, vni = m
+          hsh[vlan] = { 'vni' => vni }
+          hsh
         end
-        response
+        { 'vlans' => values }
       end
 
       ##
@@ -138,6 +195,39 @@ module PuppetX
                                  "vxlan multicast-group #{value}")
         end
         @api.config(cmds) == [{}, {}]
+      end
+
+      ##
+      # Configures the vxlan udp-port value for the Vxlan interface
+      #
+      # @param [Hash] opts The configuration parameters for the VLAN
+      # @option opts [string] :value The value to set the udp-port to
+      # @option opts [Boolean] :default The value should be set to default
+      #
+      # @return [Boolean] returns true if the command completed successfully
+      def set_udp_port(opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        cmds = ['interface Vxlan1']
+        case default
+        when true
+          cmds << 'default vxlan udp-port'
+        when false
+          cmds << (value.nil? ?  'no vxlan udp-port' : \
+                                 "vxlan udp-port #{value}")
+        end
+        @api.config(cmds) == [{}, {}]
+      end
+
+      def update_vlan(vlan, vni)
+        cmds = ["interface Vxlan1", "vxlan vlan #{vlan} vni #{vni}"]
+        @api.config cmds
+      end
+
+      def remove_vlan(vlan)
+        cmds = ["interface Vxlan1", "no vxlan vlan #{vlan} vni"]
+        @api.config cmds
       end
     end
   end

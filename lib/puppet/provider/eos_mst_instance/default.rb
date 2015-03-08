@@ -40,7 +40,7 @@ rescue LoadError => detail
   require module_base + "../../../" + "puppet_x/eos/provider"
 end
 
-Puppet::Type.type(:eos_system).provide(:eos) do
+Puppet::Type.type(:eos_mst_instance).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -52,19 +52,32 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    property_hash = { :name => 'settings', :ensure => :present,
-                      :hostname => result['hostname'] }
-    [new(property_hash)]
+    result = eapi.Stp.get
+    result['instances'].map do |(name, attrs)|
+      provider_hash = { :name => name, :ensure => :present }
+      provider_hash[:priority] = attrs['priority']
+      new(provider_hash)
+    end
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
+  def priority=(val)
+    @property_flush[:priority] = val
+    eapi.Stp.instances.set_priority(resource[:name], :value => val)
   end
 
   def exists?
-    @property_hash[:ensure] == :present
+    resource[:ensure] == :present
   end
 
-  def hostname=(val)
-    eapi.System.set_hostname(resource[:hostname])
-    @property_hash[:hostname] = val
+  def flush
+    api = eapi.Stp.instances
+    api.set_priority(resource[:name], :value => @property_flush[:priority]) \
+      if @property_flush[:priority]
+    @property_hash.merge!(@property_flush)
   end
-
 end

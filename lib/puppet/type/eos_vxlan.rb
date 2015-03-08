@@ -71,4 +71,9 @@ Puppet::Type.newtype(:eos_vxlan) do
     end
   end
 
+  newproperty(:udp_port) do
+    desc 'Configures the vxlan UDP port to send and receive traffic'
+
+    munge { |value| Integer(value) }
+  end
 end

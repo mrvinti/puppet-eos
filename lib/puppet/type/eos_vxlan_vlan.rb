@@ -31,55 +31,41 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_ipinterface) do
-  @doc = 'Manage the IP address of an interface'
+Puppet::Type.newtype(:eos_vxlan_vlan) do
 
   ensurable
 
   # Parameters
 
-  newparam(:name) do
-    desc 'The resource name for the IP interface instance'
-  end
+  newparam(:name, :namevar => true) do
+    desc "The vlanid parameter configures a virtual LAN in the range
+        of 1 to 4094."
 
-  # Properties (state management)
-
-  newproperty(:address) do
-    desc 'Specifies IP address for the interface'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
-
-  newproperty(:helper_addresses, :array_matching => :all) do
-    desc 'Specifies forwarding address for DHCP relay agent'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
-
-  newproperty(:mtu) do
-    desc 'Specifies the IP interface MTU value'
-
+    # Make sure we have a string for the ID
     munge do |value|
       Integer(value).to_s
     end
 
     validate do |value|
-      unless value.to_i.between?(68, 9214)
-        fail "value #{value.inspect} must be in the range of 68 and 9214"
+      unless value.to_i.between?(1, 4_094)
+        fail "value #{value.inspect} is not between 1 and 4094"
+      end
+    end
+  end
+
+  # Properties (state management)
+
+  newproperty(:vni) do
+    desc 'The VXLAN Virtual Network Identifier'
+
+    # Make sure we have a string for the ID
+    munge do |value|
+      Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(1, 16_777_215)
+        fail "value #{value.inspect} is not between 1 and 16777215"
       end
     end
   end

@@ -58,6 +58,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
                         :mode => attrs['mode'].to_sym,
                         :trunk_allowed_vlans => attrs['trunk_allowed_vlans'],
                         :trunk_native_vlan => attrs['trunk_native_vlan'],
+                        :trunk_groups => attrs['trunk_groups'],
                         :access_vlan => attrs['access_vlan'] }
       new(provider_hash)
     end
@@ -83,6 +84,11 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     @property_hash[:access_vlan] = val
   end
 
+  def trunk_groups=(val)
+    eapi.Switchport.set_trunk_groups(resource[:name], :value => val)
+    @property_hash[:trunk_groups] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
@@ -98,6 +104,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
                              if resource[:trunk_native_vlan]
 
     self.access_vlan = resource[:access_vlan] if resource[:access_vlan]
+    self.trunk_groups = resource[:trunk_groups] if resource[:trunk_groups]
   end
 
   def destroy

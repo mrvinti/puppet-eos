@@ -31,67 +31,97 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_ospf_instance) do
-  @doc = 'Configure OSPF settings'
+Puppet::Type.newtype(:eos_prefix_list) do
+  @doc = 'Configures prefix lists in EOS'
 
   ensurable
 
   # Parameters
 
-  newparam(:name, :namevar => true) do
-    desc 'The resource name for the OSPF instance'
+  newparam(:name) do
+    desc <<-EOS
+      The name parameter is a composite namevar that combines the
+      prefix-list name and the sequence number delimited by the
+      colon (:) character
 
-    # min: 1 max: 65535
-    munge do |value|
-      Integer(value).to_s
-    end
+      For example, if the prefix-list name is foo and the sequence
+      number for this rule is 10 the namvar would be constructed as
+      "foo:10"
+
+      The composite namevar is required to uniquely identify the
+      specific list and rule to configure
+    EOS
+  end
+
+  # Properties (state management)
+
+  newproperty(:prefix_list) do
+    desc 'Specifies the name of the prefix list'
+  end
+
+  newproperty(:seqno) do
+    desc 'Specifies this rules sequence number'
+
+    munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 65_535)
+      unless value.to_i.between?(0, 65_535)
         fail "value #{value.inspect} is not between 1 and 65535"
       end
     end
   end
 
-  # Properties (state management)
-
-  newproperty(:router_id) do
-    desc 'Set the router ID for the OSPF instance'
-
-    # IPV4 Address
-    # min: 0.0.0.0 max: 255.255.255.255
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+  newproperty(:action) do
+    desc 'Configures the type of rule as either a permit or deny'
+    newvalues(:permit, :deny)
   end
 
-  newproperty(:max_lsa) do
-    desc 'Maximum number of LSAs permitted in this instance'
+  newproperty(:prefix) do
+    desc 'Configures the network prefix to match'
+  end
+
+  newproperty(:masklen) do
+    desc 'Configures the network prefix mask'
 
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(0, 100_000)
-        fail "value #{value.inspect} is not between 0 and 100000"
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
       end
     end
   end
 
-  newproperty(:maximum_paths) do
-    desc 'Maximum number of next-hops in an ECMP route'
-
+  newproperty(:eq) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 16)
-        fail "value #{value.inspect} is not between 1 and 16"
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
+      end
+    end
+
+  end
+
+  newproperty(:ge) do
+    munge { |value| Integer(value) }
+
+    validate do |value|
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
       end
     end
   end
 
+  newproperty(:le) do
+    munge { |value| Integer(value) }
+
+    validate do |value|
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
+      end
+    end
+  end
 end
+
+
