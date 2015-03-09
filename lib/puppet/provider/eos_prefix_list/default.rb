@@ -58,13 +58,13 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
       provider_hash = rules.inject({}) do |hsh, attrs|
         hsh = { :name => namevar(name, attrs), :ensure => :present }
         hsh[:prefix_list] = name
-        hsh[:seqno] = attrs['seqno']
+        hsh[:seqno] = attrs['seqno'].to_i
         hsh[:action] = attrs['action']
         hsh[:prefix] = attrs['prefix']
-        hsh[:masklen] = attrs['masklen']
-        hsh[:eq] = attrs['eq']
-        hsh[:ge] = attrs['ge']
-        hsh[:le] = attrs['le']
+        hsh[:masklen] = attrs['masklen'].to_i
+        hsh[:eq] = attrs['eq'].nil? ? :absent : attrs['eq'].to_i
+        hsh[:ge] = attrs['ge'].nil? ? :absent : attrs['ge'].to_i
+        hsh[:le] = attrs['le'].nil? ? :absent : attrs['le'].to_i
         hsh
       end
       new(provider_hash)

@@ -28,10 +28,11 @@ module PuppetX
       end
 
       def getall
-        instances = config.scan(/ip prefix-list ([^\s]+)/).first
+        instances = config.scan(/ip prefix-list ([^\s]+)/)
         return nil unless instances
         instances.inject({}) do |hsh, name|
-          hsh[name.first] = get(name.first)
+          hsh.merge!(get(name.first))
+          hsh
         end
       end
 
