@@ -53,5 +53,6 @@ module PuppetX
     autoload :Stp, 'puppet_x/eos/modules/stp'
     autoload :Logging, 'puppet_x/eos/modules/logging'
     autoload :Prefixlist, 'puppet_x/eos/modules/prefixlist'
+    autoload :Staticroute, 'puppet_x/eos/modules/staticroute'
   end
 end
