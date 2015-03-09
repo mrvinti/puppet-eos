@@ -62,9 +62,9 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
         hsh[:action] = attrs['action']
         hsh[:prefix] = attrs['prefix']
         hsh[:masklen] = attrs['masklen'].to_i
-        hsh[:eq] = attrs['eq'].nil? ? :absent : attrs['eq'].to_i
-        hsh[:ge] = attrs['ge'].nil? ? :absent : attrs['ge'].to_i
-        hsh[:le] = attrs['le'].nil? ? :absent : attrs['le'].to_i
+        hsh[:eq] = attrs['eq'].to_i if attrs['eq']
+        hsh[:ge] = attrs['ge'].to_i if attrs['ge']
+        hsh[:le] = attrs['le'].to_i if attrs['le']
         hsh
       end
       new(provider_hash)
@@ -101,23 +101,23 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
   end
 
   def prefix=(val)
-    @property_flush[:action] = val
+    @property_flush[:prefix] = val
   end
 
   def masklen=(val)
-    @property_flush[:action] = val
+    @property_flush[:masklen] = val
   end
 
   def eq=(val)
-    @property_flush[:action] = val
+    @property_flush[:eq] = val
   end
 
   def ge=(val)
-    @property_flush[:action] = val
+    @property_flush[:ge] = val
   end
 
   def le=(val)
-    @property_flush[:action] = val
+    @property_flush[:le] = val
   end
 
   def flush
