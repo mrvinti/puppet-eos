@@ -98,6 +98,11 @@ module PuppetX
       def http
         return @http if @http
         @http = Net::HTTP.new(uri.host, uri.port)
+        if @protocol == 'https'
+          @http.use_ssl = true
+          @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+        @http
       end
 
       ##
