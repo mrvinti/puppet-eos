@@ -146,9 +146,10 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def add_member(name, member)
+        mode = get(name)['lacp_mode']
         id = name.match(/\d+/)
         @api.config(["interface #{member}",
-                     "channel-group #{id} mode on"]) == [{}, {}]
+                     "channel-group #{id} mode #{mode}"]) == [{}, {}]
       end
 
       ##
