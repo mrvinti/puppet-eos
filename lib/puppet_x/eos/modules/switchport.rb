@@ -67,10 +67,10 @@ module PuppetX
         attr_hash = {
           'name' => name,
           'mode' => mode_to_value(output),
-          'trunk_allowed_vlans' => trunk_vlans_to_value(output).split(','),
           'trunk_native_vlan' => trunk_native_to_value(output),
           'access_vlan' => access_vlan_to_value(output),
         }
+        attr_hash.merge!(parse_trunk_native_vlans(name))
         attr_hash.merge!(parse_trunk_groups(name))
         attr_hash
       end
@@ -96,6 +96,14 @@ module PuppetX
           arry
         end
         { 'trunk_groups' => values }
+      end
+
+      def parse_trunk_native_vlans(name)
+        cfg = get_block("interface #{name}", :config => config)
+        mdata = /trunk allowed vlan (.+)$/.match(cfg)
+        return { 'trunk_allowed_vlans' => [] } unless mdata[1] != 'none'
+        values = mdata[1].split(',')
+        { 'trunk_allowed_vlans' => values }
       end
 
       ##
@@ -251,11 +259,6 @@ module PuppetX
       def mode_to_value(config)
         m = /Operational Mode:\s([[:alnum:]|\s]+)\n/.match(config)
         m.nil? ? 'trunk' : (m[1] == 'static access' ? 'access' : 'trunk')
-      end
-
-      def trunk_vlans_to_value(config)
-        m = /Trunking VLANs Enabled:\s([0-9,\-AL]*)/.match(config)
-        m.nil? ? nil : (m[1] == 'ALL' ? '1-4094' : m[1])
       end
 
       def trunk_native_to_value(config)

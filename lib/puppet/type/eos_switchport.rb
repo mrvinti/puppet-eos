@@ -58,14 +58,18 @@ Puppet::Type.newtype(:eos_switchport) do
   newproperty(:trunk_allowed_vlans, :array_matching => :all) do
     desc 'Array of VLANs strings to trunk on the interface'
 
-    # Make sure we have a string for the ID
-    munge do |value|
-      Integer(value).to_s
-    end
-
     validate do |value|
-      unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
+      if /-/ !~ value
+        unless value.to_i.between?(1, 4_094)
+          fail "value #{value.inspect} is not between 1 and 4094"
+        end
+      else
+        vid_start, vid_end = value.split('-')
+        Array(vid_start.to_i..vid_end.to_i).each do |vid|
+          unless value.to_i.between?(1, 4_094)
+            fail "value #{value.inspect} is not between 1 and 4094"
+          end
+        end
       end
     end
   end
