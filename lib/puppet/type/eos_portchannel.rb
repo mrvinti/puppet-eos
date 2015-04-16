@@ -61,4 +61,20 @@ Puppet::Type.newtype(:eos_portchannel) do
       end
     end
   end
+
+  newproperty(:lacp_timeout) do
+    desc 'Configures the LACP fallback timeout value'
+
+    validate do |value|
+      unless value.to_i.between?(1, 100)
+        fail 'value #{value.inspect} is not between 1 and 100'
+      end
+    end
+  end
+
+  newproperty(:lacp_fallback) do
+    desc 'Configures the LACP fallback value'
+    newvalues(:individual, :static, :disabled)
+  end
+
 end

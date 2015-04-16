@@ -216,6 +216,8 @@ module PuppetX
         value = opts[:value]
         default = opts[:default] || false
 
+        value = (value == 'disabled' ? nil : value)
+
         cmds = ["interface #{name}"]
         case default
         when true
@@ -276,7 +278,7 @@ module PuppetX
             fallback = 'individual'
           end
         end
-        fallback || ''
+        fallback || 'disabled'
       end
     end
   end
