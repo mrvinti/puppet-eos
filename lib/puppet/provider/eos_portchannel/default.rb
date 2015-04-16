@@ -78,6 +78,11 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
     @property_hash[:lacp_fallback] = val
   end
 
+  def lacp_timeout=(val)
+    eapi.Portchannel.set_lacp_timeout(resource[:name], :value => val)
+    @property_hash[:lacp_timeout] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
@@ -88,6 +93,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
     self.members = resource[:members] if resource[:members]
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
+    self.lacp_timeout = resouorce[:lacp_timeout] if resource[:lacp_timeout]
   end
 
   def destroy
