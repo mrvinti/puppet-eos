@@ -94,4 +94,12 @@ Puppet::Type.newtype(:eos_ospf_instance) do
     end
   end
 
+  newproperty(:passive_interfaces, :array_matching => :all) do
+    desc 'Configures passive interfaces'
+
+    def insync?(is)
+      is.sort == @should.sort.map(&:to_s)
+    end
+  end
+
 end

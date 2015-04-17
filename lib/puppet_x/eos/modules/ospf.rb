@@ -116,6 +116,20 @@ module PuppetX
         @api.config(cmds) == [{}, {}]
       end
 
+      def set_passive_interfaces(inst, opts = {})
+        values = opts[:value]
+        config = instances['instances'][inst]
+
+        cmds = ["router ospf #{inst}"]
+        config['passive_interfaces'].each do |name|
+          cmds << "no passive-interface #{name}"
+        end
+        values.each do |name|
+          cmds << "passive-interface #{name}"
+        end
+        @api.config(cmds)
+      end
+
       ##
       # max_lsa configures the max-lsa value for the specified OSPF process
       #
@@ -214,6 +228,7 @@ module PuppetX
           hsh[inst.first].merge!(parse_max_lsa(config))
           hsh[inst.first].merge!(parse_areas(config))
           hsh[inst.first].merge!(parse_redistribution(config))
+          hsh[inst.first].merge!(parse_passive_interfaces(config))
           hsh
         end
         { 'instances' => values }
@@ -283,6 +298,7 @@ module PuppetX
         end
         { 'areas' => values }
       end
+      private :parse_areas
 
       ##
       # parse_redistribution scans the provided configuration block and
@@ -304,6 +320,19 @@ module PuppetX
       end
       private :parse_redistribution
 
+      ##
+      # parse_passive_interfaces scans the provided configuration block and
+      # extracts the ospf passive inteface statements.
+      #
+      # @api private
+      #
+      # @return [Hash<Symbol, Ojbect>] resource Hash attribute.
+      def parse_passive_interfaces(config)
+        values = config.scan(/passive-interface (.+)/)
+        values.flatten! unless values.empty?
+        return { 'passive_interfaces' => values }
+      end
+      private :parse_passive_interfaces
 
       ##
       # Parses the running-configuration to retreive all OSPF interfaces
@@ -325,9 +354,6 @@ module PuppetX
       def parse_network_type(config)
         m = /ip ospf network point-to-point/ =~ config
         { 'network_type' => m.nil? ? 'broadcast' : 'point_to_point' }
-      end
-
-      def parse_passive(config)
       end
 
       ##
