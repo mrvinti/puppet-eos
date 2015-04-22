@@ -118,16 +118,51 @@ module PuppetX
 
       def set_passive_interfaces(inst, opts = {})
         values = opts[:value]
-        config = instances['instances'][inst]
+        current = instances['instances'][inst]['passive_interfaces']
 
         cmds = ["router ospf #{inst}"]
-        config['passive_interfaces'].each do |name|
-          cmds << "no passive-interface #{name}"
+
+        current.each do |name|
+          cmds << "no passive-interface #{name}" unless values.include?(name)
         end
+
         values.each do |name|
           cmds << "passive-interface #{name}"
         end
+
         @api.config(cmds)
+      end
+
+      def set_active_interfaces(inst, opts = {})
+        values = opts[:value]
+        current = instances['instances'][inst]['active_interfaces']
+
+        cmds = ["router ospf #{inst}"]
+
+        current.each do |name|
+          cmds << "passive-interface #{name}" unless values.include?(name)
+        end
+
+        values.each do |name|
+          cmds << "no passive-interface #{name}"
+        end
+
+        @api.config(cmds)
+      end
+
+      def set_passive_interface_default(inst, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        cmds = ["router ospf #{inst}"]
+        case default
+        when true
+          cmds << 'default passive-interface default'
+        when false
+          cmds << (value ? "passive-interface default" :
+                           "no passive-interface default")
+        end
+        @api.config(cmds) == [{}, {}]
       end
 
       ##
@@ -228,7 +263,8 @@ module PuppetX
           hsh[inst.first].merge!(parse_max_lsa(config))
           hsh[inst.first].merge!(parse_areas(config))
           hsh[inst.first].merge!(parse_redistribution(config))
-          hsh[inst.first].merge!(parse_passive_interfaces(config))
+          hsh[inst.first].merge!(parse_ospf_interfaces(config))
+          hsh[inst.first].merge!(parse_passive_interface_default(config))
           hsh
         end
         { 'instances' => values }
@@ -320,19 +356,60 @@ module PuppetX
       end
       private :parse_redistribution
 
+
       ##
-      # parse_passive_interfaces scans the provided configuration block and
-      # extracts the ospf passive inteface statements.
+      # parse_ospf_interfaces scans the nodes configuration and extracts active
+      # and passive interfaces
       #
       # @api private
       #
-      # @return [Hash<Symbol, Ojbect>] resource Hash attribute.
-      def parse_passive_interfaces(config)
-        values = config.scan(/passive-interface (.+)/)
-        values.flatten! unless values.empty?
-        return { 'passive_interfaces' => values }
+      # @return [Hash<Symbol, Object>] resource Hash attribute.
+      def parse_ospf_interfaces(config)
+        default = config.include?('passive-interface default')
+        interfaces = configured_interfaces
+        interfaces.flatten! unless interfaces.empty?
+
+        case default
+        when true
+          active = config.scan(/no passive-interface ([^\s]+)/)
+          active.flatten! unless active.empty?
+          passive = interfaces.reject { |name| active.include?(name) }
+        when false
+          passive = config.scan(/\s{4}passive-interface ([^\s]+)/)
+          passive.flatten! unless passive.empty?
+          active = interfaces.reject { |name| passive.include?(name) }
+        end
+        { 'passive_interfaces' => passive, 'active_interfaces' => active,
+          'passive_interface_default' => default }
+
       end
-      private :parse_passive_interfaces
+      private :parse_ospf_interfaces
+
+      ##
+      # configured_interfaces scans the nodes state to return the list of
+      # interfaces that ospf is enabled on.
+      #
+      # @api private
+      #
+      # @return [Array<String>] list of interface names
+      def configured_interfaces
+        result = @api.enable('show ip ospf interface brief', :format => 'text')
+        result.first['output'].scan(/\s{4}([EVPL][a-z]+[^\s]+)/)
+      end
+      private :configured_interfaces
+
+      ##
+      # parse_passive_interface_default scans the provided configuration block
+      # and extracts the passive-interface defualt value.
+      #
+      # @api proviate
+      #
+      # @return [Hash<Symbol, Object>] resource Hash attribute
+      def parse_passive_interface_default(config)
+        cmd = 'passive-interface default'
+        return { 'passive_interface_default' => config.include?(cmd) }
+      end
+      private :parse_passive_interface_default
 
       ##
       # Parses the running-configuration to retreive all OSPF interfaces

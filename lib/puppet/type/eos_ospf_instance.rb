@@ -102,4 +102,17 @@ Puppet::Type.newtype(:eos_ospf_instance) do
     end
   end
 
+  newproperty(:active_interfaces, :array_matching => :all) do
+    desc 'Configures active interfaces'
+
+    def insync?(is)
+      is.sort == @should.sort.map(&:to_s)
+    end
+  end
+
+  newproperty(:passive_interface_default) do
+    desc 'Configures the passive-interface default value for the instance'
+    newvalues(:true, :false)
+  end
+
 end
