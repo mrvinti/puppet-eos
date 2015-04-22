@@ -52,13 +52,17 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Interface.getall.map do |name, attrs|
+    results = eapi.Interface.getall
+    results.map do |name, attrs|
       provider_hash = { :name => name, :ensure => :present }
-
       enable = attrs['shutdown'] ? :false : :true
       provider_hash[:enable] = enable
       provider_hash[:description] = attrs['description']
-      provider_hash[:speed] = attrs['speed']
+
+      if name.include?('Et')
+        provider_hash[:speed] = attrs['speed']
+        provider_hash[:lacp_priority] = attrs['lacp_priority']
+      end
 
       new(provider_hash)
     end
@@ -75,8 +79,19 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   end
 
   def speed=(val)
+    if !resource[:name].include?('Et')
+      fail "Speed property is only suppored on physical Ethernet interfaces"
+    end
     eapi.Interface.set_speed(resource[:name], :value => val)
     @property_hash[:speed] = val
+  end
+
+  def lacp_priority=(val)
+    if !resource[:name].include?('Et')
+      fail "Speed property is only suppored on physical Ethernet interfaces"
+    end
+    eapi.Interface.set_lacp_priority(resource[:name], :value => val)
+    @property_hash[:lacp_priority] = val
   end
 
   def exists?

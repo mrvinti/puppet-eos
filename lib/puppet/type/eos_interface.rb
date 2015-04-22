@@ -64,4 +64,13 @@ Puppet::Type.newtype(:eos_interface) do
     newvalues(:auto, :forced40gfull)
   end
 
+  newproperty(:lacp_priority) do
+    desc 'Configures the interface lacp priority value'
+
+    validate do |value|
+      unless value.to_i.between?(0, 65_535)
+        fail "value #{value.inspect} is not between 0 and 65535"
+      end
+    end
+  end
 end

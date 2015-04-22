@@ -29,6 +29,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+require 'puppet_x/eos/module_base'
 
 ##
 # PuppetX is the toplevel namespace for working with Arista EOS nodes
@@ -40,42 +41,53 @@ module PuppetX
     # The Interface class provides a base class instance for working with
     # physical and logical interfaces.
     #
-    class Interface
-      ##
-      # Initialize instance of Interface
-      #
-      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
-      #
-      # @return [PuppetX::Eos::Interface]
-      def initialize(api)
-        @api = api
+    class Interface < ModuleBase
+
+
+      def get(name)
+        cfg = get_block("interface #{name}", :config => config)
+        resource = { 'name' => name }
+        resource.merge!(parse_description(cfg))
+        resource.merge!(parse_shutdown(cfg))
+        resource.merge!(parse_speed(cfg)) if name.include?('Et')
+        resource.merge!(parse_lacp_priority(cfg)) if name.include?('Et')
+        resource
       end
 
       ##
       # Returns the base interface hash representing physical and logical
       # interfaces in EOS using eAPI
       #
-      # Example
-      #   {
-      #     "Ethernet1": {
-      #       "description": <string>,
-      #       "shutdown": [true, false],
-      #       "speed": <value>
-      #     }
-      #   }
-      #
       # @return [Hash] returns a hash of interfaces indexed by interface name
       #   with key/value pairs representing the running config
       def getall
-        result = @api.enable('show interfaces')
-        response = {}
-        result.first['interfaces'].map do |_, attrs|
-          shutdown = attrs['interfaceStatus'] == 'disabled' ? true : false
-          values = { 'description' => attrs['description'],
-                     'shutdown' => shutdown, 'speed' => nil }
-          response[attrs['name']] = values
+        interfaces = config.scan(/^interface (.+)/)
+        interfaces.flatten! unless interfaces.empty?
+        interfaces.inject({}) do |hsh, name|
+          data = get(name)
+          hsh[name] = data if data
+          hsh
         end
-        response
+      end
+
+      def parse_description(config)
+        mdata = /description (.+)/.match(config)
+        { 'description' => mdata.nil? ? '' : mdata[1] }
+      end
+
+      def parse_shutdown(config)
+        value = config.include?('no shutdown')
+        { 'shutdown' => !value }
+      end
+
+      def parse_speed(config)
+        mdata = /speed forced (.+)/.match(config)
+        { 'speed' => mdata.nil? ? 'auto' : "forced#{mdata[1]}" }
+      end
+
+      def parse_lacp_priority(config)
+        mdata = /lacp port-priority (\d+)/.match(config)
+        { 'lacp_priority' => mdata[1] }
       end
 
       ##
@@ -164,6 +176,22 @@ module PuppetX
         @api.config(cmds) == [{}, {}]
       end
 
+      def set_lacp_priority(name, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        cmds = ["interface #{name}"]
+        case default
+        when true
+          cmds << 'default lacp port-priority'
+        when false
+          cmds << (value.nil? ? 'no lacp port-priority' :
+                                "lacp port-priority #{value}")
+        end
+        @api.config(cmds)
+      end
+
+
       ##
       # Configures the interface speed value
       #
@@ -192,54 +220,6 @@ module PuppetX
           cmds << ((value.nil?) ? 'no speed' : "speed #{value}")
         end
         @api.config(cmds) == [{}, {}]
-      end
-
-
-      ##
-      # Configures the interface flowcontrol
-      #
-      # @param [String] name The name of the interface to configure
-      # @param [String] direction One of tx or rx
-      # @param [Hash] opts The configuration parameters for the interface
-      # @option opts [string] :value The value to set the description to
-      # @option opts [Boolean] :default The value should be set to default
-      #
-      # @return [Boolean] True if the commands succeed otherwise False
-      def set_flowcontrol(name, direction, opts = {})
-        value = opts[:value]
-        default = opts[:default] || false
-
-        cmds = ["interface #{name}"]
-        case default
-        when true
-          cmds << "default flowcontrol #{direction}"
-        when false
-          cmds << (value.nil? ? "no flowcontrol #{direction}" :
-                                "flowcontrol #{direction} #{value}")
-        end
-        @api.config(cmds) == [{}, {}]
-      end
-
-      private
-
-      ##
-      # Returns the current flow control configuration from the running
-      # config for non-converted nodes
-      #
-      # @params [String] name The name of the interface to return the
-      #   configuration values for
-      #
-      # @return [Hash] returns a hash of key/vale paris that represent
-      #   the configuration
-      def get_flowcontrol(name)
-        result = @api.enable("show running-config interfaces #{name}",
-                             :format => 'text')
-        output = result.first['output']
-        match = /flowcontrol\ssend(.*)$/.match(output)
-        tx = match.nil? ? 'absent' : match[1].strip
-        match = /flowcontrol\sreceive(.*)$/.match(output)
-        rx = match.nil? ? 'absent' : match[1].strip
-        { 'flowcontrol_send' => tx, 'flowcontrol_receive' => rx }
       end
     end
   end
