@@ -93,7 +93,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
     self.members = resource[:members] if resource[:members]
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
-    self.lacp_timeout = resouorce[:lacp_timeout] if resource[:lacp_timeout]
+    self.lacp_timeout = resource[:lacp_timeout] if resource[:lacp_timeout]
   end
 
   def destroy
