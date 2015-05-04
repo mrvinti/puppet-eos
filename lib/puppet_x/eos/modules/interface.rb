@@ -82,7 +82,7 @@ module PuppetX
 
       def parse_speed(config)
         mdata = /speed forced (.+)/.match(config)
-        { 'speed' => mdata.nil? ? 'auto' : "forced#{mdata[1]}" }
+        { 'speed' => mdata.nil? ? 'auto' : "forced #{mdata[1]}" }
       end
 
       def parse_lacp_priority(config)
