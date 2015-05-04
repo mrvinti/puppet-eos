@@ -61,7 +61,7 @@ Puppet::Type.newtype(:eos_interface) do
 
   newproperty(:speed) do
     desc 'Interface spped value'
-    newvalues(:auto, :'forced 40gfull')
+    newvalues(:auto, :forced40gfull)
   end
 
   newproperty(:lacp_priority) do
