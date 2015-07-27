@@ -132,6 +132,28 @@ describe PuppetX::Eos::Portchannel do
       end
 
       it { is_expected.to be_a_kind_of Array }
+      it { is_expected.to match_array(['Ethernet1', 'Ethernet2']) }
+    end
+
+    context '#get_members of MLAG' do
+      subject { instance.get_members(name) }
+
+      let(:name) { 'Port-Channel1' }
+
+      let :api_response do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/portchannel_getmembersmlag.json')
+        JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable)
+          .with('show port-channel 1 all-ports', format: 'text')
+          .and_return(api_response)
+      end
+
+      it { is_expected.to be_a_kind_of Array }
+      it { is_expected.to match_array(['Ethernet1']) }
     end
   end
 
