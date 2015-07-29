@@ -105,7 +105,7 @@ module PuppetX
         id = name.match(/\d+/)
         result = @api.enable("show port-channel #{id} all-ports",
                              :format => 'text')
-        result.first['output'].scan(/Ethernet\d+/)
+        result.first['output'].scan(/\bEthernet\d+/)
       end
 
       ##
