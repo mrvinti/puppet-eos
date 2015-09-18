@@ -21,7 +21,7 @@ module PuppetX
 
       def getall
         instances = config.scan(/route-map ([^\s]+)/)
-        return nil if instances.empty?
+        return nil if !instances || instances.empty?
         instances.flatten!.uniq!
         instances.inject({}) do |hsh, name|
           data = get(name)

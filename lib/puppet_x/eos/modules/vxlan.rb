@@ -62,7 +62,7 @@ module PuppetX
         result = @api.enable('show running-config all interfaces Vxlan1',
                              :format => 'text')
         config = result.first['output']
-        return {} if config.empty?
+        return {} if !config || config.empty?
         response = {}
         response['source_interface'] = parse_source_interface(config)
         response['multicast_group'] = parse_multicast_group(config)

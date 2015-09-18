@@ -62,7 +62,7 @@ module PuppetX
       #   with key/value pairs representing the running config
       def getall
         interfaces = config.scan(/^interface (.+)/)
-        interfaces.flatten! unless interfaces.empty?
+        interfaces.flatten! unless !interfaces || interfaces.empty?
         interfaces.inject({}) do |hsh, name|
           data = get(name)
           hsh[name] = data if data
