@@ -51,7 +51,7 @@ describe PuppetX::Eos::Vxlan do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/vxlan_get.text')
+        file = File.join(dir, 'fixtures/vxlan_get.json')
         JSON.load(File.read(file))
       end
 
