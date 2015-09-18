@@ -52,8 +52,8 @@ Puppet::Type.type(:eos_stp_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Stp.get
-    result['interfaces'].map do |(name, attrs)|
+    result = eapi.Stp.get_stp_interfaces
+    result.map do |(name, attrs)|
       provider_hash = { :name => name, :ensure => :present }
 
       value = attrs['portfast'] ? :enable : :disable
