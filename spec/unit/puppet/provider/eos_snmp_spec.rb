@@ -36,12 +36,12 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'settings',
-      contact: 'network operations',
-      location: 'data center',
-      chassis_id: '1234567890',
-      source_interface: 'Loopback0',
-      provider: described_class.name
+      :name => 'settings',
+      :contact => 'network operations',
+      :location => 'data center',
+      :chassis_id => '1234567890',
+      :source_interface => 'Loopback0',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_snmp).new(resource_hash)
   end
@@ -60,8 +60,7 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Snmp)
-    allow(described_class.eapi.Snmp).to receive(:get)
-      .and_return(snmp)
+    allow(described_class.eapi.Snmp).to receive(:get).and_return(snmp)
   end
 
   context 'class methods' do
@@ -88,21 +87,19 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: 'settings',
-                         contact: 'network operations',
-                         location: 'data center',
-                         chassis_id: '1234567890',
-                         source_interface: 'Loopback0'
+                         :name => 'settings',
+                         :contact => 'network operations',
+                         :location => 'data center',
+                         :chassis_id => '1234567890',
+                         :source_interface => 'Loopback0'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'settings' => Puppet::Type.type(:eos_snmp)
-            .new(name: 'settings'),
-          'alternative' => Puppet::Type.type(:eos_snmp)
-            .new(name: 'alternative')
+          'settings' => Puppet::Type.type(:eos_snmp).new(:name => 'settings'),
+          'alternative' => Puppet::Type.type(:eos_snmp).new(:name => 'alternative')
         }
       end
 
@@ -157,8 +154,7 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
       end
 
       it "calls Snmp#set_contact='network operations'" do
-        expect(eapi).to receive(:set_contact)
-          .with(value: 'network operations')
+        expect(eapi).to receive(:set_contact).with(:value => 'network operations')
         provider.contact = 'network operations'
       end
 
@@ -175,8 +171,7 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
       end
 
       it "calls Snmp#set_location='data center'" do
-        expect(eapi).to receive(:set_location)
-          .with(value: 'data center')
+        expect(eapi).to receive(:set_location).with(:value => 'data center')
         provider.location = 'data center'
       end
 
@@ -193,8 +188,7 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
       end
 
       it "calls Snmp#set_chassis_id='1234567890'" do
-        expect(eapi).to receive(:set_chassis_id)
-          .with(value: '1234567890')
+        expect(eapi).to receive(:set_chassis_id).with(:value => '1234567890')
         provider.chassis_id = '1234567890'
       end
 
@@ -207,13 +201,11 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
 
     describe '#source_interface=(val)' do
       before :each do
-        allow(eapi).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
+        allow(eapi).to receive(:set_source_interface).with(:value => 'Loopback0')
       end
 
       it "calls Snmp#set_source_interface='Loopback0'" do
-        expect(eapi).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
+        expect(eapi).to receive(:set_source_interface).with(:value => 'Loopback0')
         provider.source_interface = 'Loopback0'
       end
 

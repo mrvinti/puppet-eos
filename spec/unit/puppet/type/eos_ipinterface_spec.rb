@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ipinterface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Ethernet12', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'Ethernet12', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Ethernet12'
+  it_behaves_like 'an ensurable type', :name => 'Ethernet12'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -55,7 +55,7 @@ describe Puppet::Type.type(:eos_ipinterface) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',
                      %w(0.0.0.0 255.255.255.255)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'helper_address' do

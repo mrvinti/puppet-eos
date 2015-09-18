@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_logging_host) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '1.2.3.4', catalog: catalog) }
+  let(:type) { described_class.new(:name => '1.2.3.4', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: '1.2.3.4'
+  it_behaves_like 'an ensurable type', :name => '1.2.3.4'
 
   describe 'name' do
     let(:attribute) { :name }

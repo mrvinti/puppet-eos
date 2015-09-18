@@ -261,7 +261,7 @@ module PuppetX
       end
 
       def get_lacp_mode(members)
-        return 'on' if members.empty?
+        return 'on' if !members || members.empty?
         name = members.first
         result = @api.enable("show running-config interfaces #{name}",
                              :format => 'text')

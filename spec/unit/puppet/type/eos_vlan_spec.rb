@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_vlan) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '450', catalog: catalog) }
+  let(:type) { described_class.new(:name => '450', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: '450'
+  it_behaves_like 'an ensurable type', :name => '450'
 
   describe 'vlanid' do
     let(:attribute) { :vlanid }
@@ -45,7 +45,7 @@ describe Puppet::Type.type(:eos_vlan) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'rejects values', [{ two: :three }, 'abc']
+    include_examples 'rejects values', [{ :two => :three }, 'abc']
 
     [100, '100'].each do |val|
       it "validates #{val.inspect} as isomorphic to '100'"  do
@@ -62,7 +62,7 @@ describe Puppet::Type.type(:eos_vlan) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(Engineering)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'enable' do
@@ -83,7 +83,7 @@ describe Puppet::Type.type(:eos_vlan) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(1 5000 16777215)
     include_examples 'rejects values', \
-                     [{ two: :three }, 'abc', '0', '16_777_216', -1]
+                     [{ :two => :three }, 'abc', '0', '16_777_216', -1]
   end
 
   describe 'trunk_groups' do

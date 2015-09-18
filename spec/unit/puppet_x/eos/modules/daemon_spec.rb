@@ -43,9 +43,7 @@ describe PuppetX::Eos::Daemon do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands, format: 'text')
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
     end
 
     context '#getall' do
@@ -71,9 +69,7 @@ describe PuppetX::Eos::Daemon do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#create' do
@@ -84,8 +80,7 @@ describe PuppetX::Eos::Daemon do
 
       describe 'configure agent=foo with command=/path/to/foo' do
         before :each do
-          allow(File).to receive(:executable?)
-            .and_return(true)
+          allow(File).to receive(:executable?).and_return(true)
         end
 
         let(:name) { 'foo' }

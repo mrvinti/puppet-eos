@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_command) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'ConfigureMlag', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'ConfigureMlag', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -62,7 +62,7 @@ describe Puppet::Type.type(:eos_command) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'array of strings value'
-    include_examples 'rejects values', [0, [1], { two: :three }]
+    include_examples 'rejects values', [0, [1], { :two => :three }]
   end
 
 end

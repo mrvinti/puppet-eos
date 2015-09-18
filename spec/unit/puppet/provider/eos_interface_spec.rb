@@ -36,12 +36,12 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'Ethernet1',
-      description: 'test interface',
-      enable: :true,
-      flowcontrol_send: :on,
-      flowcontrol_receive: :off,
-      provider: described_class.name
+      :name => 'Ethernet1',
+      :description => 'test interface',
+      :enable => :true,
+      :flowcontrol_send => :on,
+      :flowcontrol_receive => :off,
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_interface).new(resource_hash)
   end
@@ -60,8 +60,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Interface)
-    allow(described_class.eapi.Interface).to receive(:getall)
-      .and_return(all_interfaces)
+    allow(described_class.eapi.Interface).to receive(:getall).and_return(all_interfaces)
   end
 
   context 'class methods' do
@@ -86,11 +85,11 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == 'Ethernet1' } }
 
         include_examples 'provider resource methods',
-                         name: 'Ethernet1',
-                         description: '',
-                         enable: :true,
-                         flowcontrol_receive: :off,
-                         flowcontrol_send: :on
+                         :name => 'Ethernet1',
+                         :description => '',
+                         :enable => :true,
+                         :flowcontrol_receive => :off,
+                         :flowcontrol_send => :on
       end
 
       context 'eos_interface { Management1: }' do
@@ -101,23 +100,20 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: 'Management1',
-                         description: '',
-                         enable: :true,
-                         flowcontrol_receive: :desired,
-                         flowcontrol_send: :desired
+                         :name => 'Management1',
+                         :description => '',
+                         :enable => :true,
+                         :flowcontrol_receive => :desired,
+                         :flowcontrol_send => :desired
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Ethernet1'),
-          'Ethernet2' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Ethernet2'),
-          'Management1' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Management1')
+          'Ethernet1' => Puppet::Type.type(:eos_interface).new(:name =>'Ethernet1'),
+          'Ethernet2' => Puppet::Type.type(:eos_interface).new(:name => 'Ethernet2'),
+          'Management1' => Puppet::Type.type(:eos_interface).new(:name => 'Management1')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -206,21 +202,18 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: name, ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => name, :ensure => :absent)
         end
       end
     end
 
     describe '#description=(value)' do
       before :each do
-        allow(eapi).to receive(:set_description)
-          .with(name, value: 'foo')
+        allow(eapi).to receive(:set_description).with(name, :value => 'foo')
       end
 
       it "calls Interface#set_description(#{name}, 'foo')" do
-        expect(eapi).to receive(:set_description)
-          .with(name, value: 'foo')
+        expect(eapi).to receive(:set_description).with(name, :value => 'foo')
         provider.description = 'foo'
       end
 
@@ -233,15 +226,13 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
     describe '#enable=(value)' do
       before :each do
-        allow(eapi).to receive(:set_shutdown)
-          .with(name, value: value)
+        allow(eapi).to receive(:set_shutdown).with(name, :value => value)
       end
 
       %w(true, false).each do |val|
         let(:value) { !val }
         it "calls Interface#set_shutdown(#{name}, #{val})" do
-          expect(eapi).to receive(:set_shutdown)
-            .with(name, value: !val)
+          expect(eapi).to receive(:set_shutdown).with(name, :value => !val)
           provider.enable = val
         end
       end
@@ -250,13 +241,11 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     %w(:on :off :desired).each do |val|
       describe '#flowcontrol_send=(value)' do
         before :each do
-          allow(eapi).to receive(:set_flowcontrol)
-            .with(name, 'send', value: val)
+          allow(eapi).to receive(:set_flowcontrol).with(name, 'send', :value => val)
         end
 
         it "calls Interface#set_flowcontrol(#{name}, 'send', #{val})" do
-          expect(eapi).to receive(:set_flowcontrol)
-            .with(name, 'send', value: val)
+          expect(eapi).to receive(:set_flowcontrol).with(name, 'send', :value => val)
           provider.flowcontrol_send = val
         end
 
@@ -269,13 +258,11 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
       describe '#flowcontrol_receive=(value)' do
         before :each do
-          allow(eapi).to receive(:set_flowcontrol)
-            .with(name, 'receive', value: val)
+          allow(eapi).to receive(:set_flowcontrol).with(name, 'receive', :value => val)
         end
 
         it "calls Interface#set_flowcontrol(#{name}, 'receive', #{val})" do
-          expect(eapi).to receive(:set_flowcontrol)
-            .with(name, 'receive', value: val)
+          expect(eapi).to receive(:set_flowcontrol).with(name, 'receive', :value => val)
           provider.flowcontrol_receive = val
         end
 

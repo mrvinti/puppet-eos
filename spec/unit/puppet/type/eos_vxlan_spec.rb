@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_vxlan) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Vxlan5000', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'Vxlan5000', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Vxlan5000'
+  it_behaves_like 'an ensurable type', :name => 'Vxlan5000'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -54,7 +54,7 @@ describe Puppet::Type.type(:eos_vxlan) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(Ethernet 42/1)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'multicast_group' do
@@ -65,7 +65,7 @@ describe Puppet::Type.type(:eos_vxlan) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
                      %w(227.10.1.1, FF01:0:0:0:0:0:0:2)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end
