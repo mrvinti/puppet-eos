@@ -52,8 +52,8 @@ Puppet::Type.type(:eos_mst_instance).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Stp.get
-    result['instances'].map do |(name, attrs)|
+    result = eapi.Stp.get_mst_instances
+    result.map do |(name, attrs)|
       provider_hash = { :name => name, :ensure => :present }
       provider_hash[:priority] = attrs['priority']
       new(provider_hash)
