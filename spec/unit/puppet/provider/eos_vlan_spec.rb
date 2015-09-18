@@ -36,13 +36,13 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: '1234',
-      vlanid: '1234',
-      vlan_name: 'VLAN1234',
-      enable: true,
-      trunk_groups: [],
-      provider: described_class.name
+      :ensure => :present,
+      :name => '1234',
+      :vlanid => '1234',
+      :vlan_name => 'VLAN1234',
+      :enable => true,
+      :trunk_groups => [],
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_vlan).new(resource_hash)
   end
@@ -84,23 +84,23 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == '1' } }
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         vlanid: '1',
-                         vlan_name: 'default',
-                         enable: :true,
-                         exists?: true,
-                         trunk_groups: [],
-                         vni: :absent
+                         :ensure => :present,
+                         :vlanid => '1',
+                         :vlan_name => 'default',
+                         :enable => :true,
+                         :exists? => true,
+                         :trunk_groups => [],
+                         :vni => :absent
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          '1' => Puppet::Type.type(:eos_vlan).new(vlanid: '1'),
-          '2' => Puppet::Type.type(:eos_vlan).new(vlanid: '2'),
-          '3' => Puppet::Type.type(:eos_vlan).new(vlanid: '3'),
-          '4' => Puppet::Type.type(:eos_vlan).new(vlanid: '4')
+          '1' => Puppet::Type.type(:eos_vlan).new(:vlanid => '1'),
+          '2' => Puppet::Type.type(:eos_vlan).new(:vlanid => '2'),
+          '3' => Puppet::Type.type(:eos_vlan).new(:vlanid => '3'),
+          '4' => Puppet::Type.type(:eos_vlan).new(:vlanid => '4')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -155,19 +155,15 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       before :each do
         allow(provider.eapi.Vlan).to receive(:create).with(id)
 
-        allow(provider.eapi.Vlan).to receive(:set_name)
-          .with(id, value: provider.resource[:vlan_name])
+        allow(provider.eapi.Vlan).to receive(:set_name).with(id, :value => provider.resource[:vlan_name])
 
-        allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id, value: provider.resource[:trunk_groups])
+        allow(provider.eapi.Vlan).to receive(:set_trunk_group).with(id, :value => provider.resource[:trunk_groups])
 
-        allow(provider.eapi.Vlan).to receive(:set_state)
-          .with(id, value: 'active')
+        allow(provider.eapi.Vlan).to receive(:set_state).with(id, :value => 'active')
       end
 
       it 'calls Vlan#create(id) with the resource id' do
-        expect(provider.eapi.Vlan).to receive(:create)
-          .with(provider.resource[:vlanid])
+        expect(provider.eapi.Vlan).to receive(:create).with(provider.resource[:vlanid])
         provider.create
       end
 
@@ -205,8 +201,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
 
       it 'calls Eapi#delete(id)' do
-        expect(provider.eapi.Vlan).to receive(:delete)
-          .with(id)
+        expect(provider.eapi.Vlan).to receive(:delete).with(id)
         provider.destroy
       end
 
@@ -223,21 +218,18 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(vlanid: id, ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:vlanid => id, :ensure => :absent)
         end
       end
     end
 
     describe '#vlan_name=(value)' do
       before :each do
-        allow(provider.eapi.Vlan).to receive(:set_name)
-          .with(provider.resource[:vlanid], value: 'foo')
+        allow(provider.eapi.Vlan).to receive(:set_name).with(provider.resource[:vlanid], :value => 'foo')
       end
 
       it 'calls Vlan#set_vlan_name("100", "foo")' do
-        expect(provider.eapi.Vlan).to receive(:set_name)
-          .with(provider.resource[:vlanid], value: 'foo')
+        expect(provider.eapi.Vlan).to receive(:set_name).with(provider.resource[:vlanid], :value => 'foo')
         provider.vlan_name = 'foo'
       end
 
@@ -250,13 +242,11 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
     describe '#trunk_groups=(value)' do
       before :each do
-        allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(provider.resource[:vlanid], value: ['foo'])
+        allow(provider.eapi.Vlan).to receive(:set_trunk_group).with(provider.resource[:vlanid], :value => ['foo'])
       end
 
       it 'calls Vlan#set_trunk_group("100", ["foo"])' do
-        expect(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(provider.resource[:vlanid], value: ['foo'])
+        expect(provider.eapi.Vlan).to receive(:set_trunk_group).with(provider.resource[:vlanid], :value => ['foo'])
         provider.trunk_groups = ['foo']
       end
 
@@ -273,8 +263,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
 
       it "calls Vlan#set_enable('100', 'active')" do
-        expect(provider.eapi.Vlan).to receive(:set_state)
-          .with(provider.resource[:vlanid], value: 'active')
+        expect(provider.eapi.Vlan).to receive(:set_state).with(provider.resource[:vlanid], :value => 'active')
         provider.enable = :true
       end
 
@@ -285,8 +274,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
 
       it "calls Vlan#set_enable('100', 'suspend')" do
-        expect(provider.eapi.Vlan).to receive(:set_state)
-          .with(provider.resource[:vlanid], value: 'suspend')
+        expect(provider.eapi.Vlan).to receive(:set_state).with(provider.resource[:vlanid], :value => 'suspend')
         provider.enable = :false
       end
 

@@ -36,8 +36,8 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'localhost',
-      provider: described_class.name
+      :name => 'localhost',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_system).new(resource_hash)
   end
@@ -56,8 +56,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:System)
-    allow(described_class.eapi.System).to receive(:get)
-      .and_return(system)
+    allow(described_class.eapi.System).to receive(:get).and_return(system)
   end
 
   context 'class methods' do
@@ -80,17 +79,15 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: 'localhost'
+                         :name => 'localhost'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'localhost' => Puppet::Type.type(:eos_system)
-            .new(name: 'localhost'),
-          'alternative' => Puppet::Type.type(:eos_system)
-            .new(name: 'alternative')
+          'localhost' => Puppet::Type.type(:eos_system).new(:name => 'localhost'),
+          'alternative' => Puppet::Type.type(:eos_system).new(:name => 'alternative')
         }
       end
 

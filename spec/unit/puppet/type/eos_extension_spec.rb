@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_extension) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'dummy.rpm', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'dummy.rpm', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'dummy.rpm'
+  it_behaves_like 'an ensurable type', :name => 'dummy.rpm'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -54,7 +54,7 @@ describe Puppet::Type.type(:eos_extension) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(a password val)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'autoload' do

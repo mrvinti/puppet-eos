@@ -56,9 +56,7 @@ describe PuppetX::Eos::Switchport do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with(commands, format: 'text')
-          .and_return(api_response)
+        allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
       end
 
       it { is_expected.to be_a_kind_of Hash }
@@ -80,11 +78,9 @@ describe PuppetX::Eos::Switchport do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .and_return(interfaces)
+        allow(eapi).to receive(:enable).and_return(interfaces)
 
-        allow(instance).to receive(:get).with('Ethernet1')
-          .and_return(switchport_et1)
+        allow(instance).to receive(:get).with('Ethernet1').and_return(switchport_et1)
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -101,9 +97,7 @@ describe PuppetX::Eos::Switchport do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#create' do
@@ -147,7 +141,7 @@ describe PuppetX::Eos::Switchport do
     context '#set_mode' do
       subject { instance.set_mode(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -187,7 +181,7 @@ describe PuppetX::Eos::Switchport do
     context '#set_trunk_allowed_vlans' do
       subject { instance.set_trunk_allowed_vlans(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -228,7 +222,7 @@ describe PuppetX::Eos::Switchport do
     context '#set_trunk_native_vlan' do
       subject { instance.set_trunk_native_vlan(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -268,7 +262,7 @@ describe PuppetX::Eos::Switchport do
     context '#set_access_vlan' do
       subject { instance.set_access_vlan(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

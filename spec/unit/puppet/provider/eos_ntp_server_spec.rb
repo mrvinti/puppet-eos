@@ -36,8 +36,8 @@ describe Puppet::Type.type(:eos_ntp_server).provider(:eos) do
 
   let :resource do
     resource_hash = {
-      name: '1.2.3.4',
-      ensure: :present
+      :name => '1.2.3.4',
+      :ensure => :present
     }
     type.new(resource_hash)
   end
@@ -55,8 +55,7 @@ describe Puppet::Type.type(:eos_ntp_server).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Ntp)
-    allow(described_class.eapi.Ntp).to receive(:get)
-      .and_return(ntp)
+    allow(described_class.eapi.Ntp).to receive(:get).and_return(ntp)
   end
 
   context 'class methods' do
@@ -80,18 +79,16 @@ describe Puppet::Type.type(:eos_ntp_server).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: '1.2.3.4',
-                         ensure: :present
+                         :name => '1.2.3.4',
+                         :ensure => :present
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_ntp_server)
-            .new(name: '1.2.3.4'),
-          '11.12.13.14' => Puppet::Type.type(:eos_ntp_server)
-            .new(name: '11.12.13.14')
+          '1.2.3.4' => Puppet::Type.type(:eos_ntp_server).new(:name => '1.2.3.4'),
+          '11.12.13.14' => Puppet::Type.type(:eos_ntp_server).new(:name => '11.12.13.14')
         }
       end
 

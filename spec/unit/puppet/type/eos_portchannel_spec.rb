@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_portchannel) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'SwitchPort22', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'SwitchPort22', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'SwitchPort22'
+  it_behaves_like 'an ensurable type', :name => 'SwitchPort22'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -64,7 +64,7 @@ describe Puppet::Type.type(:eos_portchannel) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'array of strings value'
-    include_examples 'rejects values', [0, [1], { two: :three }]
+    include_examples 'rejects values', [0, [1], { :two => :three }]
   end
 
   describe 'lacp_fallback' do
@@ -84,7 +84,7 @@ describe Puppet::Type.type(:eos_portchannel) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(1 100)
-    include_examples 'rejects values', [[-1], 'string', { two: :three }]
+    include_examples 'rejects values', [[-1], 'string', { :two => :three }]
   end
 
 end

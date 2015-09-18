@@ -36,8 +36,8 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: '1.2.3.4',
-      provider: described_class.name
+      :name => '1.2.3.4',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_logging_host).new(resource_hash)
   end
@@ -56,8 +56,7 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Logging)
-    allow(described_class.eapi.Logging).to receive(:get)
-      .and_return(logging)
+    allow(described_class.eapi.Logging).to receive(:get).and_return(logging)
   end
 
   context 'class methods' do
@@ -84,18 +83,16 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: '1.2.3.4',
-                         ensure: :present
+                         :name => '1.2.3.4',
+                         :ensure => :present
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
-            .new(name: '1.2.3.4'),
-          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
-            .new(name: '5.6.7.8')
+          '1.2.3.4' => Puppet::Type.type(:eos_logging_host).new(:name => '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_logging_host).new(:name => '5.6.7.8')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -150,8 +147,7 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
       end
 
       it 'calls Logging.hosts#create(name) with the resource id' do
-        expect(provider.eapi.Logging.hosts).to receive(:create)
-          .with(provider.resource[:name])
+        expect(provider.eapi.Logging.hosts).to receive(:create).with(provider.resource[:name])
         provider.create
       end
 
@@ -170,8 +166,7 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
       end
 
       it 'calls Logging.hosts#delete(id)' do
-        expect(eapi.hosts).to receive(:delete)
-          .with(provider.resource[:name])
+        expect(eapi.hosts).to receive(:delete).with(provider.resource[:name])
         provider.destroy
       end
 
@@ -188,8 +183,7 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: provider.resource[:name], ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => provider.resource[:name], :ensure => :absent)
         end
       end
     end

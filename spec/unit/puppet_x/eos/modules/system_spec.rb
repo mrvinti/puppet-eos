@@ -52,8 +52,7 @@ describe PuppetX::Eos::System do
       end
 
       before :each do
-        allow(eapi).to receive(:enable).with('show hostname')
-          .and_return(response)
+        allow(eapi).to receive(:enable).with('show hostname').and_return(response)
       end
 
       it { is_expected.to be_a_kind_of Hash }
@@ -68,8 +67,7 @@ describe PuppetX::Eos::System do
       let(:name) { (0...50).map { ('a'..'z').to_a[rand(26)] }.join }
 
       before :each do
-        allow(eapi).to receive(:config).with("hostname #{name}")
-          .and_return([{}])
+        allow(eapi).to receive(:config).with("hostname #{name}").and_return([{}])
       end
 
       it { is_expected.to be_truthy }

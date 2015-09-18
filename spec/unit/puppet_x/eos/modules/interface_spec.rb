@@ -58,12 +58,8 @@ describe PuppetX::Eos::Interface do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with('show interfaces')
-          .and_return(response_getall)
-        allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Ethernet1', format: 'text')
-          .and_return(response_get_flowcontrol)
+        allow(eapi).to receive(:enable).with('show interfaces').and_return(response_getall)
+        allow(eapi).to receive(:enable).with('show running-config interfaces Ethernet1', :format => 'text').and_return(response_get_flowcontrol)
       end
 
       it { is_expected.to be_a_kind_of Hash }
@@ -76,9 +72,7 @@ describe PuppetX::Eos::Interface do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(response)
+      allow(eapi).to receive(:config).with(commands).and_return(response)
     end
 
     context '#default' do
@@ -149,7 +143,7 @@ describe PuppetX::Eos::Interface do
     context '#set_description' do
       subject { instance.set_description(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -182,7 +176,7 @@ describe PuppetX::Eos::Interface do
     context '#set_shutdown' do
       subject { instance.set_shutdown(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -223,7 +217,7 @@ describe PuppetX::Eos::Interface do
     context '#set_flowcontrol' do
       subject { instance.set_flowcontrol(name, direction, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

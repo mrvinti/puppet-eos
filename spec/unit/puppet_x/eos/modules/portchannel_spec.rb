@@ -64,17 +64,11 @@ describe PuppetX::Eos::Portchannel do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with("show interfaces #{name}")
-          .and_return(response_portchannel_get)
+        allow(eapi).to receive(:enable).with("show interfaces #{name}").and_return(response_portchannel_get)
 
-        allow(eapi).to receive(:enable)
-          .with('show port-channel 1 all-ports', format: 'text')
-          .and_return(response_portchannel_getmembers)
+        allow(eapi).to receive(:enable).with('show port-channel 1 all-ports', :format => 'text').and_return(response_portchannel_getmembers)
 
-        allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Ethernet1', format: 'text')
-          .and_return(response_portchannel_getlacpmode)
+        allow(eapi).to receive(:enable).with('show running-config interfaces Ethernet1', :format => 'text').and_return(response_portchannel_getlacpmode)
       end
 
       it { is_expected.to be_a_kind_of Hash }
@@ -98,9 +92,7 @@ describe PuppetX::Eos::Portchannel do
       before :each do
         allow(eapi).to receive(:enable).and_return(interfaces)
 
-        allow(instance).to receive(:get)
-          .with('Port-Channel1')
-          .and_return(portchannel_po1)
+        allow(instance).to receive(:get).with('Port-Channel1').and_return(portchannel_po1)
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -126,9 +118,7 @@ describe PuppetX::Eos::Portchannel do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with('show port-channel 1 all-ports', format: 'text')
-          .and_return(api_response)
+        allow(eapi).to receive(:enable).with('show port-channel 1 all-ports', :format => 'text').and_return(api_response)
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -147,9 +137,7 @@ describe PuppetX::Eos::Portchannel do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with('show port-channel 1 all-ports', format: 'text')
-          .and_return(api_response)
+        allow(eapi).to receive(:enable).with('show port-channel 1 all-ports', :format => 'text').and_return(api_response)
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -159,9 +147,7 @@ describe PuppetX::Eos::Portchannel do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#create' do
@@ -239,13 +225,9 @@ describe PuppetX::Eos::Portchannel do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with('show port-channel 1 all-ports', format: 'text')
-          .and_return(enable_response)
+        allow(eapi).to receive(:enable).with('show port-channel 1 all-ports', :format => 'text').and_return(enable_response)
 
-        allow(eapi).to receive(:config)
-          .with(commands)
-          .and_return(config_response)
+        allow(eapi).to receive(:config).with(commands).and_return(config_response)
       end
 
       %w(active passive on).each do |mode|
@@ -268,7 +250,7 @@ describe PuppetX::Eos::Portchannel do
     context '#set_lacp_fallback' do
       subject { instance.set_lacp_fallback(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -310,7 +292,7 @@ describe PuppetX::Eos::Portchannel do
     context '#set_lacp_timeout' do
       subject { instance.set_lacp_timeout(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -357,21 +339,18 @@ describe PuppetX::Eos::Portchannel do
       let(:members) { %w(Ethernet1 Ethernet3) }
 
       before :each do
-        allow(instance).to receive(:get_members)
-          .and_return(%w(Ethernet1 Ethernet2))
+        allow(instance).to receive(:get_members).and_return(%w(Ethernet1 Ethernet2))
         allow(instance).to receive(:add_member)
         allow(instance).to receive(:remove_member)
       end
 
       it 'should call #remove_member' do
-        expect(instance).to receive(:add_member)
-          .with('Port-Channel1', 'Ethernet3')
+        expect(instance).to receive(:add_member).with('Port-Channel1', 'Ethernet3')
         subject
       end
 
       it 'should call #add_member' do
-        expect(instance).to receive(:add_member)
-          .with('Port-Channel1', 'Ethernet3')
+        expect(instance).to receive(:add_member).with('Port-Channel1', 'Ethernet3')
         subject
       end
     end

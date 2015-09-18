@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Ethernet 42', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'Ethernet 42', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -52,7 +52,7 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(B41.5)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'enable' do

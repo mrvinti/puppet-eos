@@ -43,9 +43,7 @@ describe PuppetX::Eos::Vxlan do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
     end
 
     context '#getall' do
@@ -72,9 +70,7 @@ describe PuppetX::Eos::Vxlan do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#create' do
@@ -116,7 +112,7 @@ describe PuppetX::Eos::Vxlan do
     context '#set_source_interface' do
       subject { instance.set_source_interface(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -151,7 +147,7 @@ describe PuppetX::Eos::Vxlan do
     context '#set_multicast_group' do
       subject { instance.set_multicast_group(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

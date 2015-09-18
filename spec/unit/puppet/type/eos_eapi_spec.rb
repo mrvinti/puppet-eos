@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_eapi) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'EAPI_1', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'EAPI_1', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -62,7 +62,7 @@ describe Puppet::Type.type(:eos_eapi) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(1 200 32780 65535)
-    include_examples 'rejects values', [0, 65_536, 'string', { two: :three }]
+    include_examples 'rejects values', [0, 65_536, 'string', { :two => :three }]
   end
 
   describe 'enable' do

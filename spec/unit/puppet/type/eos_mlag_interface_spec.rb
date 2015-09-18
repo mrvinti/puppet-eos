@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_mlag_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'MLAG_12', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'MLAG_12', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'MLAG_12'
+  it_behaves_like 'an ensurable type', :name => 'MLAG_12'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -46,7 +46,7 @@ describe Puppet::Type.type(:eos_mlag_interface) do
     include_examples 'parameter'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(mlagDomain)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'mlag_id' do
@@ -56,7 +56,7 @@ describe Puppet::Type.type(:eos_mlag_interface) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(1 200 777 2000)
-    include_examples 'rejects values', ['0', '2001', 'string', { two: :three }]
+    include_examples 'rejects values', ['0', '2001', 'string', { :two => :three }]
   end
 
 end

@@ -51,8 +51,7 @@ describe PuppetX::Eos::Logging do
     subject { instance.get }
 
     before :each do
-      allow(instance).to receive(:hosts)
-        .and_return('1.2.3.4' => {})
+      allow(instance).to receive(:hosts).and_return('1.2.3.4' => {})
     end
 
     it { is_expected.to be_a_kind_of Hash }

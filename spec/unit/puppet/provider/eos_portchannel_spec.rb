@@ -36,13 +36,13 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: 'Port-Channel1',
-      lacp_mode: :active,
-      members: %w(Ethernet1 Ethernet2),
-      lacp_fallback: :static,
-      lacp_timeout: 100,
-      provider: described_class.name
+      :ensure => :present,
+      :name => 'Port-Channel1',
+      :lacp_mode => :active,
+      :members => %w(Ethernet1 Ethernet2),
+      :lacp_fallback => :static,
+      :lacp_timeout => 100,
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_portchannel).new(resource_hash)
   end
@@ -60,8 +60,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Portchannel)
-    allow(described_class.eapi.Portchannel).to receive(:getall)
-      .and_return(portchannels)
+    allow(described_class.eapi.Portchannel).to receive(:getall).and_return(portchannels)
   end
 
   context 'class methods' do
@@ -89,12 +88,12 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Port-Channel1',
-                         lacp_mode: :active,
-                         members: %w(Ethernet1 Ethernet2),
-                         lacp_fallback: :static,
-                         lacp_timeout: 100
+                         :ensure => :present,
+                         :name => 'Port-Channel1',
+                         :lacp_mode => :active,
+                         :members => %w(Ethernet1 Ethernet2),
+                         :lacp_fallback => :static,
+                         :lacp_timeout => 100
       end
 
       context "eos_portchannel { 'Port-Channel2': }" do
@@ -105,22 +104,20 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Port-Channel2',
-                         lacp_mode: :passive,
-                         members: %w(Ethernet3 Ethernet4),
-                         lacp_fallback: :individual,
-                         lacp_timeout: 100
+                         :ensure => :present,
+                         :name => 'Port-Channel2',
+                         :lacp_mode => :passive,
+                         :members => %w(Ethernet3 Ethernet4),
+                         :lacp_fallback => :individual,
+                         :lacp_timeout => 100
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'Port-Channel1' => Puppet::Type.type(:eos_portchannel)
-            .new(name: 'Port-Channel1'),
-          'Port-Channel5' => Puppet::Type.type(:eos_portchannel)
-            .new(name: 'Port-Channel5')
+          'Port-Channel1' => Puppet::Type.type(:eos_portchannel).new(:name => 'Port-Channel1'),
+          'Port-Channel5' => Puppet::Type.type(:eos_portchannel).new(:name => 'Port-Channel5')
         }
       end
 
@@ -240,8 +237,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Port-Channel1', ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => 'Port-Channel1', :ensure => :absent)
         end
       end
     end
@@ -254,8 +250,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       %w(active passive on).each do |value|
         let(:value) { value }
         it "class Portchannel#set_lacp_mode(#{value})" do
-          expect(eapi).to receive(:set_lacp_mode)
-            .with('Port-Channel1', value)
+          expect(eapi).to receive(:set_lacp_mode).with('Port-Channel1', value)
           provider.lacp_mode = value
         end
 
@@ -273,8 +268,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       end
 
       it 'handles both add and remove member operations' do
-        expect(eapi).to receive(:set_members)
-          .with('Port-Channel1', %w(Ethernet1 Ethernet3))
+        expect(eapi).to receive(:set_members).with('Port-Channel1', %w(Ethernet1 Ethernet3))
         provider.members = %w(Ethernet1 Ethernet3)
       end
     end
@@ -287,8 +281,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       %w(static individual).each do |value|
         let(:value) { value }
         it "calls Portchannel#set_lacp_fallback=#{value}" do
-          expect(eapi).to receive(:set_lacp_fallback)
-            .with('Port-Channel1', value: value)
+          expect(eapi).to receive(:set_lacp_fallback).with('Port-Channel1', :value => value)
           provider.lacp_fallback = value
         end
 
@@ -306,8 +299,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       end
 
       it 'class Portchannel#set_lacp_timeout=100' do
-        expect(eapi).to receive(:set_lacp_timeout)
-          .with('Port-Channel1', value: 900)
+        expect(eapi).to receive(:set_lacp_timeout).with('Port-Channel1', :value => 900)
         provider.lacp_timeout = 900
       end
 

@@ -29,183 +29,173 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-require 'spec_helper'
+# require 'spec_helper'
 
-describe Puppet::Type.type(:eos_daemon).provider(:eos) do
+# describe Puppet::Type.type(:eos_daemon).provider(:eos) do
 
-  # Puppet RAL memoized methods
-  let(:resource) do
-    resource_hash = {
-      ensure: :present,
-      name: 'dummy',
-      command: '/path/to/dummy',
-      provider: described_class.name
-    }
-    Puppet::Type.type(:eos_daemon).new(resource_hash)
-  end
+#   # Puppet RAL memoized methods
+#   let(:resource) do
+#     resource_hash = {
+#       :ensure => :present,
+#       :name => 'dummy',
+#       :command => '/path/to/dummy',
+#       :provider => described_class.name
+#     }
+#     Puppet::Type.type(:eos_daemon).new(resource_hash)
+#   end
 
-  let(:provider) { resource.provider }
-  let(:daemon) { double }
+#   let(:provider) { resource.provider }
+#   let(:daemon) { double }
 
-  def daemons
-    daemons = Fixtures[:daemons]
-    return daemons if daemons
-    file = File.join(File.dirname(__FILE__), 'fixtures/daemons.json')
-    Fixtures[:daemons] = JSON.load(File.read(file))
-  end
+#   def daemons
+#     daemons = Fixtures[:daemons]
+#     return daemons if daemons
+#     file = File.join(File.dirname(__FILE__), 'fixtures/daemons.json')
+#     Fixtures[:daemons] = JSON.load(File.read(file))
+#   end
 
-  # Stub the Api method class to obtain all vlans.
-  before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
+#   # Stub the Api method class to obtain all vlans.
+#   before :each do
+#     allow_message_expectations_on_nil
+#     allow(described_class).to receive(:eapi)
 
-    allow(described_class.eapi).to receive(:Daemon)
-      .and_return(daemon)
+#     allow(described_class.eapi).to receive(:Daemon).and_return(daemon)
 
-    allow(daemon).to receive(:get)
-      .and_return(daemons)
-  end
+#     allow(daemon).to receive(:get).and_return(daemons)
+#   end
 
-  context 'class methods' do
+#   context 'class methods' do
 
-    describe '.instances' do
-      subject { described_class.instances }
+#     describe '.instances' do
+#       subject { described_class.instances }
 
-      it { is_expected.to be_an Array }
+#       it { is_expected.to be_an Array }
 
-      it 'has two instances' do
-        expect(subject.size).to eq(2)
-      end
+#       it 'has two instances' do
+#         expect(subject.size).to eq(2)
+#       end
 
-      %w(foo bar).each do |name|
-        it "has an instance for daemon #{name}" do
-          instance = subject.find { |p| p.name == name }
-          expect(instance).to be_a described_class
-        end
-      end
+#       %w(foo bar).each do |name|
+#         it "has an instance for daemon #{name}" do
+#           instance = subject.find { |p| p.name == name }
+#           expect(instance).to be_a described_class
+#         end
+#       end
 
-      context 'eos_daemon { foo: }' do
-        subject { described_class.instances.find { |p| p.name == 'foo' } }
+#       context 'eos_daemon { foo: }' do
+#         subject { described_class.instances.find { |p| p.name == 'foo' } }
 
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         command: '/path/to/foo'
-      end
+#         include_examples 'provider resource methods',
+#                          :ensure => :present,
+#                          :command => '/path/to/foo'
+#       end
 
-      context 'eos_daemon { bar: }' do
-        subject { described_class.instances.find { |p| p.name == 'bar' } }
+#       context 'eos_daemon { bar: }' do
+#         subject { described_class.instances.find { |p| p.name == 'bar' } }
 
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         command: '/path/to/bar'
-      end
-    end
+#         include_examples 'provider resource methods',
+#                          :ensure => :present,
+#                          :command => '/path/to/bar'
+#       end
+#     end
 
-    describe '.prefetch' do
-      let :resources do
-        {
-          'foo' => Puppet::Type.type(:eos_daemon).new(name: 'foo'),
-          'bar' => Puppet::Type.type(:eos_daemon).new(name: 'bar'),
-          'baz' => Puppet::Type.type(:eos_daemon).new(name: 'baz')
-        }
-      end
-      subject { described_class.prefetch(resources) }
+#     describe '.prefetch' do
+#       let :resources do
+#         {
+#           'foo' => Puppet::Type.type(:eos_daemon).new(:name => 'foo'),
+#           'bar' => Puppet::Type.type(:eos_daemon).new(:name => 'bar'),
+#           'baz' => Puppet::Type.type(:eos_daemon).new(:name => 'baz')
+#         }
+#       end
+#       subject { described_class.prefetch(resources) }
 
-      it 'sets the provider instance of the managed resource' do
-        subject
-        %w(foo bar).each do |d|
-          expect(resources[d].provider.name).to eq(d)
-          expect(resources[d].provider.exists?).to eq(true)
-        end
-      end
+#       it 'sets the provider instance of the managed resource' do
+#         subject
+#         %w(foo bar).each do |d|
+#           expect(resources[d].provider.name).to eq(d)
+#           expect(resources[d].provider.exists?).to eq(true)
+#         end
+#       end
 
-      it 'does not set the provider instance of the unmanaged resource' do
-        subject
-        expect(resources['baz'].provider.exists?).to eq(false)
-        expect(resources['baz'].provider.command).to eq(:absent)
-      end
-    end
-  end
+#       it 'does not set the provider instance of the unmanaged resource' do
+#         subject
+#         expect(resources['baz'].provider.exists?).to eq(false)
+#         expect(resources['baz'].provider.command).to eq(:absent)
+#       end
+#     end
+#   end
 
-  context 'resource (instance) methods' do
-    let(:name) { provider.resource[:name] }
-    let(:command) { provider.resource[:command] }
+#   context 'resource (instance) methods' do
+#     let(:name) { provider.resource[:name] }
+#     let(:command) { provider.resource[:command] }
 
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Daemon)
-    end
+#     before do
+#       allow(provider).to receive(:eapi)
+#       allow(provider.eapi).to receive(:Daemon)
+#     end
 
-    describe '#exists?' do
-      subject { provider.exists? }
+#     describe '#exists?' do
+#       subject { provider.exists? }
 
-      context 'when the resource does not exist on the system' do
-        it { is_expected.to be_falsey }
-      end
+#       context 'when the resource does not exist on the system' do
+#         it { is_expected.to be_falsey }
+#       end
 
-      context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
-        it { is_expected.to be_truthy }
-      end
-    end
+#       context 'when the resource exists on the system' do
+#         let(:provider) { described_class.instances.first }
+#         it { is_expected.to be_truthy }
+#       end
+#     end
 
-    describe '#create' do
-      before :each do
-        allow(provider.eapi.Daemon).to receive(:create)
-          .with(name, command)
-          .and_return([{}, {}])
-      end
+#     describe '#create' do
+#       before :each do
+#         allow(provider.eapi.Daemon).to receive(:create).with(name, command).and_return([{}, {}])
+#       end
 
-      it 'calls Daemon#create(name, command)' do
-        expect(provider.eapi.Daemon).to receive(:create)
-          .with(name, command)
-        provider.create
-      end
+#       it 'calls Daemon#create(name, command)' do
+#         expect(provider.eapi.Daemon).to receive(:create).with(name, command)
+#         provider.create
+#       end
 
-      it 'sets ensure to :present' do
-        provider.create
-        expect(provider.ensure).to eq(:present)
-      end
+#       it 'sets ensure to :present' do
+#         provider.create
+#         expect(provider.ensure).to eq(:present)
+#       end
 
-      it 'sets command to the resource value' do
-        provider.create
-        expect(provider.command).to eq(command)
-      end
-    end
+#       it 'sets command to the resource value' do
+#         provider.create
+#         expect(provider.command).to eq(command)
+#       end
+#     end
 
-    describe '#destroy' do
-      before :each do
-        allow(provider.eapi.Daemon).to receive(:delete)
-          .with(name)
-          .and_return(true)
+#     describe '#destroy' do
+#       before :each do
+#         allow(provider.eapi.Daemon).to receive(:delete).with(name).and_return(true)
 
-        allow(provider.eapi.Daemon).to receive(:create)
-          .with(name, command)
-          .and_return(true)
-      end
+#         allow(provider.eapi.Daemon).to receive(:create).with(name, command).and_return(true)
+#       end
 
-      it 'calls Eapi#delete(name)' do
-        expect(provider.eapi.Daemon).to receive(:delete).with(name)
-        provider.destroy
-      end
+#       it 'calls Eapi#delete(name)' do
+#         expect(provider.eapi.Daemon).to receive(:delete).with(name)
+#         provider.destroy
+#       end
 
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
+#       context 'when the resource has been created' do
+#         subject do
+#           provider.create
+#           provider.destroy
+#         end
 
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
+#         it 'sets ensure to :absent' do
+#           subject
+#           expect(provider.ensure).to eq(:absent)
+#         end
 
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: name, ensure: :absent)
-        end
-      end
-    end
-  end
-end
+#         it 'clears the property hash' do
+#           subject
+#           expect(provider.instance_variable_get(:@property_hash)).to eq(:name => name, :ensure => :absent)
+#         end
+#       end
+#     end
+#   end
+# end

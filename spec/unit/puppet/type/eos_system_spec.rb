@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_system) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'localhost', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'localhost', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }

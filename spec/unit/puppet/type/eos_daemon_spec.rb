@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_daemon) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'rsyslogd', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'rsyslogd', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'rsyslogd'
+  it_behaves_like 'an ensurable type', :name => 'rsyslogd'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -54,7 +54,7 @@ describe Puppet::Type.type(:eos_daemon) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(/etc/rsyslogd)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end

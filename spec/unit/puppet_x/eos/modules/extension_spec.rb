@@ -53,9 +53,7 @@ describe PuppetX::Eos::Extension do
     end
 
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
     end
 
     describe 'retreiving extensions from eAPI' do
@@ -78,9 +76,7 @@ describe PuppetX::Eos::Extension do
     let(:api_response) { [{}] }
 
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
     end
 
     describe 'load an extension with force=false (default)' do
@@ -103,15 +99,9 @@ describe PuppetX::Eos::Extension do
     before :each do
       allow(instance).to receive(:set_autoload).and_return(true)
 
-      allow(eapi).to receive(:enable)
-        .once
-        .with('no extension foo')
-        .and_return([{}])
+      allow(eapi).to receive(:enable).once.with('no extension foo').and_return([{}])
 
-      allow(eapi).to receive(:enable)
-        .once
-        .with('delete extension:foo')
-        .and_return([{}])
+      allow(eapi).to receive(:enable).once.with('delete extension:foo').and_return([{}])
     end
 
     describe 'delete an existing extension' do
@@ -125,20 +115,11 @@ describe PuppetX::Eos::Extension do
     let(:force) { false }
 
     before :each do
-      allow(eapi).to receive(:enable)
-        .once
-        .with("copy #{name} extension:")
-        .and_return([{}])
+      allow(eapi).to receive(:enable).once.with("copy #{name} extension:").and_return([{}])
 
-      allow(eapi).to receive(:enable)
-        .once
-        .with("extension #{name}")
-        .and_return([{}])
+      allow(eapi).to receive(:enable).once.with("extension #{name}").and_return([{}])
 
-      allow(eapi).to receive(:enable)
-        .once
-        .with("extension #{name} force")
-        .and_return([{}])
+      allow(eapi).to receive(:enable).once.with("extension #{name} force").and_return([{}])
     end
 
     describe 'install a new extension with force=false (default)' do

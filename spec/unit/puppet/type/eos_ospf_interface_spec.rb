@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ospf_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Ethernet1', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'Ethernet1', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Ethernet1'
+  it_behaves_like 'an ensurable type', :name => 'Ethernet1'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -46,7 +46,7 @@ describe Puppet::Type.type(:eos_ospf_interface) do
     include_examples 'parameter'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(eapi_node_tm207)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'network_type' do

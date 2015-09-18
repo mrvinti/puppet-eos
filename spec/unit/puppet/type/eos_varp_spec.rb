@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_varp) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'settings', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -52,7 +52,7 @@ describe Puppet::Type.type(:eos_varp) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(001c.7300.0099)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end

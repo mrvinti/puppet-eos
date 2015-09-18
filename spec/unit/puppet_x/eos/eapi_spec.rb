@@ -8,10 +8,10 @@ describe PuppetX::Eos::Eapi do
   let(:enable_pwd) { 'puppet' }
   let(:config) do
     {
-      hostname: hostname,
-      port: 80,
-      username: 'admin',
-      password: 'puppet'
+      :hostname => hostname,
+      :port => 80,
+      :username => 'admin',
+      :password => 'puppet'
     }
   end
   let(:api) { PuppetX::Eos::Eapi.new(config) }
@@ -29,7 +29,7 @@ describe PuppetX::Eos::Eapi do
     end
 
     it 'uses a non-ssl connnection' do
-      api = described_class.new(use_ssl: false)
+      api = described_class.new(:use_ssl => false)
       expect(api.uri.to_s).to eq('http://localhost')
     end
   end
@@ -47,7 +47,7 @@ describe PuppetX::Eos::Eapi do
   end
 
   context '#request' do
-    subject { api.request(commands, format: format) }
+    subject { api.request(commands, :format => format) }
     let(:format) { 'json' }
 
     describe 'request a single command' do
@@ -84,21 +84,17 @@ describe PuppetX::Eos::Eapi do
       subject { api.enable('foo') }
 
       before do
-        allow(api).to receive(:execute)
-          .with(['foo'], {})
-          .and_return([{}])
+        allow(api).to receive(:execute).with(['foo'], {}).and_return([{}])
       end
 
       it { is_expected.to be_a_kind_of Array }
     end
 
     context 'when sending a commands with format = "text"' do
-      subject { api.enable('foo', format: 'text') }
+      subject { api.enable('foo', :format => 'text') }
 
       before do
-        allow(api).to receive(:execute)
-          .with(['foo'], format: 'text')
-          .and_return([{}])
+        allow(api).to receive(:execute).with(['foo'], :format => 'text').and_return([{}])
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -108,9 +104,7 @@ describe PuppetX::Eos::Eapi do
       subject { api.enable(%w(foo bar)) }
 
       before do
-        allow(api).to receive(:execute)
-          .with(%w(foo bar), {})
-          .and_return([{}, {}])
+        allow(api).to receive(:execute).with(%w(foo bar), {}).and_return([{}, {}])
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -123,9 +117,7 @@ describe PuppetX::Eos::Eapi do
       subject { api.config('foo') }
 
       before do
-        allow(api).to receive(:enable)
-          .with(%w(configure foo))
-          .and_return([{}, {}])
+        allow(api).to receive(:enable).with(%w(configure foo)).and_return([{}, {}])
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -135,9 +127,7 @@ describe PuppetX::Eos::Eapi do
       subject { api.config(%w(foo bar)) }
 
       before do
-        allow(api).to receive(:enable)
-          .with(%w(configure foo bar))
-          .and_return([{}, {}, {}])
+        allow(api).to receive(:enable).with(%w(configure foo bar)).and_return([{}, {}, {}])
       end
 
       it { is_expected.to be_a_kind_of Array }

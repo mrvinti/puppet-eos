@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_mst_instance) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '100', catalog: catalog) }
+  let(:type) { described_class.new(:name => '100', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: '100'
+  it_behaves_like 'an ensurable type', :name => '100'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -46,7 +46,7 @@ describe Puppet::Type.type(:eos_mst_instance) do
     include_examples 'parameter'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(0 200 3278 4094)
-    include_examples 'rejects values', [4_095, 'string', { two: :three }]
+    include_examples 'rejects values', [4_095, 'string', { :two => :three }]
   end
 
   describe 'priority' do
@@ -56,7 +56,7 @@ describe Puppet::Type.type(:eos_mst_instance) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(0 20480 45056 61440)
-    include_examples 'rejects values', [100, 65_536, 'string', { two: :three }]
+    include_examples 'rejects values', [100, 65_536, 'string', { :two => :three }]
   end
 
 end

@@ -71,16 +71,11 @@ describe PuppetX::Eos::Ipinterface do
       end
 
       before :each do
-        allow(eapi).to receive(:enable).with('show ip interface')
-          .and_return(ipinterfaces)
+        allow(eapi).to receive(:enable).with('show ip interface').and_return(ipinterfaces)
 
-        allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Ethernet1', format: 'text')
-          .and_return(ipinterface_et1)
+        allow(eapi).to receive(:enable).with('show running-config interfaces Ethernet1', :format => 'text').and_return(ipinterface_et1)
 
-        allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Management1', format: 'text')
-          .and_return(ipinterface_ma1)
+        allow(eapi).to receive(:enable).with('show running-config interfaces Management1', :format => 'text').and_return(ipinterface_ma1)
       end
 
       describe 'retrieve ip interfaces' do
@@ -95,9 +90,7 @@ describe PuppetX::Eos::Ipinterface do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#create' do
@@ -129,7 +122,7 @@ describe PuppetX::Eos::Ipinterface do
     context '#set_address' do
       subject { instance.set_address(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -163,7 +156,7 @@ describe PuppetX::Eos::Ipinterface do
     context '#set_mtu' do
       subject { instance.set_mtu(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -197,7 +190,7 @@ describe PuppetX::Eos::Ipinterface do
     context '#set_helper_address' do
       subject { instance.set_helper_address(name, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
