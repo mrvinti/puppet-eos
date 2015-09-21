@@ -62,7 +62,7 @@ module PuppetX
       #   with key/value pairs representing the running config
       def getall
         interfaces = config.scan(/^interface (.+)/)
-        interfaces.flatten! unless interfaces.empty?
+        interfaces.flatten! unless !interfaces || interfaces.empty?
         interfaces.inject({}) do |hsh, name|
           data = get(name)
           hsh[name] = data if data
@@ -81,8 +81,8 @@ module PuppetX
       end
 
       def parse_speed(config)
-        mdata = /speed forced (.+)/.match(config)
-        { 'speed' => mdata.nil? ? 'auto' : "forced#{mdata[1]}" }
+        mdata = /speed (.+)/.match(config)
+        { 'speed' => mdata.nil? ? 'default' : "#{mdata[1]}" }
       end
 
       def parse_lacp_priority(config)
@@ -202,15 +202,8 @@ module PuppetX
       #
       # @return [Boolean] True if the commands succeed otherwise False
       def set_speed(name, opts = {})
-        value = opts[:value]
+        value = ((opts[:value] == :default) ? nil : opts[:value])
         default = opts[:default] || false
-
-        case value
-        when 'forced40g' then value = 'forced 40full'
-        when 'auto' then value = 'auto'
-        when nil then value = nil
-        else fail 'Unknown value for speed'
-        end
 
         cmds = ["interface #{name}"]
         case default

@@ -43,9 +43,7 @@ describe PuppetX::Eos::StpInstances do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
     end
 
     context '#getall' do
@@ -69,9 +67,7 @@ describe PuppetX::Eos::StpInstances do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#delete' do
@@ -91,7 +87,7 @@ describe PuppetX::Eos::StpInstances do
     context '#set_priority' do
       subject { instance.set_priority('1', opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_stp_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Ethernet12', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'Ethernet12', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Ethernet12'
+  it_behaves_like 'an ensurable type', :name => 'Ethernet12'
 
   describe 'name' do
     let(:attribute) { :name }

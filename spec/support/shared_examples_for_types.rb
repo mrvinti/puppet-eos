@@ -12,11 +12,13 @@ RSpec.shared_examples 'parameter' do
   end
 end
 
-RSpec.shared_examples 'an ensurable type' do |opts = { name: 'emanon' }|
+RSpec.shared_examples 'an ensurable type' do
+  opts = { :name => 'emanon' }
+
   describe 'ensure' do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:type) do
-      described_class.new(name: opts[:name], catalog: catalog)
+      described_class.new(:name => opts[:name], :catalog => catalog)
     end
 
     let(:attribute) { :ensure }
@@ -55,12 +57,12 @@ RSpec.shared_examples 'boolean' do |opts|
   describe "#{attribute}" do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:attribute) { attribute }
-    let(:type) { described_class.new(name: name, catalog: catalog) }
+    let(:type) { described_class.new(:name => name, :catalog => catalog) }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'boolean value'
     include_examples '#doc Documentation'
-    include_examples 'rejects values', [0, [1], { two: :three }]
+    include_examples 'rejects values', [0, [1], { :two => :three }]
   end
 end
 
@@ -76,7 +78,7 @@ RSpec.shared_examples 'boolean value' do
     end
   end
 
-  [1, -1, { foo: 1 }, [1], 'baz', nil].each do |val|
+  [1, -1, { :foo => 1 }, [1], 'baz', nil].each do |val|
     it "rejects #{val.inspect} with Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -87,7 +89,7 @@ RSpec.shared_examples 'name is the namevar' do
   describe 'name' do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:type) do
-      described_class.new(name: 'emanon', catalog: catalog)
+      described_class.new(:name => 'emanon', :catalog => catalog)
     end
 
     let(:attribute) { :name }
@@ -105,10 +107,9 @@ RSpec.shared_examples 'name is the namevar' do
       end
     end
 
-    [0, %w(Marketing Sales), { two: :three }].each do |val|
+    [0, %w(Marketing Sales), { :two => :three }].each do |val|
       it "rejects #{val.inspect}" do
-        expect { type[attribute] = val }
-          .to raise_error Puppet::ResourceError, /is invalid, must be a String/
+        expect { type[attribute] = val }.to raise_error Puppet::ResourceError, /is invalid, must be a String/
       end
     end
   end
@@ -125,7 +126,7 @@ RSpec.shared_examples '#doc Documentation' do
 end
 
 RSpec.shared_examples 'rejected parameter values' do
-  [{ two: :three }, nil, :undef, :undefined, 'foobar'].each do |val|
+  [{ :two => :three }, nil, :undef, :undefined, 'foobar'].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -144,7 +145,7 @@ RSpec.shared_examples 'channel group id value' do
     expect(type[attribute]).to eq('10')
   end
 
-  [-1, 1001, 8192, 'asdf', { foo: 1 }, true, false, nil].each do |val|
+  [-1, 1001, 8192, 'asdf', { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -163,7 +164,7 @@ RSpec.shared_examples 'vlan id value' do
     expect(type[attribute]).to eq('10')
   end
 
-  [-1, 4096, 8192, 'asdf', { foo: 1 }, true, false, nil].each do |val|
+  [-1, 4096, 8192, 'asdf', { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -183,7 +184,7 @@ RSpec.shared_examples 'vlan range value' do
     expect(type[attribute]).to eq([10, 20])
   end
 
-  [-1, 4096, 8192, 'asdf', { foo: 1 }, true, false, nil].each do |val|
+  [-1, 4096, 8192, 'asdf', { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -203,7 +204,7 @@ RSpec.shared_examples 'vlan range string value' do
     expect(type[attribute]).to eq(%w(10 20))
   end
 
-  [-1, 4096, '8192', 'asdf', { foo: 1 }, true, false, nil].each do |val|
+  [-1, 4096, '8192', 'asdf', { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -218,7 +219,7 @@ RSpec.shared_examples 'interface list value' do
     end
   end
 
-  [-1, 4096, 8192, 'asdf', { foo: 1 }, true, false, nil].each do |val|
+  [-1, 4096, 8192, 'asdf', { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -230,7 +231,7 @@ RSpec.shared_examples 'array of strings property' do |opts|
   name = opts[:name] || 'emanon'
   describe "#{attribute}" do
     let(:catalog) { Puppet::Resource::Catalog.new }
-    let(:type) { described_class.new(name: name, catalog: catalog) }
+    let(:type) { described_class.new(:name => name, :catalog => catalog) }
     let(:attribute) { attribute }
     subject { described_class.attrclass(attribute) }
 
@@ -247,7 +248,7 @@ RSpec.shared_examples 'array of strings value' do
     end
   end
 
-  [-1, 4096, 8192, { foo: 1 }, true, false, nil].each do |val|
+  [-1, 4096, 8192, { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end
@@ -288,7 +289,7 @@ RSpec.shared_examples 'description property' do
     end
   end
 
-  [0, [1], { two: :three }].each do |val|
+  [0, [1], { :two => :three }].each do |val|
     it "rejects #{val.inspect}" do
       expect { type[attribute] = val }.to raise_error Puppet::ResourceError
     end
@@ -304,7 +305,7 @@ RSpec.shared_examples 'speed property' do
     end
   end
 
-  [0, 15, '0', '15', { two: :three }, 'abc'].each do |val|
+  [0, 15, '0', '15', { :two => :three }, 'abc'].each do |val|
     it "rejects #{val.inspect} with Puppet::ResourceError" do
       expect { type[attribute] = val }.to raise_error Puppet::ResourceError
     end
@@ -320,7 +321,7 @@ RSpec.shared_examples 'duplex property' do
     end
   end
 
-  [0, 15, '0', '15', { two: :three }, 'abc'].each do |val|
+  [0, 15, '0', '15', { :two => :three }, 'abc'].each do |val|
     it "rejects #{val.inspect} with Puppet::ResourceError" do
       expect { type[attribute] = val }.to raise_error Puppet::ResourceError
     end
@@ -343,7 +344,7 @@ RSpec.shared_examples 'flowcontrol property' do
     end
   end
 
-  [0, 15, '0', '15', { two: :three }, 'abc'].each do |val|
+  [0, 15, '0', '15', { :two => :three }, 'abc'].each do |val|
     it "rejects #{val.inspect} with Puppet::ResourceError" do
       expect { type[attribute] = val }.to raise_error Puppet::ResourceError
     end
@@ -354,7 +355,7 @@ RSpec.shared_examples 'enabled type' do
   describe 'enable' do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:type) do
-      described_class.new(name: 'emanon', catalog: catalog)
+      described_class.new(:name => 'emanon', :catalog => catalog)
     end
 
     let(:attribute) { :enable }
@@ -377,12 +378,12 @@ RSpec.shared_examples 'string' do |opts|
   describe "#{attribute}" do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:attribute) { attribute }
-    let(:type) { described_class.new(name: name, catalog: catalog) }
+    let(:type) { described_class.new(:name => name, :catalog => catalog) }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'string value'
     include_examples '#doc Documentation'
-    include_examples 'rejects values', [0, [1], { two: :three }]
+    include_examples 'rejects values', [0, [1], { :two => :three }]
   end
 end
 
@@ -393,10 +394,9 @@ RSpec.shared_examples 'string value' do
     end
   end
 
-  [0, [1], { two: :three }].each do |val|
+  [0, [1], { :two => :three }].each do |val|
     it "rejects #{val.inspect}" do
-      expect { type[attribute] = val }
-        .to raise_error Puppet::ResourceError, /is invalid, must be a String/
+      expect { type[attribute] = val }.to raise_error Puppet::ResourceError, /is invalid, must be a String/
     end
   end
 

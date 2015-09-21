@@ -50,11 +50,8 @@ describe PuppetX::Eos::StpInterfaces do
       subject { instance.getall }
 
       before :each do
-        allow(eapi).to receive(:enable).with('show interfaces')
-          .and_return(show_interfaces)
-        allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Ethernet1', format: 'text')
-          .and_return(show_interfaces_et1)
+        allow(eapi).to receive(:enable).with('show interfaces').and_return(show_interfaces)
+        allow(eapi).to receive(:enable).with('show running-config interfaces Ethernet1', :format => 'text').and_return(show_interfaces_et1)
       end
 
       let :show_interfaces do
@@ -80,15 +77,13 @@ describe PuppetX::Eos::StpInterfaces do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#set_portfast' do
       subject { instance.set_portfast('Ethernet1', opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

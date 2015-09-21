@@ -36,10 +36,10 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: '1',
-      router_id: '1.1.1.1',
-      provider: described_class.name
+      :ensure => :present,
+      :name => '1',
+      :router_id => '1.1.1.1',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_ospf_instance).new(resource_hash)
   end
@@ -58,8 +58,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Ospf)
-    allow(described_class.eapi.Ospf).to receive(:getall)
-      .and_return(ospf_instance)
+    allow(described_class.eapi.Ospf).to receive(:getall).and_return(ospf_instance)
   end
 
   context 'class methods' do
@@ -82,9 +81,9 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == '1' } }
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: '1',
-                         router_id: '1.1.1.1'
+                         :ensure => :present,
+                         :name => '1',
+                         :router_id => '1.1.1.1'
       end
 
     end
@@ -92,8 +91,8 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1' => Puppet::Type.type(:eos_ospf_instance).new(name: '1'),
-          '2' => Puppet::Type.type(:eos_ospf_instance).new(name: '2')
+          '1' => Puppet::Type.type(:eos_ospf_instance).new(:name => '1'),
+          '2' => Puppet::Type.type(:eos_ospf_instance).new(:name => '2')
         }
       end
 
@@ -190,21 +189,18 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: '1', ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => '1', :ensure => :absent)
         end
       end
     end
 
     describe '#router_id=(val)' do
       before :each do
-        allow(provider.eapi.Ospf).to receive(:set_router_id)
-          .with('1', value: '1.1.1.1')
+        allow(provider.eapi.Ospf).to receive(:set_router_id).with('1', :value => '1.1.1.1')
       end
 
-      it "calls Ospf#set_router_id('1', val: '1.1.1.1')" do
-        expect(eapi).to receive(:set_router_id)
-          .with('1', value: '1.1.1.1')
+      it "calls Ospf#set_router_id('1', :val => '1.1.1.1')" do
+        expect(eapi).to receive(:set_router_id).with('1', :value => '1.1.1.1')
         provider.router_id = '1.1.1.1'
       end
 

@@ -36,13 +36,13 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'settings',
-      domain_id: 'MLAG-Domain',
-      local_interface: 'Port-Channel1',
-      peer_address: '10.1.1.1',
-      peer_link: 'Vlan4094',
-      enable: :true,
-      provider: described_class.name
+      :name => 'settings',
+      :domain_id => 'MLAG-Domain',
+      :local_interface => 'Port-Channel1',
+      :peer_address => '10.1.1.1',
+      :peer_link => 'Vlan4094',
+      :enable => :true,
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_mlag).new(resource_hash)
   end
@@ -61,8 +61,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Mlag)
-    allow(described_class.eapi.Mlag).to receive(:get)
-      .and_return(mlag)
+    allow(described_class.eapi.Mlag).to receive(:get).and_return(mlag)
   end
 
   context 'class methods' do
@@ -89,19 +88,19 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: 'settings',
-                         domain_id: 'MLAG-Domain',
-                         local_interface: 'Port-Channel1',
-                         peer_address: '10.1.1.1',
-                         peer_link: 'Vlan4094',
-                         enable: :true
+                         :name => 'settings',
+                         :domain_id => 'MLAG-Domain',
+                         :local_interface => 'Port-Channel1',
+                         :peer_address => '10.1.1.1',
+                         :peer_link => 'Vlan4094',
+                         :enable => :true
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'settings' => Puppet::Type.type(:eos_mlag).new(name: 'settings')
+          'settings' => Puppet::Type.type(:eos_mlag).new(:name => 'settings')
         }
       end
 
@@ -152,8 +151,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       end
 
       it "calls Mlag#set_local_interface='Port-Channel1'" do
-        expect(eapi).to receive(:set_local_interface)
-          .with(value: 'Port-Channel1')
+        expect(eapi).to receive(:set_local_interface).with(:value => 'Port-Channel1')
         provider.local_interface = 'Port-Channel1'
       end
 
@@ -170,8 +168,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       end
 
       it "calls Mlag#set_peer_link='Vlan4094'" do
-        expect(eapi).to receive(:set_peer_link)
-          .with(value: 'Vlan4094')
+        expect(eapi).to receive(:set_peer_link).with(:value => 'Vlan4094')
         provider.peer_link = 'Vlan4094'
       end
 
@@ -188,8 +185,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       end
 
       it "calls Mlag#set_peer_address='10.1.1.1'" do
-        expect(eapi).to receive(:set_peer_address)
-          .with(value: '10.1.1.1')
+        expect(eapi).to receive(:set_peer_address).with(:value => '10.1.1.1')
         provider.peer_address = '10.1.1.1'
       end
 
@@ -208,8 +204,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       %w(:true, :false).each do |value|
         let(:value) { value }
         it "calls Mlag#set_shutdown=#{value}" do
-          expect(eapi).to receive(:set_shutdown)
-            .with(value: !value)
+          expect(eapi).to receive(:set_shutdown).with(:value => !value)
           provider.enable = value
         end
 

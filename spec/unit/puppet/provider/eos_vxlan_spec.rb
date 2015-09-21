@@ -36,11 +36,11 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: 'Vxlan1',
-      source_interface: 'Looback0',
-      multicast_group: '239.10.10.10',
-      provider: described_class.name
+      :ensure => :present,
+      :name => 'Vxlan1',
+      :source_interface => 'Looback0',
+      :multicast_group => '239.10.10.10',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_vxlan).new(resource_hash)
   end
@@ -59,8 +59,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Vxlan)
-    allow(described_class.eapi.Vxlan).to receive(:getall)
-      .and_return(vxlan)
+    allow(described_class.eapi.Vxlan).to receive(:getall).and_return(vxlan)
   end
 
   context 'class methods' do
@@ -83,18 +82,18 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == 'Vxlan1' } }
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Vxlan1',
-                         source_interface: 'Loopback0',
-                         multicast_group: '239.10.10.10'
+                         :ensure => :present,
+                         :name => 'Vxlan1',
+                         :source_interface => 'Loopback0',
+                         :multicast_group => '239.10.10.10'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'Vxlan1' => Puppet::Type.type(:eos_vxlan).new(name: 'Vxlan1'),
-          'Vxlan2' => Puppet::Type.type(:eos_vxlan).new(name: 'Vxlan2')
+          'Vxlan1' => Puppet::Type.type(:eos_vxlan).new(:name => 'Vxlan1'),
+          'Vxlan2' => Puppet::Type.type(:eos_vxlan).new(:name => 'Vxlan2')
         }
       end
 
@@ -200,8 +199,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Vxlan1', ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => 'Vxlan1', :ensure => :absent)
         end
       end
     end
@@ -212,8 +210,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
       end
 
       it "calls Vxlan#set_source_interface='Looback0'" do
-        expect(eapi).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
+        expect(eapi).to receive(:set_source_interface).with(:value => 'Loopback0')
         provider.source_interface = 'Loopback0'
       end
 
@@ -230,8 +227,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
       end
 
       it "calls Vxlan#set_multicast_group='Looback0'" do
-        expect(eapi).to receive(:set_multicast_group)
-          .with(value: '239.10.10.10')
+        expect(eapi).to receive(:set_multicast_group).with(:value => '239.10.10.10')
         provider.multicast_group = '239.10.10.10'
       end
 

@@ -88,7 +88,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def lacp_priority=(val)
     if !resource[:name].include?('Et')
-      fail "Speed property is only suppored on physical Ethernet interfaces"
+      fail "LACP property is only suppored on physical Ethernet interfaces"
     end
     eapi.Interface.set_lacp_priority(resource[:name], :value => val)
     @property_hash[:lacp_priority] = val

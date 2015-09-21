@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_varp_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Vlan1234', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'Vlan1234', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }

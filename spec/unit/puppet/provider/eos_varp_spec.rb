@@ -36,8 +36,8 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
 
   let :resource do
     resource_hash = {
-      name: 'settings',
-      mac_address: 'aaaa.bbbb.cccc'
+      :name => 'settings',
+      :mac_address => 'aaaa.bbbb.cccc'
     }
     type.new(resource_hash)
   end
@@ -55,8 +55,7 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Varp)
-    allow(described_class.eapi.Varp).to receive(:get)
-      .and_return(varp)
+    allow(described_class.eapi.Varp).to receive(:get).and_return(varp)
   end
 
   context 'class methods' do
@@ -80,13 +79,13 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: 'settings',
-                         mac_address: 'aaaa.bbbb.cccc'
+                         :name => 'settings',
+                         :mac_address => 'aaaa.bbbb.cccc'
       end
     end
 
     describe '.prefetch' do
-      let(:resources) { { 'settings' => type.new(name: 'settings') } }
+      let(:resources) { { 'settings' => type.new(:name => 'settings') } }
       subject { described_class.prefetch(resources) }
 
       it 'updates the provider instance of managed resources' do
@@ -111,13 +110,11 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
       subject { provider.mac_address = 'aaaa.bbbb.cccc' }
 
       before :each do
-        allow(provider.eapi.Varp).to receive(:set_mac_address)
-          .with(value: 'aaaa.bbbb.cccc')
+        allow(provider.eapi.Varp).to receive(:set_mac_address).with(:value => 'aaaa.bbbb.cccc')
       end
 
       it 'calls Varp.set_mac_address = "aaaa.bbbb.cccc"' do
-        expect(provider.eapi.Varp).to receive(:set_mac_address)
-          .with(value: 'aaaa.bbbb.cccc')
+        expect(provider.eapi.Varp).to receive(:set_mac_address).with(:value => 'aaaa.bbbb.cccc')
         subject
       end
 

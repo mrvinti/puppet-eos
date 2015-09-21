@@ -43,9 +43,7 @@ describe PuppetX::Eos::Varp do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
     end
 
     context '#get' do
@@ -71,15 +69,13 @@ describe PuppetX::Eos::Varp do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#set_mac_address' do
       subject { instance.set_mac_address(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

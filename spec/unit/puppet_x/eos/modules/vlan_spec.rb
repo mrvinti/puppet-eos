@@ -43,9 +43,7 @@ describe PuppetX::Eos::Vlan do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
     end
 
     context '#getall' do
@@ -85,9 +83,7 @@ describe PuppetX::Eos::Vlan do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#create' do
@@ -132,7 +128,7 @@ describe PuppetX::Eos::Vlan do
     context '#set_name' do
       subject { instance.set_name(vlanid, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -169,7 +165,7 @@ describe PuppetX::Eos::Vlan do
     context '#set_state' do
       subject { instance.set_state(vlanid, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -207,7 +203,7 @@ describe PuppetX::Eos::Vlan do
     context '#set_trunk_group' do
       subject { instance.set_trunk_group(vlanid, opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

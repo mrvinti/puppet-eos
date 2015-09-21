@@ -36,10 +36,10 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: 'Port-Channel1',
-      mlag_id: '1',
-      provider: described_class.name
+      :ensure => :present,
+      :name => 'Port-Channel1',
+      :mlag_id => '1',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_mlag_interface).new(resource_hash)
   end
@@ -58,8 +58,7 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Mlag)
-    allow(described_class.eapi.Mlag).to receive(:get_interfaces)
-      .and_return(mlag_interfaces)
+    allow(described_class.eapi.Mlag).to receive(:get_interfaces).and_return(mlag_interfaces)
   end
 
   context 'class methods' do
@@ -88,9 +87,9 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Port-Channel1',
-                         mlag_id: '1'
+                         :ensure => :present,
+                         :name => 'Port-Channel1',
+                         :mlag_id => '1'
       end
 
       context "eos_mlag_interface { 'Port-Channel2': }" do
@@ -101,19 +100,17 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Port-Channel2',
-                         mlag_id: '2'
+                         :ensure => :present,
+                         :name => 'Port-Channel2',
+                         :mlag_id => '2'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'Port-Channel1' => Puppet::Type.type(:eos_mlag_interface)
-            .new(name: 'Port-Channel1'),
-          'Port-Channel3' => Puppet::Type.type(:eos_mlag_interface)
-            .new(name: 'Port-Channel3')
+          'Port-Channel1' => Puppet::Type.type(:eos_mlag_interface).new(:name => 'Port-Channel1'),
+          'Port-Channel3' => Puppet::Type.type(:eos_mlag_interface).new(:name => 'Port-Channel3')
         }
       end
 
@@ -169,8 +166,7 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
       end
 
       it "calls Mlag#add_interface('Port-Channel1)" do
-        expect(eapi).to receive(:add_interface)
-          .with('Port-Channel1', '1')
+        expect(eapi).to receive(:add_interface).with('Port-Channel1', '1')
         provider.create
       end
 
@@ -210,21 +206,18 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Port-Channel1', ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => 'Port-Channel1', :ensure => :absent)
         end
       end
     end
 
     describe '#mlag_id=(val)' do
       before :each do
-        allow(provider.eapi.Mlag).to receive(:set_mlag_id)
-          .with('Port-Channel1', value: '3')
+        allow(provider.eapi.Mlag).to receive(:set_mlag_id).with('Port-Channel1', :value => '3')
       end
 
       it "calls Mlag#set_mlag_id='3')" do
-        expect(eapi).to receive(:set_mlag_id)
-          .with('Port-Channel1', value: '3')
+        expect(eapi).to receive(:set_mlag_id).with('Port-Channel1', :value => '3')
         provider.mlag_id = '3'
       end
 

@@ -84,6 +84,58 @@ module PuppetX
       end
 
       ##
+      # Returns a hash of the the STP mode representing the current running
+      # configuration from eAPI.
+      #
+      # Example
+      #   {
+      #     "mode": "mstp",
+      #   }
+      #
+      # @return [Hash] returns a Hash of attributes derived from eAPI
+      def get_mode
+        result = @api.enable('show running-config section spanning-tree mode',
+                             :format => 'text')
+        mode = /mode\s(\w+)$/.match(result.first['output'])
+        response = { 'mode' => mode[1] }
+        response
+      end
+
+      ##
+      # Returns a hash of the STP instances representing the current running
+      # configuration from eAPI.
+      #
+      # Example
+      #   {
+      #     "1": {
+      #       "priority": "4096"
+      #     }
+      #     "2": {...}
+      #   }
+      #
+      # @return [Hash] returns a Hash of attributes derived from eAPI
+      def get_mst_instances
+        instances.getall
+      end
+
+      ##
+      # Returns a hash of the STP interfaces representing the current running
+      # configuration from eAPI.
+      #
+      # Example
+      #   {
+      #     "Ethernet1": {
+      #       "portfast": "enable"
+      #     },
+      #     "Ethernet2": {...}
+      #   }
+      #
+      # @return [Hash] returns a Hash of attributes derived from eAPI
+      def get_stp_interfaces
+        interfaces.getall
+      end
+
+      ##
       # Returns all spanning-tree instances as key/value hash
       #
       # @return [PuppetX::Eos::StpInstances]
@@ -262,11 +314,11 @@ module PuppetX
       private
 
       def get_interface_config(name)
-        cmd = "show running-config all interfaces #{name}"
+        cmd = "show running-config interfaces #{name}"
         result = @api.enable(cmd, :format => 'text')
         output = result.first['output']
-        portfast = /no spanning-tree portfast/.match(output)
-        { 'portfast' => portfast.nil? }
+        portfast = /spanning-tree portfast/.match(output)
+        { 'portfast' => !portfast.nil? }
       end
     end
   end

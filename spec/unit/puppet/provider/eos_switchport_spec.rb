@@ -36,13 +36,13 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: 'Ethernet1',
-      mode: :trunk,
-      trunk_allowed_vlans: %w(1 10 100 1000),
-      trunk_native_vlan: '1',
-      access_vlan: '1',
-      provider: described_class.name
+      :ensure => :present,
+      :name => 'Ethernet1',
+      :mode => :trunk,
+      :trunk_allowed_vlans => %w(1 10 100 1000),
+      :trunk_native_vlan => '1',
+      :access_vlan => '1',
+      :provider => described_class.name
     }
     Puppet::Type.type(:eos_switchport).new(resource_hash)
   end
@@ -61,8 +61,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Switchport)
-    allow(described_class.eapi.Switchport).to receive(:getall)
-      .and_return(switchports)
+    allow(described_class.eapi.Switchport).to receive(:getall).and_return(switchports)
   end
 
   context 'class methods' do
@@ -86,12 +85,12 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == 'Ethernet1' } }
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Ethernet1',
-                         mode: :trunk,
-                         trunk_allowed_vlans: %w(1 10 100 1000),
-                         trunk_native_vlan: '1',
-                         access_vlan: '1'
+                         :ensure => :present,
+                         :name => 'Ethernet1',
+                         :mode => :trunk,
+                         :trunk_allowed_vlans => %w(1 10 100 1000),
+                         :trunk_native_vlan => '1',
+                         :access_vlan => '1'
 
       end
 
@@ -99,12 +98,12 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == 'Ethernet2' } }
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Ethernet2',
-                         mode: :access,
-                         trunk_allowed_vlans: [],
-                         trunk_native_vlan: '1',
-                         access_vlan: '1'
+                         :ensure => :present,
+                         :name => 'Ethernet2',
+                         :mode => :access,
+                         :trunk_allowed_vlans => [],
+                         :trunk_native_vlan => '1',
+                         :access_vlan => '1'
 
       end
 
@@ -112,12 +111,12 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         subject { described_class.instances.find { |p| p.name == 'Ethernet3' } }
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Ethernet3',
-                         mode: :trunk,
-                         trunk_allowed_vlans: %w(1 10 100 1000),
-                         trunk_native_vlan: '1',
-                         access_vlan: '1'
+                         :ensure => :present,
+                         :name => 'Ethernet3',
+                         :mode => :trunk,
+                         :trunk_allowed_vlans => %w(1 10 100 1000),
+                         :trunk_native_vlan => '1',
+                         :access_vlan => '1'
 
       end
     end
@@ -125,10 +124,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet1'),
-          'Ethernet4' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet4')
+          'Ethernet1' => Puppet::Type.type(:eos_switchport).new(:name => 'Ethernet1'),
+          'Ethernet4' => Puppet::Type.type(:eos_switchport).new(:name => 'Ethernet4')
         }
       end
 
@@ -249,8 +246,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
         it 'clears the property hash' do
           subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Ethernet1', ensure: :absent)
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => 'Ethernet1', :ensure => :absent)
         end
       end
     end
@@ -263,8 +259,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       %w(access trunk).each do |value|
         let(:value) { value }
         it "class Switchport#set_mode(#{value})" do
-          expect(eapi).to receive(:set_mode)
-            .with('Ethernet1', value: value)
+          expect(eapi).to receive(:set_mode).with('Ethernet1', :value => value)
           provider.mode = value
         end
 
@@ -278,15 +273,13 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
     describe 'set_trunk_native_vlan=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_trunk_native_vlan)
-          .with('Ethernet1', value: vlanid)
+        allow(provider.eapi.Switchport).to receive(:set_trunk_native_vlan).with('Ethernet1', :value => vlanid)
       end
 
       let(:vlanid) { '1' }
 
       it 'calls Switchport#set_trunk_native_vlan' do
-        expect(eapi).to receive(:set_trunk_native_vlan)
-          .with('Ethernet1', value: vlanid)
+        expect(eapi).to receive(:set_trunk_native_vlan).with('Ethernet1', :value => vlanid)
         provider.trunk_native_vlan = vlanid
       end
 
@@ -299,15 +292,13 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
     describe 'set_trunk_allowed_vlans=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_trunk_allowed_vlans)
-          .with('Ethernet1', value: vlan_array)
+        allow(provider.eapi.Switchport).to receive(:set_trunk_allowed_vlans).with('Ethernet1', :value => vlan_array)
       end
 
       let(:vlan_array) { %w(1 10 100 1000) }
 
       it 'calls Switchport#set_trunk_allowed_vlans' do
-        expect(eapi).to receive(:set_trunk_allowed_vlans)
-          .with('Ethernet1', value: vlan_array)
+        expect(eapi).to receive(:set_trunk_allowed_vlans).with('Ethernet1', :value => vlan_array)
         provider.trunk_allowed_vlans = vlan_array
       end
 
@@ -320,15 +311,13 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
     describe 'set_access_vlan=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_access_vlan)
-          .with('Ethernet1', value: vlanid)
+        allow(provider.eapi.Switchport).to receive(:set_access_vlan).with('Ethernet1', :value => vlanid)
       end
 
       let(:vlanid) { '1' }
 
       it 'calls Switchport#set_access_vlan' do
-        expect(eapi).to receive(:set_access_vlan)
-          .with('Ethernet1', value: vlanid)
+        expect(eapi).to receive(:set_access_vlan).with('Ethernet1', :value => vlanid)
         provider.access_vlan = vlanid
       end
 

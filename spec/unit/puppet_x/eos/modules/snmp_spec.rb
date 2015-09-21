@@ -43,9 +43,7 @@ describe PuppetX::Eos::Snmp do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands, format: 'text')
-        .and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
     end
 
     context '#get' do
@@ -70,15 +68,13 @@ describe PuppetX::Eos::Snmp do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#set_contact' do
       subject { instance.set_contact(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -109,7 +105,7 @@ describe PuppetX::Eos::Snmp do
     context '#set_location' do
       subject { instance.set_location(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -140,7 +136,7 @@ describe PuppetX::Eos::Snmp do
     context '#set_chassis_id' do
       subject { instance.set_chassis_id(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -171,7 +167,7 @@ describe PuppetX::Eos::Snmp do
     context '#set_source_interface' do
       subject { instance.set_source_interface(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

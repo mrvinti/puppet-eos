@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_snmp) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'settings', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -52,7 +52,7 @@ describe Puppet::Type.type(:eos_snmp) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(Bonnie H at 3-1470)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'location' do
@@ -62,7 +62,7 @@ describe Puppet::Type.type(:eos_snmp) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(lab_25)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'chassis_id' do
@@ -72,7 +72,7 @@ describe Puppet::Type.type(:eos_snmp) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', 'xyz-1234'
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'source_interface' do
@@ -82,7 +82,7 @@ describe Puppet::Type.type(:eos_snmp) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', 'Ethernet1'
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end

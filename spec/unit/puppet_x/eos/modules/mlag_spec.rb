@@ -60,13 +60,9 @@ describe PuppetX::Eos::Mlag do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with('show mlag')
-          .and_return(api_response)
-        allow(eapi).to receive(:enable)
-          .with('show running-config section mlag configuration',
-                format: 'text')
-          .and_return(response_get_shutdown)
+        allow(eapi).to receive(:enable).with('show mlag').and_return(api_response)
+        allow(eapi).to receive(:enable).with('show running-config section mlag configuration',
+                :format => 'text').and_return(response_get_shutdown)
       end
 
       describe 'mlag configuration' do
@@ -84,9 +80,7 @@ describe PuppetX::Eos::Mlag do
       end
 
       before :each do
-        allow(eapi).to receive(:enable)
-          .with('show mlag interfaces')
-          .and_return(api_response)
+        allow(eapi).to receive(:enable).with('show mlag interfaces').and_return(api_response)
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -103,9 +97,7 @@ describe PuppetX::Eos::Mlag do
 
   context 'with Eapi#config' do
     before :each do
-      allow(eapi).to receive(:config)
-        .with(commands)
-        .and_return(api_response)
+      allow(eapi).to receive(:config).with(commands).and_return(api_response)
     end
 
     context '#add_interface' do
@@ -138,7 +130,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_domain_id' do
       subject { instance.set_domain_id(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -169,7 +161,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_local_interface' do
       subject { instance.set_local_interface(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -200,7 +192,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_peer_address' do
       subject { instance.set_peer_address(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -231,7 +223,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_peer_link' do
       subject { instance.set_peer_link(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -263,7 +255,7 @@ describe PuppetX::Eos::Mlag do
       subject { instance.set_mlag_id(name, opts) }
 
       let(:name) { 'Port-Channel1' }
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -294,7 +286,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_shutdown' do
       subject { instance.set_shutdown(opts) }
 
-      let(:opts) { { value: value, default: default } }
+      let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
       let(:value) { nil }
 

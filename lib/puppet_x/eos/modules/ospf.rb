@@ -367,16 +367,16 @@ module PuppetX
       def parse_ospf_interfaces(config)
         default = config.include?('passive-interface default')
         interfaces = configured_interfaces
-        interfaces.flatten! unless interfaces.empty?
+        interfaces.flatten! unless !interfaces || interfaces.empty?
 
         case default
         when true
           active = config.scan(/no passive-interface ([^\s]+)/)
-          active.flatten! unless active.empty?
+          active.flatten! unless !active || active.empty?
           passive = interfaces.reject { |name| active.include?(name) }
         when false
           passive = config.scan(/\s{4}passive-interface ([^\s]+)/)
-          passive.flatten! unless passive.empty?
+          passive.flatten! unless !passive || passive.empty?
           active = interfaces.reject { |name| passive.include?(name) }
         end
         { 'passive_interfaces' => passive, 'active_interfaces' => active,

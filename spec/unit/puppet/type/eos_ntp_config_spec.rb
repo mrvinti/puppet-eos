@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ntp_config) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'configuration', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'configuration', :catalog => catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -53,7 +53,7 @@ describe Puppet::Type.type(:eos_ntp_config) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
                      %w(Management1 Ethernet42/1)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end

@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ntp_server) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'configuration', catalog: catalog) }
+  let(:type) { described_class.new(:name => 'configuration', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'configuration'
+  it_behaves_like 'an ensurable type', :name => 'configuration'
 
   describe 'name' do
     let(:attribute) { :name }
