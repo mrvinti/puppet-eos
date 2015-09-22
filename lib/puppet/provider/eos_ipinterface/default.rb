@@ -69,7 +69,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
 
   def helper_addresses=(val)
     eapi.Ipinterface.set_helper_addresses(resource['name'], :value => val)
-    @property_hash[:helper_address] = val
+    @property_hash[:helper_addresses] = val
   end
 
   def mtu=(val)
@@ -86,8 +86,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     @property_hash = { :name => resource[:name], :ensure => :present }
     self.address = resource[:address] if resource[:address]
     self.mtu = resource[:mtu] if resource[:mtu]
-    self.helper_addresses = resource[:helper_addresses] \
-      if resource[:helper_addresses]
+    self.helper_addresses = resource[:helper_addresses] if resource[:helper_addresses]
   end
 
   def destroy
