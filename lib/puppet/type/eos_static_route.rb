@@ -39,22 +39,7 @@ Puppet::Type.newtype(:eos_static_route) do
   # Parameters
 
   newparam(:name) do
-    desc <<-EOS
-      The name parameter is a composite namevar that combines the
-      static route next hop prefix, mask length in bits and next
-      hop (address or interface) delimited by /.
-
-      For example, the static route entry below
-
-        * ip route 192.168.10.0/24 Ethernet1
-
-      will construct a namevar as below
-
-        * 192.168.10.0/24/Ethernet1
-
-      The composite namevar is requird to uniquely identify the
-      specific static route
-    EOS
+    desc 'Composite namevar for specific static route'
   end
 
   # Properties (state management)

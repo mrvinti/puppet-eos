@@ -39,18 +39,7 @@ Puppet::Type.newtype(:eos_prefix_list) do
   # Parameters
 
   newparam(:name) do
-    desc <<-EOS
-      The name parameter is a composite namevar that combines the
-      prefix-list name and the sequence number delimited by the
-      colon (:) character
-
-      For example, if the prefix-list name is foo and the sequence
-      number for this rule is 10 the namvar would be constructed as
-      "foo:10"
-
-      The composite namevar is required to uniquely identify the
-      specific list and rule to configure
-    EOS
+    desc 'The composite namevar for prefix list'
   end
 
   # Properties (state management)

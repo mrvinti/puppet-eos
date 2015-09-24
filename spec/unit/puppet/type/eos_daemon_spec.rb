@@ -47,14 +47,4 @@ describe Puppet::Type.type(:eos_daemon) do
     include_examples '#doc Documentation'
   end
 
-  describe 'command' do
-    let(:attribute) { :command }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(/etc/rsyslogd)
-    include_examples 'rejects values', [[1], { :two => :three }]
-  end
-
 end

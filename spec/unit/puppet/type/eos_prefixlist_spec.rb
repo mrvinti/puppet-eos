@@ -37,25 +37,14 @@ describe Puppet::Type.type(:eos_prefixlist) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(:name => 'PreFix100', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', :name => 'PreFix100'
+  # it_behaves_like 'an ensurable type', :name => 'PreFix100'
 
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
 
-    include_examples 'parameter'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(prefixBld1)
-    include_examples 'rejects values', [[1], { :two => :three }]
-  end
-
-  describe 'entries' do
-    let(:attribute) { :entries }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'array of strings value'
+    # include_examples 'parameter'
+    # include_examples '#doc Documentation'
   end
 
 end
