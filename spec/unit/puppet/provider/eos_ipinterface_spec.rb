@@ -88,7 +88,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          :ensure => :present,
                          :name => 'Ethernet1',
                          :address => '172.16.10.1/24',
-                         :helper_address => %w(5.6.7.8 9.10.11.12),
+                         :helper_addresses => %w(5.6.7.8 9.10.11.12),
                          :mtu => '1500'
       end
 
@@ -103,7 +103,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          :ensure => :present,
                          :name => 'Management1',
                          :address => '192.168.1.16/24',
-                         :helper_address => [],
+                         :helper_addresses => [],
                          :mtu => '1500'
       end
     end
@@ -142,7 +142,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
     let(:eapi) { double }
 
-    before do
+    before :each do
       allow(provider).to receive(:eapi)
       allow(provider.eapi).to receive(:Ipinterface).and_return(eapi)
     end
@@ -261,7 +261,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       end
     end
 
-    describe '#helper_address=(val)' do
+    describe '#helper_addresses=(val)' do
       let(:value) { %w(1.2.3.4 5.6.7.8) }
 
       before :each do

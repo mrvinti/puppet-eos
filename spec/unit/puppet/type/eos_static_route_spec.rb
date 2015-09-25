@@ -33,11 +33,11 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_ospf_area) do
+describe Puppet::Type.type(:eos_static_route) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(:name => 'ConfigureMlag', :catalog => catalog) }
+  let(:type) { described_class.new(:name => '1.2.3.0', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', :name => 'eng'
+  it_behaves_like 'an ensurable type', :name => '1.2.3.0'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -45,16 +45,19 @@ describe Puppet::Type.type(:eos_ospf_area) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging',\
+                     %w(1.2.3.4/24, 3012:D678::/64)
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
-  describe 'networks' do
-    let(:attribute) { :networks }
+  describe 'route_name' do
+    let(:attribute) { :route_name }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'array of strings value'
-    include_examples 'rejects values', [0, [1], { :two => :three }]
+    include_examples 'accepts values without munging', %w(Server Room)
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end

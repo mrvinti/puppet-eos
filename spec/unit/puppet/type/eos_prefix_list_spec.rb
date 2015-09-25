@@ -33,9 +33,11 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_eapi) do
+describe Puppet::Type.type(:eos_prefix_list) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(:name => 'EAPI_1', :catalog => catalog) }
+  let(:type) { described_class.new(:name => 'PreFix100', :catalog => catalog) }
+
+  it_behaves_like 'an ensurable type', :name => 'PreFix100'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -43,36 +45,17 @@ describe Puppet::Type.type(:eos_eapi) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(prefixBld1)
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
-  describe 'protocol' do
-    let(:attribute) { :protocol }
+  describe 'entries' do
+    let(:attribute) { :entries }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:http, :https]
-    include_examples 'rejected parameter values'
-  end
-
-  describe 'port' do
-    let(:attribute) { :port }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1 200 32780 65535)
-    include_examples 'rejects values', [0, 65_536, 'string', { :two => :three }]
-  end
-
-  describe 'enable' do
-    let(:attribute) { :enable }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'boolean value'
-    include_examples 'rejected parameter values'
+    include_examples 'array of strings value'
   end
 
 end

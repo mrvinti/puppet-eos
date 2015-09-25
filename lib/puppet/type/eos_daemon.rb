@@ -31,41 +31,17 @@
 #
 # encoding: utf-8
 
-require 'spec_helper'
+Puppet::Type.newtype(:eos_daemon) do
+  @doc = 'Configure a new daemon process'
 
-describe Puppet::Type.type(:eos_access_list) do
-  let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(:name => 'eng', :catalog => catalog) }
+  ensurable
 
-  it_behaves_like 'an ensurable type', :name => 'eng'
+  # Parameters
 
-  describe 'name' do
-    let(:attribute) { :name }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'parameter'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(mkt)
-    include_examples 'rejects values', [[1], { :two => :three }]
+  newparam(:name) do
+    desc 'The resource name for the daemon instance'
   end
 
-  describe 'acl_type' do
-    let(:attribute) { :acl_type }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values', [:standard, :extended]
-    include_examples 'rejected parameter values'
-  end
-
-  describe 'entries' do
-    let(:attribute) { :entries }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'array of strings value'
-  end
+  # Properties (state management)
 
 end
