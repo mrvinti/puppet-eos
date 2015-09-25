@@ -138,6 +138,54 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       allow(provider.eapi).to receive(:Interface).and_return(eapi)
     end
 
+    describe '#create' do
+      before :each do
+        allow(eapi).to receive(:create).with(name).and_return(true)
+        allow(eapi).to receive(:set_shutdown).and_return(true)
+      end
+
+      it 'calls Interface#create(name) with the resource name' do
+        expect(eapi).to receive(:create).with(name)
+        provider.create
+      end
+
+      it 'sets enable to the resource value' do
+        provider.create
+        expect(provider.enable).to eq(provider.resource[:enable])
+      end
+
+      it 'sets description to the resource value' do
+        provider.create
+        expect(provider.description).to eq(provider.resource[:description])
+      end
+    end
+
+    describe '#destroy' do
+      before :each do
+        allow(eapi).to receive(:create).with(name)
+        allow(eapi).to receive(:set_shutdown).and_return(true)
+        allow(eapi).to receive(:set_description).and_return(true)
+        allow(eapi).to receive(:delete).with(name).and_return(true)
+      end
+
+      it 'calls Interface#delete(name)' do
+        expect(eapi).to receive(:delete).with(name)
+        provider.destroy
+      end
+
+      context 'when the resource has been created' do
+        subject do
+          provider.create
+          provider.destroy
+        end
+
+        it 'clears the property hash' do
+          subject
+          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => name, :ensure => :absent)
+        end
+      end
+    end
+
     describe '#description=(value)' do
       before :each do
         allow(eapi).to receive(:set_description).with(name, :value => 'foo')

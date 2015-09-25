@@ -200,7 +200,7 @@ RSpec.shared_examples 'vlan range string value' do
   end
 
   it 'munges [10, 20] to ["10", "20"]' do
-    type[attribute] = ['10', '20']
+    type[attribute] = [10, 20]
     expect(type[attribute]).to eq(%w(10 20))
   end
 

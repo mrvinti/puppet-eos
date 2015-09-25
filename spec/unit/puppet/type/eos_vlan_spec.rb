@@ -37,7 +37,7 @@ describe Puppet::Type.type(:eos_vlan) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(:name => '450', :catalog => catalog) }
 
-  # it_behaves_like 'an ensurable type', :name => '450'
+  it_behaves_like 'an ensurable type', :name => '450'
 
   describe 'vlanid' do
     let(:attribute) { :vlanid }

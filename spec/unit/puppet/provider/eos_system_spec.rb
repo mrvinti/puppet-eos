@@ -96,7 +96,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
       it 'sets the provider instance of the managed resource' do
         subject
         expect(resources['localhost'].provider.name).to eq('localhost')
-        # expect(resources['localhost'].provider.exists?).to be_truthy
+        expect(resources['localhost'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do

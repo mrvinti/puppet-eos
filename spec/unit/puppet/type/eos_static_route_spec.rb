@@ -45,7 +45,9 @@ describe Puppet::Type.type(:eos_static_route) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1.2.3.4/24, 3012:D678::/64)
+    include_examples 'accepts values without munging',\
+                     %w(1.2.3.4/24, 3012:D678::/64)
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
   describe 'route_name' do
@@ -55,6 +57,7 @@ describe Puppet::Type.type(:eos_static_route) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(Server Room)
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
 end
