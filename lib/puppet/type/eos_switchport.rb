@@ -62,8 +62,8 @@ Puppet::Type.newtype(:eos_switchport) do
       if value.to_s.include? "-"
         vid_start, vid_end = value.split('-')
         Array(vid_start.to_i..vid_end.to_i).each do |vid|
-          unless value.to_i.between?(1, 4_094)
-            fail "value #{value.inspect} is not between 1 and 4094"
+          unless vid.to_i.between?(1, 4_094)
+            fail "value #{vid.inspect} is not between 1 and 4094"
           end
         end
       else

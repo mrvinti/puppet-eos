@@ -56,7 +56,7 @@ describe PuppetX::Eos::StpInterfaces do
 
       let :show_interfaces do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_interfaces_getall.json')
+        file = File.join(dir, 'fixtures/stp.json')
         JSON.load(File.read(file))
       end
 
@@ -96,7 +96,7 @@ describe PuppetX::Eos::StpInterfaces do
       end
 
       describe 'for Ethernet1 to "disable"' do
-        let(:value) { 'disable' }
+        let(:value) { false }
         let(:commands) { ['interface Ethernet1', 'no spanning-tree portfast'] }
         let(:api_response) { [{}, {}] }
 
