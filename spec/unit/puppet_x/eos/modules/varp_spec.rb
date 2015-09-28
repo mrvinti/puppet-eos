@@ -49,7 +49,7 @@ describe PuppetX::Eos::Varp do
     context '#get' do
       subject { instance.get }
 
-      let(:commands) { 'show ip virtual-router' }
+      let(:commands) { ['show ip virtual-router', 'show ip interface'] }
 
       let :api_response do
         dir = File.dirname(__FILE__)

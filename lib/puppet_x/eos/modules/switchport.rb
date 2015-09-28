@@ -70,8 +70,9 @@ module PuppetX
           'trunk_native_vlan' => trunk_native_to_value(output),
           'access_vlan' => access_vlan_to_value(output),
         }
-        attr_hash.merge!(parse_trunk_native_vlans(name))
-        attr_hash.merge!(parse_trunk_groups(name))
+        cfg = get_block("interface #{name}", :config => config)
+        attr_hash.merge!(parse_trunk_native_vlans(name, cfg))
+        attr_hash.merge!(parse_trunk_groups(name, cfg))
         attr_hash
       end
 
@@ -88,8 +89,7 @@ module PuppetX
         switchports
       end
 
-      def parse_trunk_groups(name)
-        cfg = get_block("interface #{name}", :config => config)
+      def parse_trunk_groups(name, cfg)
         matches = cfg.scan(/switchport trunk group ([^\s]+)/)
         values = matches.inject([]) do |arry, m|
           arry << m.first
@@ -98,8 +98,7 @@ module PuppetX
         { 'trunk_groups' => values }
       end
 
-      def parse_trunk_native_vlans(name)
-        cfg = get_block("interface #{name}", :config => config)
+      def parse_trunk_native_vlans(name, cfg)
         mdata = /trunk allowed vlan (.+)$/.match(cfg)
         return { 'trunk_allowed_vlans' => [] } unless mdata[1] != 'none'
         values = mdata[1].split(',')
