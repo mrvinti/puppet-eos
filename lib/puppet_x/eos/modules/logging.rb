@@ -28,6 +28,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+require 'puppet_x/eos/module_base'
+
 ##
 # PuppetX is the toplevel namespace for working with Arista EOS nodes
 module PuppetX
@@ -79,7 +81,7 @@ module PuppetX
     # The LoggingHosts class provides an implementation for configuring
     # individual host destinations in the current nodes running config
     #
-    class LoggingHosts
+    class LoggingHosts < ModuleBase
       ##
       # Initialize instance of Logging host
       #
@@ -103,10 +105,9 @@ module PuppetX
       #
       # @return [Hash] returns a hash with the host name as the index
       def getall
-        result = @api.enable('show running-config all section logging',
-                             :format => 'text')
-        output = result.first['output']
-        values = output.scan(/^logging host ([^\s]+)$/)
+        result = config('^logging')
+        return {} unless result
+        values = result.scan(/^logging host ([^\s]+)$/)
         values.inject({}) do |hsh, val|
           hsh[val.first] = {}
           hsh

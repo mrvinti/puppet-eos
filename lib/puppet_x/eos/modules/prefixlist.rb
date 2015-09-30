@@ -17,7 +17,9 @@ module PuppetX
                      (?:[ ]le[ ](\d+))?/x
 
       def get(name)
-        instances = config.scan(/^ip prefix-list #{name} (.*)$/)
+        results = config.scan(/^ip prefix-list #{name}/)
+        return nil unless result
+        instances = results.scan(/^ip prefix-list #{name} (.*)$/)
         return nil unless instances
         instances.inject({}) do |hsh, inst|
           hsh[name] = [] unless hsh.include?(name)
@@ -28,7 +30,9 @@ module PuppetX
       end
 
       def getall
-        instances = config.scan(/ip prefix-list ([^\s]+)/)
+        results = config.scan(/^ip prefix-list/)
+        return nil unless result
+        instances = results.scan(/ip prefix-list ([^\s]+)/)
         return nil unless instances
         instances.inject({}) do |hsh, name|
           hsh.merge!(get(name.first))

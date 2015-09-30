@@ -51,14 +51,16 @@ describe PuppetX::Eos::Interface do
         JSON.load(File.read(file))
       end
 
+      let(:command) { 'show running-config all section ^interface' }
+
       before :each do
-        allow(eapi).to receive(:enable).with('show interfaces').and_return(response_getall)
+        allow(eapi).to receive(:enable).with(command, :format => 'text').and_return(response_getall)
       end
 
       it { is_expected.to be_a_kind_of Hash }
 
-      it 'should contain one entry' do
-        expect(subject.size).to eq 1
+      it 'should contain 14 entries' do
+        expect(subject.size).to eq 14
       end
     end
   end

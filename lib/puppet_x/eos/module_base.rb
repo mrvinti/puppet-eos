@@ -20,15 +20,19 @@ module PuppetX
       end
 
       ##
-      # configu returns the current running configuration as a string.  This
+      # config returns the current running configuration as a string.  This
       # method is intended to be used by subclasses.  The configuration is
       # returned as a single string object to faciliate the use of String#scan
       #
       # @api private
       #
+      # @param [String] :section Expression that will follow the
+      #   section option to show running-config all.
+      #
       # @return [String]
-      def config
-        result = api.enable('show running-config all', :format => 'text')
+      def config(section)
+        result = api.enable("show running-config all section #{section}",
+                            :format => 'text')
         result.last['output']
       end
 

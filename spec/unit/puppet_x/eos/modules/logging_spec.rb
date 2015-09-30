@@ -49,7 +49,7 @@ describe PuppetX::Eos::Logging do
 
   context '#get' do
     before :each do
-      allow(eapi).to receive(:enable).with('show running-config all section logging', :format => 'text').and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
     end
 
     let :api_response do
@@ -57,6 +57,8 @@ describe PuppetX::Eos::Logging do
       file = File.join(dir, 'fixtures/logging_get.json')
       JSON.load(File.read(file))
     end
+
+    let(:commands) { 'show running-config all section ^logging' }
 
     subject { instance.get }
 

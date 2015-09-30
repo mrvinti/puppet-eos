@@ -49,7 +49,7 @@ describe PuppetX::Eos::Daemon do
     context '#getall' do
       subject { instance.getall }
 
-      let(:commands) { 'show running-config section daemon' }
+      let(:commands) { 'show running-config all section daemon' }
 
       let :api_response do
         dir = File.dirname(__FILE__)

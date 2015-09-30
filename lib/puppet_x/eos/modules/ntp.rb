@@ -30,6 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+require 'puppet_x/eos/module_base'
+
 ##
 # PuppetX is the toplevel namespace for working with Arista EOS nodes
 module PuppetX
@@ -40,7 +42,7 @@ module PuppetX
     # The Ntp class provides a base class instance for working with
     # the global NTP configuration
     #
-    class Ntp
+    class Ntp < ModuleBase
       ##
       # Initialize instance of Snmp
       #
@@ -67,17 +69,17 @@ module PuppetX
       #
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
-        result = @api.enable('show running-config section ntp', :format => 'text')
-        output = result.first['output']
+        result = config('ntp')
+        return {} unless result
 
-        m_source = /source\s(\w|\d)+$/.match(output)
+        m_source = /source\s(\w|\d)+$/.match(result)
 
         servers = {}
-        output.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/).each do |srv|
+        result.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/).each do |srv|
           servers[srv] = {}
         end
 
-        output.scan(/\w+\.\w+\.\w{3}/).each do |srv|
+        result.scan(/\w+\.\w+\.\w{3}/).each do |srv|
           servers[srv] = {}
         end
 

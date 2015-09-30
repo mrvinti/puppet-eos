@@ -100,10 +100,6 @@ describe PuppetX::Eos::Portchannel do
       it 'has only one entry' do
         expect(subject.size).to eq 1
       end
-
-      it 'contains Port-Channel1' do
-        expect(subject[0]['name']).to eq 'Port-Channel1'
-      end
     end
 
     context '#get_members' do
@@ -183,20 +179,6 @@ describe PuppetX::Eos::Portchannel do
       describe 'a logical switchport interface' do
         let(:name) { 'Ethernet1' }
         let(:api_response) { [{}] }
-
-        it { is_expected.to be_truthy }
-      end
-    end
-
-    context '#add_member' do
-      subject { instance.add_member(name, member) }
-
-      describe 'to portchannel interface' do
-        let(:name) { 'Port-Channel1' }
-        let(:member) { 'Ethernet1' }
-        let(:commands) { ['interface Ethernet1', 'channel-group 1 mode on'] }
-
-        let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
       end

@@ -7,7 +7,9 @@ module PuppetX
     class Routemap < ModuleBase
 
       def get(name)
-        clauses = config.scan(/route-map #{name} .+/)
+        results = config(/route-map #{name}/)
+        return nil unless results
+        clauses = results.scan(/route-map #{name} .+/)
         return nil unless clauses
 
         clauses.inject({}) do |hsh, clause|
@@ -20,7 +22,9 @@ module PuppetX
       end
 
       def getall
-        instances = config.scan(/route-map ([^\s]+)/)
+        results = config(/route-map/)
+        return nil unless results
+        instances = results.scan(/route-map ([^\s]+)/)
         return nil if !instances || instances.empty?
         instances.flatten!.uniq!
         instances.inject({}) do |hsh, name|

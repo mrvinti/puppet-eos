@@ -30,6 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+require 'puppet_x/eos/module_base'
+
 ##
 # PuppetX is the toplevel namespace for working with Arista EOS nodes
 module PuppetX
@@ -41,7 +43,7 @@ module PuppetX
     # commands over eAPI.  This class provides method for creating and
     # deleting daemons
     #
-    class Daemon
+    class Daemon < ModuleBase
       ##
       # Initializes a new instance of Daemon.
       #
@@ -62,11 +64,11 @@ module PuppetX
       #
       # @return [Hash<String, String>] Hash of configured agents
       def getall
-        result = @api.enable('show running-config section daemon',
-                             :format => 'text')
+        result = config('daemon')
+        return {} unless result
         response = {}
         key = nil
-        result.first['output'].split("\n").each do |entry|
+        result.split("\n").each do |entry|
           token = entry.strip.match(/^daemon\s(.*)$/)
           unless token.nil?
             key = token[1]

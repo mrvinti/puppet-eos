@@ -42,16 +42,10 @@ module PuppetX
     # physical and logical interfaces.
     #
     class Interface < ModuleBase
-
-
       def get(name)
-        cfg = get_block("interface #{name}", :config => config)
-        resource = { 'name' => name }
-        resource.merge!(parse_description(cfg))
-        resource.merge!(parse_shutdown(cfg))
-        resource.merge!(parse_speed(cfg)) if name.include?('Et')
-        resource.merge!(parse_lacp_priority(cfg)) if name.include?('Et')
-        resource
+        result = config("^interface #{name}")
+        return {} unless result
+        parse_interface(name, result)
       end
 
       ##
@@ -61,13 +55,25 @@ module PuppetX
       # @return [Hash] returns a hash of interfaces indexed by interface name
       #   with key/value pairs representing the running config
       def getall
-        interfaces = config.scan(/^interface (.+)/)
+        result = config('^interface')
+        return {} unless result
+        interfaces = result.scan(/^interface (.+)/)
         interfaces.flatten! unless !interfaces || interfaces.empty?
         interfaces.inject({}) do |hsh, name|
-          data = get(name)
+          cfg = get_block("interface #{name}", :config => result)
+          data = parse_interface(name, result)
           hsh[name] = data if data
           hsh
         end
+      end
+
+      def parse_interface(name, cfg)
+        resource = { 'name' => name }
+        resource.merge!(parse_description(cfg))
+        resource.merge!(parse_shutdown(cfg))
+        resource.merge!(parse_speed(cfg)) if name.include?('Et')
+        resource.merge!(parse_lacp_priority(cfg)) if name.include?('Et')
+        resource
       end
 
       def parse_description(config)

@@ -53,13 +53,13 @@ describe PuppetX::Eos::StpInstances do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp.json')
+        file = File.join(dir, 'fixtures/stp_instances_getall.json')
         JSON.load(File.read(file))
       end
 
       it { is_expected.to be_a_kind_of Hash }
 
-      %w(0 3 4).each do |inst|
+      %w(0 1).each do |inst|
         it { is_expected.to have_key inst }
       end
     end

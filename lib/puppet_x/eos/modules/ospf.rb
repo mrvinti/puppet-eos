@@ -253,7 +253,7 @@ module PuppetX
       #
       # @return [Hash]
       def instances
-        running_config = config
+        running_config = config('^router ospf')
         instances = running_config.scan(/^router ospf (\d)/)
         values = instances.inject({}) do |hsh, inst|
           config = get_block("router ospf #{inst.first}", :config => running_config)
@@ -416,7 +416,7 @@ module PuppetX
       #
       # @return [Hash] a hash of key/value pairs
       def interfaces
-        running_config = config
+        running_config = config('^interface')
         interfaces = running_config.scan(/^interface (.+)/)
         values = interfaces.inject({}) do |hsh, name|
           next if name =~ /^Ma/
