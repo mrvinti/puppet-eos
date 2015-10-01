@@ -9,20 +9,18 @@ module PuppetX
       attr_reader :api
 
       ##
-      # Initialize instance of Module and get the current running-config from
-      # the api. The Module class provides instance methods to configure module
-      # related resources on the target device.
+      # Initialize instance of Module.  The Module class provides instance
+      # methods to configure module related resources on the target device.
       #
       # @param [PuppetX::Eos::Eapi] api An instance of Eapi
       #
       # @return [PuppetX::Eos::ModuleBase]
       def initialize(api)
         @api = api
-        @result = api.enable('show running-config all', :format => 'text')
       end
 
       ##
-      # config returns the current running configuration as a string.  This
+      # configu returns the current running configuration as a string.  This
       # method is intended to be used by subclasses.  The configuration is
       # returned as a single string object to faciliate the use of String#scan
       #
@@ -30,7 +28,8 @@ module PuppetX
       #
       # @return [String]
       def config
-        @result.last['output']
+        result = api.enable('show running-config all', :format => 'text')
+        result.last['output']
       end
 
       ##
