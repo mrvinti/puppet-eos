@@ -47,7 +47,8 @@ describe PuppetX::Eos::Switchport do
       subject { instance.get(name) }
 
       let(:name) { 'Ethernet1' }
-      let(:commands) { 'show interfaces Ethernet1 switchport' }
+#      let(:commands) { 'show interfaces Ethernet1 switchport' }
+      let(:commands) { 'show running-config all' }
 
       let :api_response do
         dir = File.dirname(__FILE__)

@@ -37,7 +37,9 @@ describe Puppet::Type.type(:eos_vlan) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(:name => '450', :catalog => catalog) }
 
-  it_behaves_like 'an ensurable type', :name => '450'
+  # Cannot use the helper ensurable type check because even though the
+  # namevar is always a string, for this type the namevar is really an integer
+  # and the type will validate that the name can be converted to an integer.
 
   describe 'vlanid' do
     let(:attribute) { :vlanid }

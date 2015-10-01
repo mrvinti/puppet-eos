@@ -39,8 +39,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       :name => 'Ethernet1',
       :description => 'test interface',
       :enable => :true,
-      :flowcontrol_send => :on,
-      :flowcontrol_receive => :off,
       :provider => described_class.name
     }
     Puppet::Type.type(:eos_interface).new(resource_hash)
@@ -87,9 +85,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         include_examples 'provider resource methods',
                          :name => 'Ethernet1',
                          :description => '',
-                         :enable => :true,
-                         :flowcontrol_receive => :off,
-                         :flowcontrol_send => :on
+                         :enable => :true
       end
 
       context 'eos_interface { Management1: }' do
@@ -102,9 +98,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         include_examples 'provider resource methods',
                          :name => 'Management1',
                          :description => '',
-                         :enable => :true,
-                         :flowcontrol_receive => :desired,
-                         :flowcontrol_send => :desired
+                         :enable => :true
       end
     end
 
@@ -144,69 +138,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       allow(provider.eapi).to receive(:Interface).and_return(eapi)
     end
 
-    describe '#create' do
-      before :each do
-        allow(eapi).to receive(:create).with(name).and_return(true)
-        allow(eapi).to receive(:set_shutdown).and_return(true)
-        allow(eapi).to receive(:set_description).and_return(true)
-        allow(eapi).to receive(:set_flowcontrol).and_return(true)
-      end
-
-      it 'calls Interface#create(name) with the resource name' do
-        expect(eapi).to receive(:create).with(name)
-        provider.create
-      end
-
-      it 'sets enable to the resource value' do
-        provider.create
-        expect(provider.enable).to eq(provider.resource[:enable])
-      end
-
-      it 'sets description to the resource value' do
-        provider.create
-        expect(provider.description).to eq(provider.resource[:description])
-      end
-
-      it 'sets flowcontrol_send to the resource value' do
-        provider.create
-        value = provider.resource[:flowcontrol_send]
-        expect(provider.flowcontrol_send).to eq(value)
-      end
-
-      it 'sets flowcontrol_receive to the resource value' do
-        provider.create
-        value = provider.resource[:flowcontrol_receive]
-        expect(provider.flowcontrol_receive).to eq(value)
-      end
-    end
-
-    describe '#destroy' do
-      before :each do
-        allow(eapi).to receive(:create).with(name)
-        allow(eapi).to receive(:set_shutdown).and_return(true)
-        allow(eapi).to receive(:set_description).and_return(true)
-        allow(eapi).to receive(:set_flowcontrol).and_return(true)
-        allow(eapi).to receive(:delete).with(name).and_return(true)
-      end
-
-      it 'calls Interface#delete(name)' do
-        expect(eapi).to receive(:delete).with(name)
-        provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash)).to eq(:name => name, :ensure => :absent)
-        end
-      end
-    end
-
     describe '#description=(value)' do
       before :each do
         allow(eapi).to receive(:set_description).with(name, :value => 'foo')
@@ -234,42 +165,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         it "calls Interface#set_shutdown(#{name}, #{val})" do
           expect(eapi).to receive(:set_shutdown).with(name, :value => !val)
           provider.enable = val
-        end
-      end
-    end
-
-    %w(:on :off :desired).each do |val|
-      describe '#flowcontrol_send=(value)' do
-        before :each do
-          allow(eapi).to receive(:set_flowcontrol).with(name, 'send', :value => val)
-        end
-
-        it "calls Interface#set_flowcontrol(#{name}, 'send', #{val})" do
-          expect(eapi).to receive(:set_flowcontrol).with(name, 'send', :value => val)
-          provider.flowcontrol_send = val
-        end
-
-        it 'updates flowcontrol_receive in the provider' do
-          expect(provider.flowcontrol_receive).not_to eq(val)
-          provider.flowcontrol_send = val
-          expect(provider.flowcontrol_send).to eq(val)
-        end
-      end
-
-      describe '#flowcontrol_receive=(value)' do
-        before :each do
-          allow(eapi).to receive(:set_flowcontrol).with(name, 'receive', :value => val)
-        end
-
-        it "calls Interface#set_flowcontrol(#{name}, 'receive', #{val})" do
-          expect(eapi).to receive(:set_flowcontrol).with(name, 'receive', :value => val)
-          provider.flowcontrol_receive = val
-        end
-
-        it 'updates flowcontrol_receive in the provider' do
-          expect(provider.flowcontrol_receive).not_to eq(val)
-          provider.flowcontrol_receive = val
-          expect(provider.flowcontrol_receive).to eq(val)
         end
       end
     end

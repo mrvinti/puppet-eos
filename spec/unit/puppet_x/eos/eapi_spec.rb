@@ -42,7 +42,8 @@ describe PuppetX::Eos::Eapi do
 
   describe '#http' do
     it 'returns an instance of Net::HTTP' do
-      expect(subject.http).to be_a Net::HTTP
+      api = described_class.new(:use_ssl => false)
+      expect(api.http).to be_a Net::HTTP
     end
   end
 
@@ -84,7 +85,7 @@ describe PuppetX::Eos::Eapi do
       subject { api.enable('foo') }
 
       before do
-        allow(api).to receive(:execute).with(['foo'], {}).and_return([{}])
+        allow(api).to receive(:execute).with([{:input=>"", :cmd=>"enable"}, 'foo'], {}).and_return([{}])
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -94,7 +95,7 @@ describe PuppetX::Eos::Eapi do
       subject { api.enable('foo', :format => 'text') }
 
       before do
-        allow(api).to receive(:execute).with(['foo'], :format => 'text').and_return([{}])
+        allow(api).to receive(:execute).with([{:input=>"", :cmd=>"enable"}, 'foo'], :format => 'text').and_return([{}])
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -104,7 +105,7 @@ describe PuppetX::Eos::Eapi do
       subject { api.enable(%w(foo bar)) }
 
       before do
-        allow(api).to receive(:execute).with(%w(foo bar), {}).and_return([{}, {}])
+        allow(api).to receive(:execute).with([{:input=>"", :cmd=>"enable"}, "foo", "bar"], {}).and_return([{}, {}])
       end
 
       it { is_expected.to be_a_kind_of Array }
