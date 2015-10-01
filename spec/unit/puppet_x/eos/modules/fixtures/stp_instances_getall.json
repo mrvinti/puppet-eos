@@ -1,4 +1,5 @@
 [
+  "output": "spanning-tree mode mstp\n"
   {
     "spanningTreeInstances": {
         "MST4": {

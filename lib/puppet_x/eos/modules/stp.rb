@@ -74,10 +74,7 @@ module PuppetX
       #
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
-        result = @api.enable('show running-config section spanning-tree mode',
-                             :format => 'text')
-        mode = /mode\s(\w+)$/.match(result.first['output'])
-        response = { 'mode' => mode[1] }
+        response = get_mode
         response['instances'] = instances.getall
         response['interfaces'] = interfaces.getall
         response
@@ -205,8 +202,11 @@ module PuppetX
       #
       # @return [Hash] instance attributes from eAPI
       def getall
-        result = @api.enable('show running-config', :format => 'text')
-        config = result.first['output']
+        result = @api.enable('show running-config all section spanning-tree mst',
+                             :format => 'text')
+        return {} unless result
+        config = result.first['spanningTreeInstances']
+        return {} unless config
         values = config.scan(/spanning-tree mst (\d+) priority (\d+)/)
         values.each.inject({}) do |hsh, (inst, priority)|
           hsh[inst] = { 'priority' => priority }
@@ -278,6 +278,7 @@ module PuppetX
       # @return [Hash] interface attributes from the running-config
       def getall
         result = @api.enable('show interfaces')
+        return {} unless result
         result = result.first['interfaces']
         response = result.inject({}) do |hsh, (name, attrs)|
           hsh[name] = get_interface_config(name) \

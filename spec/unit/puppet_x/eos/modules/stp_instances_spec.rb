@@ -43,17 +43,17 @@ describe PuppetX::Eos::StpInstances do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
     end
 
     context '#getall' do
       subject { instance.getall }
 
-      let(:commands) { 'show spanning-tree' }
+      let(:commands) { 'show running-config all section spanning-tree mst' }
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_instances_getall.json')
+        file = File.join(dir, 'fixtures/stp.json')
         JSON.load(File.read(file))
       end
 

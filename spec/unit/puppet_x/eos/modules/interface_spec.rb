@@ -51,15 +51,8 @@ describe PuppetX::Eos::Interface do
         JSON.load(File.read(file))
       end
 
-      let :response_get_flowcontrol do
-        dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/interfaces_get_flowcontrol.json')
-        JSON.load(File.read(file))
-      end
-
       before :each do
         allow(eapi).to receive(:enable).with('show interfaces').and_return(response_getall)
-        allow(eapi).to receive(:enable).with('show running-config interfaces Ethernet1', :format => 'text').and_return(response_get_flowcontrol)
       end
 
       it { is_expected.to be_a_kind_of Hash }
@@ -210,55 +203,6 @@ describe PuppetX::Eos::Interface do
           let(:commands) { ["interface #{name}", 'no shutdown'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
-        end
-      end
-    end
-
-    context '#set_flowcontrol' do
-      subject { instance.set_flowcontrol(name, direction, opts) }
-
-      let(:opts) { { :value => value, :default => default } }
-      let(:default) { false }
-      let(:value) { nil }
-
-      %w(Ethernet1 Ethernet1/1).each do |intf|
-        %w(send receive).each do |direction|
-          %w(on off desired).each do |state|
-            describe 'configure flowcontrol on interface' do
-              let(:name) { intf }
-              let(:direction) { direction }
-              let(:value) { state }
-              let(:commands) do
-                ["interface #{name}", "flowcontrol #{direction} #{state}"]
-              end
-              let(:response) { [{}, {}] }
-
-              it { is_expected.to be_truthy }
-            end
-          end
-
-          describe 'configuring flowcontrol default' do
-            let(:name) { intf }
-            let(:direction) { direction }
-            let(:default) { true }
-            let(:commands) do
-              ["interface #{name}", "default flowcontrol #{direction}"]
-            end
-            let(:response) { [{}, {}] }
-
-            it { is_expected.to be_truthy }
-          end
-
-          describe 'negating flowcontrol' do
-            let(:name) { intf }
-            let(:direction) { direction }
-            let(:commands) do
-              ["interface #{name}", "no flowcontrol #{direction}"]
-            end
-            let(:response) { [{}, {}] }
-
-            it { is_expected.to be_truthy }
-          end
         end
       end
     end

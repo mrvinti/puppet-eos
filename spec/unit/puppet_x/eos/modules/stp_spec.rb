@@ -36,6 +36,12 @@ describe PuppetX::Eos::Stp do
   let(:eapi) { double }
   let(:instance) { PuppetX::Eos::Stp.new eapi }
 
+  let(:command_mode) { 'show running-config section spanning-tree mode' }
+  let(:command_instances) do
+    'show running-config all section spanning-tree mst'
+  end
+  let(:command_interfaces) { 'show interfaces' }
+
   context 'when initializing a new Stp instance' do
     subject { instance }
     it { is_expected.to be_a_kind_of PuppetX::Eos::Stp }
@@ -43,17 +49,20 @@ describe PuppetX::Eos::Stp do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
+      allow(eapi).to \
+        receive(:enable).with(command_mode, :format => 'text').and_return(api_response)
+      allow(eapi).to \
+        receive(:enable).with(command_instances, :format => 'text').and_return(nil)
+      allow(eapi).to \
+        receive(:enable).with(command_interfaces).and_return(nil)
     end
 
     context '#get' do
       subject { instance.get }
 
-      let(:commands) { 'show running-config section spanning-tree mode' }
-
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_get.json')
+        file = File.join(dir, 'fixtures/stp.json')
         JSON.load(File.read(file))
       end
 
