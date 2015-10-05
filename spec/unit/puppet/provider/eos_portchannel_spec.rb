@@ -268,7 +268,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       end
 
       it 'handles both add and remove member operations' do
-        expect(eapi).to receive(:set_members).with('Port-Channel1', %w(Ethernet1 Ethernet3))
+        expect(eapi).to receive(:set_members).with('Port-Channel1', %w(Ethernet1 Ethernet3), :active)
         provider.members = %w(Ethernet1 Ethernet3)
       end
     end
