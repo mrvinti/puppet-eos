@@ -69,7 +69,10 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def members=(val)
-    eapi.Portchannel.set_members(resource[:name], val)
+    if resource[:lacp_mode].nil?
+      fail "member property is only supported if the lacp_mode property is set"
+    end
+    eapi.Portchannel.set_members(resource[:name], val, resource[:lacp_mode])
     @property_hash[:members] = val
   end
 

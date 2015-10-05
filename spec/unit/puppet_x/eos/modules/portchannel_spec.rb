@@ -189,14 +189,15 @@ describe PuppetX::Eos::Portchannel do
     end
 
     context '#add_member' do
-      subject { instance.add_member(name, member) }
+      subject { instance.add_member(name, member, mode) }
 
       describe 'to portchannel interface' do
         let(:name) { 'Port-Channel1' }
         let(:member) { 'Ethernet1' }
-        let(:commands) { ['interface Ethernet1', 'channel-group 1 mode on'] }
+        let(:mode) { :active }
+        let(:commands) { ['interface Ethernet1', 'channel-group 1 mode active'] }
 
-        let(:api_response) { [{}, {}] }
+        let(:api_response) { [{}, {}, {}] }
 
         it { is_expected.to be_truthy }
       end
@@ -333,10 +334,11 @@ describe PuppetX::Eos::Portchannel do
   context 'with instance' do
 
     describe '#set_members' do
-      subject { instance.set_members(intf, members) }
+      subject { instance.set_members(intf, members, mode) }
 
       let(:intf) { 'Port-Channel1' }
       let(:members) { %w(Ethernet1 Ethernet3) }
+      let(:mode) { :active }
 
       before :each do
         allow(instance).to receive(:get_members).and_return(%w(Ethernet1 Ethernet2))
@@ -345,12 +347,12 @@ describe PuppetX::Eos::Portchannel do
       end
 
       it 'should call #remove_member' do
-        expect(instance).to receive(:add_member).with('Port-Channel1', 'Ethernet3')
+        expect(instance).to receive(:add_member).with('Port-Channel1', 'Ethernet3', :active)
         subject
       end
 
       it 'should call #add_member' do
-        expect(instance).to receive(:add_member).with('Port-Channel1', 'Ethernet3')
+        expect(instance).to receive(:add_member).with('Port-Channel1', 'Ethernet3', :active)
         subject
       end
     end
