@@ -3,5 +3,5 @@
     "lacp_mode": "active",
     "members": ["Ethernet1", "Ethernet2"],
     "lacp_fallback": "static",
-    "lacp_timeout": 100
+    "lacp_timeout": 300
 }

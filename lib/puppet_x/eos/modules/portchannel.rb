@@ -60,7 +60,7 @@ module PuppetX
       #     "lacp_mode": [active, passive, off],
       #     "members": [Array],
       #     "lacp_fallback": [static, individual],
-      #     "lacp_timeout": <0-900>
+      #     "lacp_timeout": <0-300>
       #   }
       #
       # @param [String] name The name of the port-channel interface
