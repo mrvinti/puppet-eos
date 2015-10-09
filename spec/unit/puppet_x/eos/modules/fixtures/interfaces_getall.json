@@ -11,7 +11,7 @@
             "hardware": "ethernet",
             "interfaceStatus": "disabled",
             "bandwidth": 10000000000,
-            "forwardingModel": "bridged",
+            "forwardingModel": "dataLink",
             "lineProtocolStatus": "down",
             "interfaceCounters": {
                 "outBroadcastPkts": 0,
