@@ -299,7 +299,7 @@ describe PuppetX::Eos::Portchannel do
 
       describe 'configure portchannel lacp timeout' do
         let(:name) { 'Port-Channel1' }
-        let(:value) { '100' }
+        let(:value) { '300' }
         let(:commands) do
           ["interface #{name}", "port-channel lacp fallback timeout #{value}"]
         end

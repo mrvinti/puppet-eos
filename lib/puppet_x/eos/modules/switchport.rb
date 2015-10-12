@@ -84,7 +84,9 @@ module PuppetX
         result = @api.enable('show interfaces')
         switchports = []
         result.first['interfaces'].map do |name, attrs|
-          switchports << get(name) if attrs['forwardingModel'] == 'bridged'
+          switchports << get(name) \
+            if (attrs['forwardingModel'] == 'bridged' || \
+                attrs['forwardingModel'] == 'dataLink')
         end
         switchports
       end
