@@ -183,7 +183,7 @@
          "hardware": "ethernet",
          "interfaceStatus": "connected",
          "bandwidth": 10000000000,
-         "forwardingModel": "bridged",
+         "forwardingModel": "dataLink",
          "lineProtocolStatus": "up",
          "interfaceCounters": {
             "outBroadcastPkts": 301,

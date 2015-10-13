@@ -60,7 +60,7 @@ module PuppetX
       #     "lacp_mode": [active, passive, off],
       #     "members": [Array],
       #     "lacp_fallback": [static, individual],
-      #     "lacp_timeout": <0-900>
+      #     "lacp_timeout": <0-300>
       #   }
       #
       # @param [String] name The name of the port-channel interface
@@ -145,11 +145,10 @@ module PuppetX
       # @param [String] member The name of the interface to add
       #
       # @return [Boolean] True if the create succeeds otherwise False
-      def add_member(name, member)
-        mode = get(name)['lacp_mode']
+      def add_member(name, member, mode)
         id = name.match(/\d+/)
         @api.config(["interface #{member}",
-                     "channel-group #{id} mode #{mode}"]) == [{}, {}]
+                     "channel-group #{id} mode #{mode}"]) == [{}, {}, {}]
       end
 
       ##
@@ -169,13 +168,14 @@ module PuppetX
       # @param [String] name The name of the port-channel to assign the
       #   the members to
       # @param [Array] members The array of members to add to the port-channel
-      def set_members(name, members)
+      # @param [String] mode The mode of the port-channel member
+      def set_members(name, members, mode)
         current = get_members(name)
         (current - members).each do |member|
           remove_member(name, member)
         end
         (members - current).each do |member|
-          add_member(name, member)
+          add_member(name, member, mode)
         end
       end
 

@@ -64,8 +64,8 @@ describe Puppet::Type.type(:eos_static_route) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'numeric parameter', :min => 1, :max => 32
-    include_examples 'rejects values', [0, 33]
+    include_examples 'numeric parameter', :min => 0, :max => 32
+    include_examples 'rejects values', [-1, 33]
   end
 
   describe 'nexthop' do

@@ -1,5 +1,5 @@
 [
   {
-    "output": "interface Ethernet1\n   channel-group 1 mode on\n"
+    "output": "interface Ethernet1\n   channel-group 1 mode active\n"
   }
 ]

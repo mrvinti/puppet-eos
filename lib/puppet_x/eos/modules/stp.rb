@@ -282,7 +282,8 @@ module PuppetX
         result = result.first['interfaces']
         response = result.inject({}) do |hsh, (name, attrs)|
           hsh[name] = get_interface_config(name) \
-            if attrs['forwardingModel'] == 'bridged'
+            if (attrs['forwardingModel'] == 'bridged' || \
+                attrs['forwardingModel'] == 'dataLink')
           hsh
         end
         response

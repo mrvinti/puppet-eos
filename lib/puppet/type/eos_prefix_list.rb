@@ -86,8 +86,8 @@ Puppet::Type.newtype(:eos_prefix_list) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 32)
-        fail "value #{value.inspect} is not between 1 and 32"
+      unless value.to_i.between?(0, 32)
+        fail "value #{value.inspect} is not between 0 and 32"
       end
     end
   end
@@ -96,8 +96,8 @@ Puppet::Type.newtype(:eos_prefix_list) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 32)
-        fail "value #{value.inspect} is not between 1 and 32"
+      unless value.to_i.between?(0, 32)
+        fail "value #{value.inspect} is not between 0 and 32"
       end
     end
 
@@ -107,8 +107,8 @@ Puppet::Type.newtype(:eos_prefix_list) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 32)
-        fail "value #{value.inspect} is not between 1 and 32"
+      unless value.to_i.between?(0, 32)
+        fail "value #{value.inspect} is not between 0 and 32"
       end
     end
   end
@@ -117,8 +117,8 @@ Puppet::Type.newtype(:eos_prefix_list) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 32)
-        fail "value #{value.inspect} is not between 1 and 32"
+      unless value.to_i.between?(0, 32)
+        fail "value #{value.inspect} is not between 0 and 32"
       end
     end
   end
