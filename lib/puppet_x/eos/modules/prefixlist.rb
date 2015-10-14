@@ -51,7 +51,7 @@ module PuppetX
       def remove_rule(opts = {})
         name = opts[:prefix_list]
         seqno = opts[:seqno]
-        @api.config "no ip prefix-list #{name} seqno #{seqno}"
+        @api.config "no ip prefix-list #{name} seq #{seqno}"
       end
     end
   end
