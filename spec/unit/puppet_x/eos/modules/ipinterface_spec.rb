@@ -109,11 +109,12 @@ describe PuppetX::Eos::Ipinterface do
     context '#delete' do
       subject { instance.delete(name) }
 
-      let(:commands) { ["interface #{name}", 'no ip address', 'switchport'] }
+      let(:commands) { ["interface #{name}", 'no ip address', 'no mtu',
+                        'default ip helper-address','switchport'] }
 
       describe 'logical ip address' do
         let(:name) { 'Ethernet1' }
-        let(:api_response) { [{}, {}, {}] }
+        let(:api_response) { [{}, {}, {}, {}, {}] }
 
         it { is_expected.to be_truthy }
       end

@@ -91,8 +91,9 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def delete(name)
-        @api.config(["interface #{name}", 'no ip address',
-                     'switchport']) == [{}, {}, {}]
+        @api.config(["interface #{name}", 'no ip address', 'no mtu',
+                     'default ip helper-address', 'switchport']) ==
+                     [{}, {}, {}, {}, {}]
       end
 
       ##
