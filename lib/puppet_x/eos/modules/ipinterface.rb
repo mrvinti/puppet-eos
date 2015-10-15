@@ -114,9 +114,12 @@ module PuppetX
         when true
           cmds << 'default ip address'
         when false
-          cmds << (value.nil? ? 'no ip address' : "ip address #{value}")
+            cmds << 'default ip address'
+          if (value != nil)
+            cmds << "ip address #{value}"
+          end
         end
-        @api.config(cmds) == [{}, {}]
+        @api.config(cmds)
       end
 
       ##

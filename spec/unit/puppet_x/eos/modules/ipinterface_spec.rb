@@ -130,15 +130,15 @@ describe PuppetX::Eos::Ipinterface do
       describe 'with valid address and mask' do
         let(:name) { 'Ethernet1' }
         let(:value) { '10.10.10.10/24' }
-        let(:commands) { ["interface #{name}", "ip address #{value}"] }
-        let(:api_response) { [{}, {}] }
+        let(:commands) { ["interface #{name}", 'default ip address', "ip address #{value}"] }
+        let(:api_response) { [{}, {}, {}] }
 
         it { is_expected.to be_truthy }
       end
 
       describe 'negate address for interface' do
         let(:name) { 'Ethernet1' }
-        let(:commands) { ["interface #{name}", 'no ip address'] }
+        let(:commands) { ["interface #{name}", 'default ip address'] }
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -188,8 +188,8 @@ describe PuppetX::Eos::Ipinterface do
       end
     end
 
-    context '#set_helper_address' do
-      subject { instance.set_helper_address(name, opts) }
+    context '#set_helper_addresses' do
+      subject { instance.set_helper_addresses(name, opts) }
 
       let(:opts) { { :value => value, :default => default } }
       let(:default) { false }
@@ -202,7 +202,7 @@ describe PuppetX::Eos::Ipinterface do
           ["interface #{name}", 'default ip helper-address',
            'ip helper-address 1.2.3.4', 'ip helper-address 5.6.7.8']
         end
-        let(:api_response) { [{}, {}, {}] }
+        let(:api_response) { [{}, {}, {}, {}] }
 
         it { is_expected.to be_truthy }
       end
