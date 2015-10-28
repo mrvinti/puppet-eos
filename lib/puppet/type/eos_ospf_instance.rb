@@ -88,8 +88,8 @@ Puppet::Type.newtype(:eos_ospf_instance) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 16)
-        fail "value #{value.inspect} is not between 1 and 16"
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
       end
     end
   end
