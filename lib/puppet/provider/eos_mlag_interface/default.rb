@@ -73,7 +73,6 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   def create
     eapi.Mlag.add_interface(resource[:name], resource['mlag_id'])
     @property_hash = { :name => resource['name'], :ensure => :present }
-    self.mlag_id = resource[:mlag_id] if resource[:mlag_id]
   end
 
   def destroy

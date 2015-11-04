@@ -174,11 +174,6 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         provider.create
         expect(provider.ensure).to eq(:present)
       end
-
-      it 'sets mlag_id to the resource value' do
-        provider.create
-        expect(provider.mlag_id).to eq(provider.resource[:mlag_id])
-      end
     end
 
     describe '#destroy' do

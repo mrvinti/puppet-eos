@@ -54,19 +54,16 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
   def self.instances
     result = eapi.Prefixlist.getall
     return [] unless result
-    result.map do |(name, rules)|
-      provider_hash = rules.inject({}) do |hsh, attrs|
-        hsh = { :name => namevar(name, attrs), :ensure => :present }
-        hsh[:prefix_list] = name
-        hsh[:seqno] = attrs['seqno'].to_i
-        hsh[:action] = attrs['action']
-        hsh[:prefix] = attrs['prefix']
-        hsh[:masklen] = attrs['masklen'].to_i
-        hsh[:eq] = attrs['eq'].to_i if attrs['eq']
-        hsh[:ge] = attrs['ge'].to_i if attrs['ge']
-        hsh[:le] = attrs['le'].to_i if attrs['le']
-        hsh
-      end
+    result.map do |attrs|
+      provider_hash = { :name => namevar(attrs), :ensure => :present }
+      provider_hash[:prefix_list] = attrs['prefix_list']
+      provider_hash[:seqno] = attrs['seqno'].to_i
+      provider_hash[:action] = attrs['action']
+      provider_hash[:prefix] = attrs['prefix']
+      provider_hash[:masklen] = attrs['masklen'].to_i
+      provider_hash[:eq] = attrs['eq'].to_i if attrs['eq']
+      provider_hash[:ge] = attrs['ge'].to_i if attrs['ge']
+      provider_hash[:le] = attrs['le'].to_i if attrs['le']
       new(provider_hash)
     end
   end
@@ -145,8 +142,9 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
   end
   private :validate_identity
 
-  def self.namevar(name, attrs)
-    seqno = attrs['seqno']
+  def self.namevar(opts)
+    name = opts['prefix_list']
+    seqno = opts['seqno']
     "#{name}:#{seqno}"
   end
 
