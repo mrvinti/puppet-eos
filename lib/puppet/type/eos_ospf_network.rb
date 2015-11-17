@@ -48,6 +48,10 @@ Puppet::Type.newtype(:eos_ospf_network) do
     desc 'Configures the OSPF AREA'
   end
 
+  newproperty(:instance_id) do
+    desc 'The instance ID for the associated instance'
+  end
+
   newproperty(:instance) do
   end
 

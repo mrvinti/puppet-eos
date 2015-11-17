@@ -17,7 +17,9 @@ module PuppetX
                       (?:[ ]name[ ](.+))?/x
 
       def getall
-        instances = config.scan(ROUTE_REGEXP)
+        result = config('^ip route')
+        return {} unless result
+        instances = result.scan(ROUTE_REGEXP)
         return nil unless instances
         instances.map do |route|
           parse_route(route)

@@ -43,13 +43,13 @@ describe PuppetX::Eos::StpInstances do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable).with(commands).and_return(api_response)
+      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
     end
 
     context '#getall' do
       subject { instance.getall }
 
-      let(:commands) { 'show spanning-tree' }
+      let(:commands) { 'show running-config all section spanning-tree mst' }
 
       let :api_response do
         dir = File.dirname(__FILE__)
@@ -59,7 +59,7 @@ describe PuppetX::Eos::StpInstances do
 
       it { is_expected.to be_a_kind_of Hash }
 
-      %w(0 3 4).each do |inst|
+      %w(0 1).each do |inst|
         it { is_expected.to have_key inst }
       end
     end

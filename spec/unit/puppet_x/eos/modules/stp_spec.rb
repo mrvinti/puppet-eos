@@ -42,20 +42,45 @@ describe PuppetX::Eos::Stp do
   end
 
   context 'with Eapi#enable' do
+    let(:command_mode) do
+      'show running-config all section spanning-tree mode'
+    end
+    let(:command_instances) do
+      'show running-config all section spanning-tree mst'
+    end
+    let(:command_interfaces) do
+      'show running-config all section spanning-tree'
+    end
+
+    let :api_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/stp_get.json')
+      JSON.load(File.read(file))
+    end
+
+    let :api_instance_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/stp_instances_getall.json')
+      JSON.load(File.read(file))
+    end
+
+    let :api_interface_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/stp_interfaces_getall.json')
+      JSON.load(File.read(file))
+    end
+
     before :each do
-      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
+      allow(eapi).to \
+        receive(:enable).with(command_mode, :format => 'text').and_return(api_response)
+      allow(eapi).to \
+        receive(:enable).with(command_instances, :format => 'text').and_return(api_instance_response)
+      allow(eapi).to \
+        receive(:enable).with(command_interfaces, :format => 'text').and_return(api_interface_response)
     end
 
     context '#get' do
       subject { instance.get }
-
-      let(:commands) { 'show running-config section spanning-tree mode' }
-
-      let :api_response do
-        dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_get.json')
-        JSON.load(File.read(file))
-      end
 
       it { is_expected.to be_a_kind_of Hash }
       it { is_expected.to have_key 'mode' }

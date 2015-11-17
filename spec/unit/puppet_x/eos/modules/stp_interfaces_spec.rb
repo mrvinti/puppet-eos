@@ -43,34 +43,25 @@ describe PuppetX::Eos::StpInterfaces do
 
   context 'with Eapi#enable' do
     before :each do
-      allow(eapi).to receive(:enable)
+      allow(eapi).to receive(:enable).with(command, :format => 'text').and_return(interfaces)
     end
 
     context '#getall' do
       subject { instance.getall }
 
-      before :each do
-        allow(eapi).to receive(:enable).with('show interfaces').and_return(show_interfaces)
-        allow(eapi).to receive(:enable).with('show running-config interfaces Ethernet1', :format => 'text').and_return(show_interfaces_et1)
-      end
-
-      let :show_interfaces do
+      let :interfaces do
         dir = File.dirname(__FILE__)
         file = File.join(dir, 'fixtures/stp_interfaces_getall.json')
         JSON.load(File.read(file))
       end
 
-      let :show_interfaces_et1 do
-        dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_interfaces_et1.json')
-        JSON.load(File.read(file))
-      end
+      let(:command) { 'show running-config all section spanning-tree' }
 
       it { is_expected.to be_a_kind_of Hash }
       it { is_expected.to have_key 'Ethernet1' }
 
-      it 'has only one entry' do
-        expect(subject.size).to eq(1)
+      it 'has ten entries' do
+        expect(subject.size).to eq(10)
       end
     end
   end
@@ -96,7 +87,7 @@ describe PuppetX::Eos::StpInterfaces do
       end
 
       describe 'for Ethernet1 to "disable"' do
-        let(:value) { 'disable' }
+        let(:value) { false }
         let(:commands) { ['interface Ethernet1', 'no spanning-tree portfast'] }
         let(:api_response) { [{}, {}] }
 

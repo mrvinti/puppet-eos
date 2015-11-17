@@ -48,14 +48,21 @@ describe PuppetX::Eos::Logging do
   end
 
   context '#get' do
-    subject { instance.get }
-
     before :each do
-      allow(instance).to receive(:hosts).and_return('1.2.3.4' => {})
+      allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
     end
+
+    let :api_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/logging_get.json')
+      JSON.load(File.read(file))
+    end
+
+    let(:commands) { 'show running-config all section ^logging' }
+
+    subject { instance.get }
 
     it { is_expected.to be_a_kind_of Hash }
     it { is_expected.to have_key 'hosts' }
-
   end
 end

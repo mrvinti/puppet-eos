@@ -44,6 +44,10 @@ Puppet::Type.newtype(:eos_ospf_redistribution) do
 
   # Properties (state management)
 
+  newproperty(:instance_id) do
+    desc 'The instance ID for the associated instance'
+  end
+
   newproperty(:route_map) do
     desc 'Route map to apply to the redistribution'
   end

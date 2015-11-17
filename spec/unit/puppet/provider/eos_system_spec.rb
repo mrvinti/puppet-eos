@@ -36,7 +36,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      :name => 'localhost',
+      :hostname => 'localhost',
       :provider => described_class.name
     }
     Puppet::Type.type(:eos_system).new(resource_hash)
@@ -67,19 +67,19 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
       it { is_expected.to be_an Array }
 
       it 'has an instance for hostname=localhost' do
-        instance = subject.find { |p| p.name == 'localhost' }
+        instance = subject.find { |p| p.hostname == 'localhost' }
         expect(instance).to be_a described_class
       end
 
       context "eos_system { 'localhost': }" do
         subject do
           described_class.instances.find do |p|
-            p.name == 'localhost'
+            p.hostname == 'localhost'
           end
         end
 
         include_examples 'provider resource methods',
-                         :name => 'localhost'
+                         :hostname => 'localhost'
       end
     end
 
@@ -96,13 +96,11 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
       it 'sets the provider instance of the managed resource' do
         subject
         expect(resources['localhost'].provider.name).to eq('localhost')
-        expect(resources['localhost'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['alternative'].provider.name).to eq('alternative')
-        expect(resources['alternative'].provider.exists?).to be_falsey
       end
     end
   end

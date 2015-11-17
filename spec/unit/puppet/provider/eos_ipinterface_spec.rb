@@ -39,7 +39,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       :ensure => :present,
       :name => 'Ethernet1',
       :address => '1.2.3.4/24',
-      :helper_address => %w(5.6.7.8 9.10.11.12),
+      :helper_addresses => %w(5.6.7.8 9.10.11.12),
       :mtu => '9000',
       :provider => described_class.name
     }
@@ -88,7 +88,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          :ensure => :present,
                          :name => 'Ethernet1',
                          :address => '172.16.10.1/24',
-                         :helper_address => %w(5.6.7.8 9.10.11.12),
+                         :helper_addresses => %w(5.6.7.8 9.10.11.12),
                          :mtu => '1500'
       end
 
@@ -103,7 +103,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          :ensure => :present,
                          :name => 'Management1',
                          :address => '192.168.1.16/24',
-                         :helper_address => [],
+                         :helper_addresses => [],
                          :mtu => '1500'
       end
     end
@@ -142,7 +142,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
     let(:eapi) { double }
 
-    before do
+    before :each do
       allow(provider).to receive(:eapi)
       allow(provider.eapi).to receive(:Ipinterface).and_return(eapi)
     end
@@ -166,7 +166,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         allow(eapi).to receive(:create).with('Ethernet1')
         allow(eapi).to receive(:set_address)
         allow(eapi).to receive(:set_mtu)
-        allow(eapi).to receive(:set_helper_address)
+        allow(eapi).to receive(:set_helper_addresses)
       end
 
       it "calls Ipinterface#create('Ethernet1')" do
@@ -189,10 +189,9 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(provider.mtu).to eq(provider.resource[:mtu])
       end
 
-      it 'sets helper_address to the resource value' do
+      it 'sets helper_addresses to the resource value' do
         provider.create
-        value = provider.resource[:helper_address]
-        expect(provider.helper_address).to eq(value)
+        expect(provider.helper_addresses).to eq(provider.resource[:helper_addresses])
       end
     end
 
@@ -202,7 +201,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         allow(eapi).to receive(:create)
         allow(eapi).to receive(:set_address)
         allow(eapi).to receive(:set_mtu)
-        allow(eapi).to receive(:set_helper_address)
+        allow(eapi).to receive(:set_helper_addresses)
       end
 
       it "calls Ipinterface#delete('Ethernet1')" do
@@ -262,22 +261,22 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       end
     end
 
-    describe '#helper_address=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_helper_address).with('Ethernet1', :value => value)
-      end
-
+    describe '#helper_addresses=(val)' do
       let(:value) { %w(1.2.3.4 5.6.7.8) }
 
-      it 'calls Ipinterface#set_helper_address' do
-        expect(eapi).to receive(:set_helper_address).with('Ethernet1', :value => value)
-        provider.helper_address = value
+      before :each do
+        allow(eapi).to receive(:set_helper_addresses).with('Ethernet1', :value => value)
       end
 
-      it 'updates the help_address property in the provider' do
-        expect(provider.helper_address).not_to eq(value)
-        provider.helper_address = value
-        expect(provider.helper_address).to eq(value)
+      it 'calls Ipinterface#set_helper_address' do
+        expect(eapi).to receive(:set_helper_addresses).with('Ethernet1', :value => value)
+        provider.helper_addresses = value
+      end
+
+      it 'updates the help_addresses property in the provider' do
+        expect(provider.helper_addresses).not_to eq(value)
+        value = provider.helper_addresses
+        expect(provider.helper_addresses).to eq(value)
       end
     end
   end

@@ -1,15 +1,11 @@
 {
     "Ethernet1": {
         "description": "",
-        "shutdown": false,
-        "flowcontrol_send": "on",
-        "flowcontrol_receive": "off"
+        "shutdown": false
     },
     "Management1": {
         "description": "",
-        "shutdown": false,
-        "flowcontrol_send": "desired",
-        "flowcontrol_receive": "desired"
+        "shutdown": false
     }
 }
 

@@ -49,7 +49,7 @@ describe PuppetX::Eos::Ntp do
     context '#get' do
       subject { instance.get }
 
-      let(:commands) { 'show running-config section ntp' }
+      let(:commands) { 'show running-config all section ntp' }
 
       let :api_response do
         dir = File.dirname(__FILE__)

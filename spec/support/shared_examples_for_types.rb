@@ -192,19 +192,14 @@ RSpec.shared_examples 'vlan range value' do
 end
 
 RSpec.shared_examples 'vlan range string value' do
-  %w(1 10 100 4094).each do |val|
+  %w(1 10 100 4094 10-100).each do |val|
     it "munges #{val.inspect} to [#{val}]" do
       type[attribute] = val
       expect(type[attribute]).to eq([val])
     end
   end
 
-  it 'munges [10, 20] to ["10", "20"]' do
-    type[attribute] = [10, 20]
-    expect(type[attribute]).to eq(%w(10 20))
-  end
-
-  [-1, 4096, '8192', 'asdf', { :foo => 1 }, true, false, nil].each do |val|
+  [-1, 4096, '4000-4096', '8192', 'asdf', { :foo => 1 }, true, false, nil].each do |val|
     it "rejects #{val.inspect} with a Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
     end

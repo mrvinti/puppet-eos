@@ -187,8 +187,8 @@ describe PuppetX::Eos::Ipinterface do
       end
     end
 
-    context '#set_helper_address' do
-      subject { instance.set_helper_address(name, opts) }
+    context '#set_helper_addresses' do
+      subject { instance.set_helper_addresses(name, opts) }
 
       let(:opts) { { :value => value, :default => default } }
       let(:default) { false }

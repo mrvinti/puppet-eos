@@ -33,9 +33,11 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_eapi) do
+describe Puppet::Type.type(:eos_prefix_list) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(:name => 'EAPI_1', :catalog => catalog) }
+  let(:type) { described_class.new(:name => 'PreFix:100', :catalog => catalog) }
+
+  it_behaves_like 'an ensurable type', :name => 'PreFix:100'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -43,36 +45,54 @@ describe Puppet::Type.type(:eos_eapi) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(prefixBld1)
   end
 
-  describe 'protocol' do
-    let(:attribute) { :protocol }
+  describe 'prefix_list' do
+    let(:attribute) { :prefix_list }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:http, :https]
-    include_examples 'rejected parameter values'
+    include_examples 'accepts values without munging', %w(PreFix100)
   end
 
-  describe 'port' do
-    let(:attribute) { :port }
+  describe 'seqno' do
+    let(:attribute) { :seqno }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1 200 32780 65535)
-    include_examples 'rejects values', [0, 65_536, 'string', { :two => :three }]
+    include_examples 'numeric parameter', :min => 0, :max => 65_535
+    include_examples 'rejects values', [-1, 65_536]
   end
 
-  describe 'enable' do
-    let(:attribute) { :enable }
+  describe 'action' do
+    let(:attribute) { :action }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'boolean value'
-    include_examples 'rejected parameter values'
+    include_examples 'accepts values', [:permit, :deny]
+    include_examples 'rejects values', [[1], { :two => :three }]
   end
 
+  describe 'prefix' do
+    let(:attribute) { :prefix}
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(PreFix)
+  end
+
+  describe 'masklen' do
+    let(:attribute) { :masklen }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'numeric parameter', :min => 1, :max => 32
+    include_examples 'rejects values', [0, 33]
+  end
 end

@@ -54,6 +54,7 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
   def self.instances
     result = eapi.Prefixlist.getall
     return [] unless result
+    require 'pry'; binding.pry
     result.map do |(name, rules)|
       provider_hash = rules.inject({}) do |hsh, attrs|
         hsh = { :name => namevar(name, attrs), :ensure => :present }
@@ -135,7 +136,7 @@ Puppet::Type.type(:eos_prefix_list).provide(:eos) do
 
   ##
   # validate_identity checks to make sure there are enough options specified to
-  # uniquely identify a radius server resource.
+  # uniquely identify a prefix list resource.
   def validate_identity(opts = {})
     errors = false
     missing = [:prefix_list, :seqno].reject { |k| opts[k] }
