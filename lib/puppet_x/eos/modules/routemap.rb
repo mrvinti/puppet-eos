@@ -7,13 +7,13 @@ module PuppetX
     class Routemap < ModuleBase
 
       def get(name)
-        results = config(/route-map #{name}/)
+        results = config("route-map #{name}")
         return nil unless results
         clauses = results.scan(/route-map #{name} .+/)
         return nil unless clauses
 
         clauses.inject({}) do |hsh, clause|
-          cfg = get_block(clause, :config => config)
+          cfg = get_block(clause, :config => results)
           action, seqno = parse_action_seqno(cfg)
           hsh[seqno] = { 'action' => action }
           hsh[seqno].merge!(parse_clause(cfg))
@@ -22,7 +22,7 @@ module PuppetX
       end
 
       def getall
-        results = config(/route-map/)
+        results = config('route-map')
         return nil unless results
         instances = results.scan(/route-map ([^\s]+)/)
         return nil if !instances || instances.empty?

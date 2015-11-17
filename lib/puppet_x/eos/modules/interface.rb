@@ -61,8 +61,10 @@ module PuppetX
         interfaces.flatten! unless !interfaces || interfaces.empty?
         interfaces.inject({}) do |hsh, name|
           cfg = get_block("interface #{name}", :config => result)
-          data = parse_interface(name, result)
-          hsh[name] = data if data
+          if cfg
+            data = parse_interface(name, cfg)
+            hsh[name] = data if data
+          end
           hsh
         end
       end

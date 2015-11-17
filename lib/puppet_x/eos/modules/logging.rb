@@ -107,7 +107,7 @@ module PuppetX
       def getall
         result = config('^logging')
         return {} unless result
-        values = result.scan(/^logging host ([^\s]+)$/)
+        values = result.scan(/^logging host ([^\s]+)/)
         values.inject({}) do |hsh, val|
           hsh[val.first] = {}
           hsh

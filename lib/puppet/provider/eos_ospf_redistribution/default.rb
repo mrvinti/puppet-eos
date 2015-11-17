@@ -54,9 +54,10 @@ Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
   def self.instances
     result = eapi.Ospf.getall['instances']
     resources = []
-    result.values.each do |inst|
+    result.each do |instance_id, inst|
       inst['redistribution'].each do |(name, attrs)|
         provider_hash = { :name => name, :ensure => :present }
+        provider_hash[:instance_id] = instance_id
         provider_hash[:route_map] = attrs['route_map']
         resources << new(provider_hash)
       end
@@ -69,6 +70,10 @@ Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
     @property_flush = {}
   end
 
+  def instance_id=(val)
+    @property_flush[:instance_id] = val
+  end
+
   def route_map=(val)
     @property_flush[:route_map] = val
   end
@@ -78,10 +83,12 @@ Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
   end
 
   def create
+    fail('instance_id property must be included') if resource[:instance_id].nil?
     @property_flush = resource.to_hash
   end
 
   def destroy
+    fail('instance_id property must be included') if resource[:instance_id].nil?
     @property_flush = resource.to_hash
   end
 
@@ -91,9 +98,11 @@ Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
     case desired_state[:ensure]
     when :present
       api.update_redistribution(desired_state[:name],
+                                desired_state[:instance_id],
                                 :route_map => desired_state[:route_map])
     when :absent
-      api.remove_redistribution(desired_state[:name])
+      api.remove_redistribution(desired_state[:name],
+                                desired_state[:instance_id])
     end
     @property_hash = desired_state
   end

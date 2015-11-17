@@ -212,38 +212,31 @@ module PuppetX
         @api.config(cmds) == [{}, {}]
       end
 
-      def update_redistribution(proto, opts = {})
+      def update_redistribution(proto, instance_id, opts = {})
         route_map = opts[:route_map]
-        mdata = /(router ospf \d+)/.match(config)
-        return false unless mdata
-        cmds = [mdata[1]]
+        cmds = ["router ospf #{instance_id}"]
         cfg = "redistribute #{proto}"
         cfg << " route-map #{route_map}" if route_map
         cmds << cfg
         @api.config(cmds)
       end
 
-      def remove_redistribution(proto)
-        mdata = /(router ospf \d+)/.match(config)
-        return false unless mdata
-        cmds = [mdata[1]]
-        cmds << "no redistribution #{proto}"
+      def remove_redistribution(proto, instance_id)
+        cmds = ["router ospf #{instance_id}"]
+        cmds << "no redistribute #{proto}"
+        require 'pry'; binding.pry
         @api.config(cmds)
       end
 
 
-      def update_network(network, area)
-        mdata = /(router ospf \d+)/.match(config)
-        return false unless mdata
-        cmds = [mdata[1]]
+      def update_network(network, instance_id, area)
+        cmds = ["router ospf #{instance_id}"]
         cmds << "network #{network} area #{area}"
         @api.config(cmds)
       end
 
-      def remove_network(network, area)
-        mdata = /(router ospf \d+)/.match(config)
-        return false unless mdata
-        cmds = [mdata[1]]
+      def remove_network(network, instance_id, area)
+        cmds = ["router ospf #{instance_id}"]
         cmds << "no network #{network} area #{area}"
         @api.config(cmds)
       end
@@ -256,15 +249,16 @@ module PuppetX
         running_config = config('^router ospf')
         instances = running_config.scan(/^router ospf (\d)/)
         values = instances.inject({}) do |hsh, inst|
-          config = get_block("router ospf #{inst.first}", :config => running_config)
-          hsh[inst.first] = {}
-          hsh[inst.first].merge!(parse_router_id(config))
-          hsh[inst.first].merge!(parse_maximum_paths(config))
-          hsh[inst.first].merge!(parse_max_lsa(config))
-          hsh[inst.first].merge!(parse_areas(config))
-          hsh[inst.first].merge!(parse_redistribution(config))
-          hsh[inst.first].merge!(parse_ospf_interfaces(config))
-          hsh[inst.first].merge!(parse_passive_interface_default(config))
+          inum = inst.first
+          config = get_block("router ospf #{inum}", :config => running_config)
+          hsh[inum] = {}
+          hsh[inum].merge!(parse_router_id(config))
+          hsh[inum].merge!(parse_maximum_paths(config))
+          hsh[inum].merge!(parse_max_lsa(config))
+          hsh[inum].merge!(parse_areas(config))
+          hsh[inum].merge!(parse_redistribution(config))
+          hsh[inum].merge!(parse_ospf_interfaces(config))
+          hsh[inum].merge!(parse_passive_interface_default(config))
           hsh
         end
         { 'instances' => values }

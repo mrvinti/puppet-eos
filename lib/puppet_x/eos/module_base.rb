@@ -33,7 +33,9 @@ module PuppetX
       def config(section)
         result = api.enable("show running-config all section #{section}",
                             :format => 'text')
-        result.last['output']
+        # When using the section filter sometimes the last '!' in a block
+        # is not returned. Add a '!' to the end of returned text.
+        result.last['output'] + "!\n"
       end
 
       ##
