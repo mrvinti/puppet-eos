@@ -58,11 +58,10 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
       provider_hash[:router_id] = attrs['router_id']
       provider_hash[:max_lsa] = attrs['max_lsa']
       provider_hash[:maximum_paths] = attrs['maximum_paths']
-      provider_hash[:active_interfaces] = attrs['active_interfaces']
-      provider_hash[:passive_interfaces] = attrs['passive_interfaces']
-
       value = attrs['passive_interface_default'].to_s.to_sym
       provider_hash[:passive_interface_default] = value
+      provider_hash[:active_interfaces] = attrs['active_interfaces']
+      provider_hash[:passive_interfaces] = attrs['passive_interfaces']
 
       new(provider_hash)
     end
@@ -110,9 +109,9 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
     self.router_id = resource[:router_id] if resource[:router_id]
     self.max_lsa = resource[:max_lsa] if resource[:max_lsa]
     self.maximum_paths = resource[:maximum_paths] if resource[:maximum_paths]
+    self.passive_interface_default = resource[:passive_interface_default] if resource[:passive_interface_default]
     self.passive_interfaces = resource[:passive_interfaces] if resource[:passive_interfaces]
     self.active_interfaces = resource[:active_interfaces] if resource[:active_interfaces]
-    self.passive_interface_default = resource[:passive_interface_default] if resource[:passive_interface_default]
   end
 
   def destroy

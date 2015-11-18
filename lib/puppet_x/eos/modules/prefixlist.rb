@@ -9,7 +9,8 @@ module PuppetX
       # Regular expression to extract a prefix list attributes from the
       # running-configuration text.  The explicit [ ] spaces enable line
       # wrappping and indentation with the /x flag.
-      RULE_REGEXP = /(?:seq[ ](\d+))
+      RULE_REGEXP = /ip[ ]prefix[-]list[ ](:?[^\s]+)[ ]
+                     (?:seq[ ](\d+))
                      (?:[ ](permit|deny))
                      (?:[ ]([^\s]+))
                      (?:[ ]eq[ ](\d+))?
@@ -31,26 +32,24 @@ module PuppetX
       def getall
         results = config('^ip prefix-list')
         return nil unless results
-        instances = results.scan(/ip prefix-list ([^\s]+)/)
+        instances = results.scan(RULE_REGEXP)
         return nil unless instances
-        instances.inject({}) do |hsh, name|
-          hsh.merge!(get(name.first))
-          hsh
+        instances.map do |rule|
+          parse_rule(rule)
         end
       end
 
       def parse_rule(config)
-        tuples = config.scan(RULE_REGEXP)
-        tuples.inject({}) do |hsh, (seqno, action, net, eq, ge, le)|
-          hsh['seqno'] = seqno
-          hsh['action'] = action
-          hsh['prefix'] = net.split('/')[0]
-          hsh['masklen'] = net.split('/')[1]
-          hsh['eq'] = eq
-          hsh['ge'] = ge
-          hsh['le'] = le
-          hsh
-        end
+        hsh = {}
+        hsh['prefix_list'] = config[0]
+        hsh['seqno'] = config[1]
+        hsh['action'] = config[2]
+        hsh['prefix'] = config[3].split('/')[0]
+        hsh['masklen'] = config[3].split('/')[1]
+        hsh['eq'] = config[4]
+        hsh['ge'] = config[5]
+        hsh['le'] = config[6]
+        hsh
       end
 
       def update_rule(opts = {})
@@ -66,7 +65,7 @@ module PuppetX
       def remove_rule(opts = {})
         name = opts[:prefix_list]
         seqno = opts[:seqno]
-        @api.config "no ip prefix-list #{name} seqno #{seqno}"
+        @api.config "no ip prefix-list #{name} seq #{seqno}"
       end
     end
   end

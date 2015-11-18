@@ -49,7 +49,7 @@ describe PuppetX::Eos::Stp do
       'show running-config all section spanning-tree mst'
     end
     let(:command_interfaces) do
-      'show running-config all section spanning-tree'
+      'show interfaces'
     end
 
     let :api_response do
@@ -76,7 +76,7 @@ describe PuppetX::Eos::Stp do
       allow(eapi).to \
         receive(:enable).with(command_instances, :format => 'text').and_return(api_instance_response)
       allow(eapi).to \
-        receive(:enable).with(command_interfaces, :format => 'text').and_return(api_interface_response)
+        receive(:enable).with(command_interfaces).and_return(nil)
     end
 
     context '#get' do

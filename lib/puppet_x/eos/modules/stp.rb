@@ -276,18 +276,16 @@ module PuppetX
       #
       # @return [Hash] interface attributes from the running-config
       def getall
-        # Note that only bridged interfaces would appear in list.
-        result = config('spanning-tree')
+        result = @api.enable('show interfaces')
         return {} unless result
-        # Extract all the interface names from the output
-        interfaces = result.scan(/^interface\s+(\S+)$/)
-        response = interfaces.inject({}) do |hsh, name_arry|
-          name = name_arry[0]
-          cfg = get_block("interface #{name}", :config => result)
-          portfast = /no spanning-tree portfast/ =~ cfg
-          hsh[name] = { 'portfast' => portfast.nil? }
+        result = result.first['interfaces']
+        response = result.inject({}) do |hsh, (name, attrs)|
+          hsh[name] = get_interface_config(name) \
+            if (attrs['forwardingModel'] == 'bridged' || \
+                attrs['forwardingModel'] == 'dataLink')
           hsh
         end
+        response
       end
 
       ##
@@ -313,6 +311,15 @@ module PuppetX
         end
         @api.config(cmds) == [{}, {}]
       end
+
+      def get_interface_config(name)
+        cmd = "show running-config interfaces #{name}"
+        result = @api.enable(cmd, :format => 'text')
+        output = result.first['output']
+        portfast = /spanning-tree portfast/.match(output)
+        { 'portfast' => !portfast.nil? }
+      end
+      private :get_interface_config
     end
   end
 end

@@ -41,7 +41,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       :lacp_mode => :active,
       :members => %w(Ethernet1 Ethernet2),
       :lacp_fallback => :static,
-      :lacp_timeout => 100,
+      :lacp_timeout => 300,
       :provider => described_class.name
     }
     Puppet::Type.type(:eos_portchannel).new(resource_hash)
@@ -93,7 +93,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
                          :lacp_mode => :active,
                          :members => %w(Ethernet1 Ethernet2),
                          :lacp_fallback => :static,
-                         :lacp_timeout => 100
+                         :lacp_timeout => 300
       end
 
       context "eos_portchannel { 'Port-Channel2': }" do
@@ -109,7 +109,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
                          :lacp_mode => :passive,
                          :members => %w(Ethernet3 Ethernet4),
                          :lacp_fallback => :individual,
-                         :lacp_timeout => 100
+                         :lacp_timeout => 300
       end
     end
 
@@ -268,7 +268,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       end
 
       it 'handles both add and remove member operations' do
-        expect(eapi).to receive(:set_members).with('Port-Channel1', %w(Ethernet1 Ethernet3))
+        expect(eapi).to receive(:set_members).with('Port-Channel1', %w(Ethernet1 Ethernet3), :active)
         provider.members = %w(Ethernet1 Ethernet3)
       end
     end
@@ -298,15 +298,15 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         allow(provider.eapi.Portchannel).to receive(:set_lacp_timeout)
       end
 
-      it 'class Portchannel#set_lacp_timeout=100' do
-        expect(eapi).to receive(:set_lacp_timeout).with('Port-Channel1', :value => 900)
-        provider.lacp_timeout = 900
+      it 'class Portchannel#set_lacp_timeout=300' do
+        expect(eapi).to receive(:set_lacp_timeout).with('Port-Channel1', :value => 300)
+        provider.lacp_timeout = 300
       end
 
       it 'updates the lacp_timeout property in the provider' do
-        expect(provider.lacp_timeout).not_to eq 900
-        provider.lacp_timeout = 900
-        expect(provider.lacp_timeout).to eq 900
+        expect(provider.lacp_timeout).not_to eq 300
+        provider.lacp_timeout = 300
+        expect(provider.lacp_timeout).to eq 300
       end
     end
   end
