@@ -17,8 +17,22 @@ module PuppetX
                      (?:[ ]ge[ ](\d+))?
                      (?:[ ]le[ ](\d+))?/x
 
+      def get(name)
+        results = config("^ip prefix-list #{name}")
+        return nil unless results
+        instances = results.chomp("!\n").split("\n")
+        return nil unless instances
+        instances.inject({}) do |hsh, inst|
+          hsh[name] = [] unless hsh.include?(name)
+          hsh[name] << parse_rule(inst.first)
+          hsh
+        end
+      end
+
       def getall
-        instances = config.scan(RULE_REGEXP)
+        results = config('^ip prefix-list')
+        return nil unless results
+        instances = results.scan(RULE_REGEXP)
         return nil unless instances
         instances.map do |rule|
           parse_rule(rule)

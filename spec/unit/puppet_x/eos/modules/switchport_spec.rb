@@ -42,22 +42,29 @@ describe PuppetX::Eos::Switchport do
   end
 
   context 'with Eapi#enable' do
+    let(:cmd_swp_et1) { 'show interfaces Ethernet1 switchport' }
+    let(:cmd_all_et1) { 'show running-config all section ^interface Ethernet1' }
+
+    let :swp_et1_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/switchport_get.json')
+      JSON.load(File.read(file))
+    end
+
+    let :all_et1_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/switchport_get_et1.json')
+      JSON.load(File.read(file))
+    end
 
     context '#get' do
       subject { instance.get(name) }
 
       let(:name) { 'Ethernet1' }
-#      let(:commands) { 'show interfaces Ethernet1 switchport' }
-      let(:commands) { 'show running-config all' }
-
-      let :api_response do
-        dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/switchport_get.json')
-        JSON.load(File.read(file))
-      end
 
       before :each do
-        allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
+        allow(eapi).to receive(:enable).with(cmd_swp_et1, :format => 'text').and_return(swp_et1_response)
+        allow(eapi).to receive(:enable).with(cmd_all_et1, :format => 'text').and_return(all_et1_response)
       end
 
       it { is_expected.to be_a_kind_of Hash }
@@ -66,22 +73,19 @@ describe PuppetX::Eos::Switchport do
     context '#getall' do
       subject { instance.getall }
 
+      # Getall does this command and also the same commands for the get above
+      let(:command) { 'show interfaces' }
+
       let :interfaces do
         dir = File.dirname(__FILE__)
         file = File.join(dir, 'fixtures/switchport_getall_interfaces.json')
         JSON.load(File.read(file))
       end
 
-      let :switchport_et1 do
-        dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/switchport_get_et1.json')
-        JSON.load(File.read(file))
-      end
-
       before :each do
-        allow(eapi).to receive(:enable).and_return(interfaces)
-
-        allow(instance).to receive(:get).with('Ethernet1').and_return(switchport_et1)
+        allow(eapi).to receive(:enable).with(command).and_return(interfaces)
+        allow(eapi).to receive(:enable).with(cmd_swp_et1, :format => 'text').and_return(swp_et1_response)
+        allow(eapi).to receive(:enable).with(cmd_all_et1, :format => 'text').and_return(all_et1_response)
       end
 
       it { is_expected.to be_a_kind_of Array }

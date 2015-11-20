@@ -49,7 +49,7 @@ describe PuppetX::Eos::LoggingHosts do
     context '#getall' do
       subject { instance.getall }
 
-      let(:commands) { 'show running-config section ^logging\shost' }
+      let(:commands) { 'show running-config all section ^logging' }
 
       let :api_response do
         dir = File.dirname(__FILE__)

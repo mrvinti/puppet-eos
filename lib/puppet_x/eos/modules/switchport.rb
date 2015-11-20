@@ -46,6 +46,9 @@ module PuppetX
       ##
       # Retrieves the properies for a logical switchport from the
       # running-config using eAPI.
+      # TODO: The processing in the get/getall routines would be
+      # inefficient on a modular switch. Need to reduce eapi calls
+      # and amount of content returned.
       #
       #   Example
       #   {
@@ -70,7 +73,7 @@ module PuppetX
           'trunk_native_vlan' => trunk_native_to_value(output),
           'access_vlan' => access_vlan_to_value(output),
         }
-        cfg = get_block("interface #{name}", :config => config)
+        cfg = config("^interface #{name}")
         attr_hash.merge!(parse_trunk_native_vlans(name, cfg))
         attr_hash.merge!(parse_trunk_groups(name, cfg))
         attr_hash

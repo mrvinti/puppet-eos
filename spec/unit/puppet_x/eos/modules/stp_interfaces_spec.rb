@@ -56,7 +56,7 @@ describe PuppetX::Eos::StpInterfaces do
 
       let :show_interfaces do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp.json')
+        file = File.join(dir, 'fixtures/stp_interfaces_getall.json')
         JSON.load(File.read(file))
       end
 

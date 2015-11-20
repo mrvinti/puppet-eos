@@ -100,10 +100,6 @@ describe PuppetX::Eos::Portchannel do
       it 'has only one entry' do
         expect(subject.size).to eq 1
       end
-
-      it 'contains Port-Channel1' do
-        expect(subject[0]['name']).to eq 'Port-Channel1'
-      end
     end
 
     context '#get_members' do

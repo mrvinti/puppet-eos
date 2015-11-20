@@ -30,6 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+require 'puppet_x/eos/module_base'
+
 ##
 # PuppetX is the toplevel namespace for working with Arista EOS nodes
 module PuppetX
@@ -40,7 +42,7 @@ module PuppetX
     # The Stp class provides a base class instance for working with
     # the EOS spanning-tree configuration
     #
-    class Stp
+    class Stp < ModuleBase
       ##
       # Initialize instance of Stp
       #
@@ -91,9 +93,9 @@ module PuppetX
       #
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get_mode
-        result = @api.enable('show running-config section spanning-tree mode',
-                             :format => 'text')
-        mode = /mode\s(\w+)$/.match(result.first['output'])
+        result = config('spanning-tree mode')
+        return {} unless result
+        mode = /mode\s(\w+)$/.match(result)
         response = { 'mode' => mode[1] }
         response
       end
@@ -177,7 +179,7 @@ module PuppetX
     # The StpInstances class provides a class instance for working with
     # spanning-tree instances in EOS
     #
-    class StpInstances
+    class StpInstances < ModuleBase
       ##
       # Initialize instance of StpInstances
       #
@@ -202,12 +204,9 @@ module PuppetX
       #
       # @return [Hash] instance attributes from eAPI
       def getall
-        result = @api.enable('show running-config all section spanning-tree mst',
-                             :format => 'text')
+        result = config('spanning-tree mst')
         return {} unless result
-        config = result.first['spanningTreeInstances']
-        return {} unless config
-        values = config.scan(/spanning-tree mst (\d+) priority (\d+)/)
+        values = result.scan(/spanning-tree mst (\d+) priority (\d+)/)
         values.each.inject({}) do |hsh, (inst, priority)|
           hsh[inst] = { 'priority' => priority }
           hsh
@@ -253,7 +252,7 @@ module PuppetX
     # The StpInterfaces class provides a class instance for working with
     # spanning-tree insterfaces in EOS
     #
-    class StpInterfaces
+    class StpInterfaces < ModuleBase
       ##
       # Initialize instance of StpInterfaces
       #
@@ -313,8 +312,6 @@ module PuppetX
         @api.config(cmds) == [{}, {}]
       end
 
-      private
-
       def get_interface_config(name)
         cmd = "show running-config interfaces #{name}"
         result = @api.enable(cmd, :format => 'text')
@@ -322,6 +319,7 @@ module PuppetX
         portfast = /spanning-tree portfast/.match(output)
         { 'portfast' => !portfast.nil? }
       end
+      private :get_interface_config
     end
   end
 end

@@ -53,11 +53,12 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
 
   def self.instances
     result = eapi.Ospf.getall['instances']
-    result.values.inject([]) do |resources, inst|
+    result.inject([]) do |resources, (instance_id, inst)|
       areas_arry = inst['areas'].inject([]) do |areas, (area, attrs)|
         networks = attrs['networks'].inject([]) do |arry, name|
           provider_hash = { :name => name, :ensure => :present }
           provider_hash[:area] = area
+          provider_hash[:instance_id] = instance_id
           provider_hash[:instance] = inst
           arry << new(provider_hash)
           arry
@@ -79,15 +80,27 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
     @property_flush[:area] = val
   end
 
+  def instance_id=(val)
+    @property_flush[:instance_id] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
 
   def create
+    if resource[:instance_id].nil?
+      fail('instance_id property must be included')
+    end
+    fail('area property must be included') if resource[:area].nil?
     @property_flush = resource.to_hash
   end
 
   def destroy
+    if resource[:instance_id].nil?
+      fail('instance_id property must be included')
+    end
+    fail('area property must be included') if resource[:area].nil?
     @property_flush = resource.to_hash
   end
 
@@ -96,9 +109,11 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
     desired_state = @property_hash.merge!(@property_flush)
     case desired_state[:ensure]
     when :present
-      api.update_network(desired_state[:name], desired_state[:area])
+      api.update_network(desired_state[:name], desired_state[:instance_id],
+                         desired_state[:area])
     when :absent
-      api.remove_network(desired_state[:name], desired_state[:area])
+      api.remove_network(desired_state[:name], desired_state[:instance_id],
+                         desired_state[:area])
     end
     @property_hash = desired_state
   end

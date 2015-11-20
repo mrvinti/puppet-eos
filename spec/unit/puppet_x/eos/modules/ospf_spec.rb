@@ -44,13 +44,15 @@ describe PuppetX::Eos::Ospf do
   context 'with Eapi#enable' do
     before :each do
       allow(eapi).to receive(:enable).with(commands, :format => 'text').and_return(api_response)
+      allow(eapi).to receive(:enable).with(cmd_interface, :format => 'text').and_return(api_response)
     end
 
     context '#getall' do
       subject { instance.getall }
 
       describe 'retrieve all instances of ospf' do
-        let(:commands) { 'show ip ospf' }
+        let(:commands) { 'show running-config all section ^router ospf' }
+        let(:cmd_interface) { 'show running-config all section ^interface' }
 
         let :api_response do
           dir = File.dirname(__FILE__)
