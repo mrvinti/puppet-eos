@@ -224,7 +224,6 @@ module PuppetX
       def remove_redistribution(proto, instance_id)
         cmds = ["router ospf #{instance_id}"]
         cmds << "no redistribute #{proto}"
-        require 'pry'; binding.pry
         @api.config(cmds)
       end
 
