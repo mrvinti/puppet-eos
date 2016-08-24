@@ -1,5 +1,0 @@
-[
-  {
-  "output": "spanning-tree mode mstp\nspanning-tree mst 0 priority 8192\nspanning-tree mst 1 priority 4096\n!\nspanning-tree mst configuration\n   no name\n   revision 0\n   instance 1 vlan  1\n"
-  }
-]
