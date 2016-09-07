@@ -54,17 +54,18 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
     return [] if !result || result.empty?
     result.each_with_object([]) do |(prefix_list, rules), arry|
       rules.each do |rule|
-        attrs = parse_prefix(rule[:prefix])
-        provider_hash = { :name => namevar(prefix_list: prefix_list, seqno: rule[:seqno]),
+        attrs = parse_prefix(rule['prefix'])
+        provider_hash = { :name => namevar(prefix_list: prefix_list, seqno: rule['seq']),
                           :ensure => :present }
         provider_hash[:prefix_list] = prefix_list
-        provider_hash[:seqno] = rule[:seqno].to_i
-        provider_hash[:action] = rule[:action]
+        provider_hash[:seqno] = rule['seq'].to_i
+        provider_hash[:action] = rule['action']
         provider_hash[:prefix] = attrs[:prefix]
         provider_hash[:masklen] = attrs[:masklen].to_i
         provider_hash[:eq] = attrs[:eq].to_i if attrs[:eq]
         provider_hash[:ge] = attrs[:ge].to_i if attrs[:ge]
         provider_hash[:le] = attrs[:le].to_i if attrs[:le]
+        Puppet.debug(provider_hash)
         arry << new(provider_hash)
       end
     end
