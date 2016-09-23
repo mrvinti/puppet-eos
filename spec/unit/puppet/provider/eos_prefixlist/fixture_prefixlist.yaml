@@ -1,0 +1,19 @@
+---
+'test':
+  - :seqno: '10'
+    :action: permit
+    :prefix: 10.10.0.0/16
+  - :seqno: '20'
+    :action: deny
+    :prefix: 10.20.0.0/16
+  - :seqno: '30'
+    :action: permit
+    :prefix: 10.30.0.0/24 eq 26
+  - :seqno: '40'
+    :action: permit
+    :prefix: 10.40.0.0/16 ge 18 le 28
+'test1':
+  - :seqno: '10'
+    :action: permit
+    :prefix: 1.10.10.0/24
+'test2': []
