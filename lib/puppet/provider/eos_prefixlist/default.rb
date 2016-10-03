@@ -55,8 +55,10 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
     result.each_with_object([]) do |(prefix_list, rules), arry|
       rules.each do |rule|
         attrs = parse_prefix(rule['prefix'])
-        provider_hash = { :name => namevar(prefix_list: prefix_list, seqno: rule['seq']),
-                          :ensure => :present }
+        provider_hash = {
+          :name => namevar(prefix_list: prefix_list, seqno: rule['seq']),
+          :ensure => :present
+        }
         provider_hash[:prefix_list] = prefix_list
         provider_hash[:seqno] = rule['seq'].to_i
         provider_hash[:action] = rule['action']
@@ -128,11 +130,10 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
     name = desired_state[:prefix_list]
     seqno = desired_state[:seqno]
     action = resource[:action]
-    prefix = resource[:prefix]
-    prefix += "/#{resource[:masklen]}"
-    prefix += ' eq #{resource[:eq]}' if resource[:eq]
-    prefix += ' ge #{resource[:ge]}' if resource[:ge]
-    prefix += ' eq #{resource[:le]}' if resource[:le]
+    prefix = "#{resource[:prefix]}/#{resource[:masklen]}"
+    prefix << ' eq #{resource[:eq]}' if resource[:eq]
+    prefix << ' ge #{resource[:ge]}' if resource[:ge]
+    prefix << ' eq #{resource[:le]}' if resource[:le]
 
     validate_identity(desired_state)
     case desired_state[:ensure]
